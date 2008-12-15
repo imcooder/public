@@ -2,7 +2,7 @@
 #define HWX_EXT_TYPE_H
 
 #include <assert.h>
-#include <wtypes.h>
+#include <wtypes.h> 
 #include <CRTDbg.h>
 #include <tchar.h>
 #ifdef XEXPORT
