@@ -2,7 +2,7 @@
 #include "Asci.h"
 
 //是否是数字
-BOOL WINAPI Asci_isdigit( LONG ch)
+BOOL WINAPI Asci_IsDigit( LONG ch)
 {
 	if (ch < 0)
 		ch += 256;
@@ -13,7 +13,7 @@ BOOL WINAPI Asci_isdigit( LONG ch)
 }
 
 //是否是16进制数学字符(即0-9 A-F a-f )
-BOOL WINAPI Asci_isxdigit( LONG ch)
+BOOL WINAPI Asci_IsXDigit( LONG ch)
 {
 	if (ch < 0)
 		ch += 256;
@@ -50,7 +50,7 @@ BOOL WINAPI Asci_isspace( LONG ch)
 }
 
 //是否是大写字母
-BOOL WINAPI Asci_isupper( LONG ch)
+BOOL WINAPI Asci_IsUpper( LONG ch)
 {
 	if (ch < 0)
 		ch += 256;
@@ -61,7 +61,7 @@ BOOL WINAPI Asci_isupper( LONG ch)
 }
 
 //是否是小写字母
-BOOL WINAPI Asci_islower( LONG ch)
+BOOL WINAPI Asci_IsLower( LONG ch)
 {
 	if (ch < 0)
 		ch += 256;
@@ -72,7 +72,7 @@ BOOL WINAPI Asci_islower( LONG ch)
 }
 
 //是否是字母
-BOOL WINAPI Asci_isalpha( LONG ch)
+BOOL WINAPI Asci_IsAlpha( LONG ch)
 {
 	if (ch < 0)
 		ch += 256;
@@ -81,4 +81,30 @@ BOOL WINAPI Asci_isalpha( LONG ch)
 	  || (ch >= 'a' && ch <= 'z') )
 		return 1;
 	return 0;
+}
+
+BOOL WINAPI Asci_IsPunctuation( LONG ch )
+{
+	if (ch < 0x7F)
+	{
+		if (!Asci_IsAlpha(ch) && !Asci_IsDigit(ch))
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+
+WCHAR WINAPI Asci_HalfToFull( WCHAR wCharInput)
+{	
+	WCHAR wChar = wCharInput;
+	if (wCharInput == TEXT(' '))
+	{
+		wChar = 0x3000;			
+	}
+	else if (wCharInput <= 0x7F)
+	{
+		wChar = wCharInput + 0xFEE0;
+	}			
+	return wChar;
 }
