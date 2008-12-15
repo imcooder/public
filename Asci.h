@@ -5,14 +5,15 @@
 #ifdef __cplusplus
 extern "C"{
 #endif
-	BOOL WINAPI Asci_isdigit( LONG ch);
-	BOOL WINAPI Asci_isxdigit( LONG ch);
+	BOOL WINAPI Asci_IsDigit( LONG ch);
+	BOOL WINAPI Asci_IsXDigit( LONG ch);
 	BOOL WINAPI Asci_iscntrl( LONG ch);
 	BOOL WINAPI Asci_isspace( LONG ch);
-	BOOL WINAPI Asci_isupper( LONG ch);
-	BOOL WINAPI Asci_islower( LONG ch);
-	BOOL WINAPI Asci_isalpha( LONG ch);
-
+	BOOL WINAPI Asci_IsUpper( LONG ch);
+	BOOL WINAPI Asci_IsLower( LONG ch);
+	BOOL WINAPI Asci_IsAlpha( LONG ch);
+	BOOL WINAPI Asci_IsPunctuation(LONG ch);
+	WCHAR WINAPI Asci_HalfToFull( WCHAR);
 #ifdef __cplusplus
 }
 #endif
