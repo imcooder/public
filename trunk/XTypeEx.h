@@ -13,13 +13,13 @@
    ((HFONT) ::SelectObject((hDC), (HGDIOBJ) (HFONT) (hFont)))
 
 
-#define HANDLE_MSG(hwnd, message, fn) \
+#define HANDLE_MSG(m_hWnd, message, fn) \
    case (message): \
-      return HANDLE_##message((hwnd), (wParam), (lParam), (fn))
+      return HANDLE_##message((m_hWnd), (wParam), (lParam), (fn))
 
 
-#define HANDLE_WM_COMMAND(hwnd, wParam, lParam, fn) \
-   ( (fn) ((hwnd), (int) (LOWORD(wParam)), (HWND)(lParam), (UINT) HIWORD(wParam)), 0L)
+#define HANDLE_WM_COMMAND(m_hWnd, wParam, lParam, fn) \
+   ( (fn) ((m_hWnd), (int) (LOWORD(wParam)), (HWND)(lParam), (UINT) HIWORD(wParam)), 0L)
 
 
 #ifndef FORCEASSERT
