@@ -508,7 +508,7 @@ BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type)
 		BOOL fSaclPresent = FALSE;  
 		BOOL fSaclDefaulted = FALSE;  
 
-		if (ConvertStringSecurityDescriptorToSecurityDescriptorW(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
+		if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
 		{	
 			if (GetSecurityDescriptorSacl(pSD, &fSaclPresent, &pSacl, &fSaclDefaulted))
 			{
