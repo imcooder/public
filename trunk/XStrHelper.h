@@ -20,6 +20,20 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define GetPathDirectory Helper_GetPathDirectoryW
 #define StrMove			 Helper_StrMoveW
 #define StrMove_S			 Helper_StrMoveW_S
+#define StrMid				Helper_StrMidW
+#define StrRight			Helper_StrRightW
+#define StrLeft				Helper_StrLeftW
+#define StrTrimLeft		Helper_StrTrimLeftW
+#define StrTrimRight	Helper_StrTrimRightW
+#define StrTrim				Helper_StrTrimW
+#define StrUpper			Helper_StrUpperW
+#define StrGetNumber	Helper_StrGetNumberW
+#define StrGetFloat		Helper_StrGetFloatW
+#define StrGetHex			Helper_StrGetHexW
+#define StrReverse		Helper_StrReverseW
+
+
+
 #else
 
 #define StrChrChr     Helper_StrChrChrA
@@ -30,6 +44,21 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define GetPathDirectory Helper_GetPathDirectoryA
 #define StrMove			 Helper_StrMoveA
 #define StrMove_S			 Helper_StrMoveA_S
+#define StrMid				Helper_StrMidA
+#define StrRight			Helper_StrRightA
+#define StrLeft				Helper_StrLeftA
+#define StrTrimLeft		Helper_StrTrimLeftA
+#define StrTrimRight		Helper_StrTrimRightA
+#define StrTrim				Helper_StrTrimA
+#define StrUpper			Helper_StrUpperA
+#define StrGetNumber	Helper_StrGetNumberA
+#define StrGetFloat		Helper_StrGetFloatA
+#define StrGetHex			Helper_StrGetHexA
+#define StrReverse		Helper_StrReverseA
+
+
+
+
 #endif
 
 
@@ -64,6 +93,30 @@ extern "C"{
 	LPSTR WINAPI Helper_StrMoveA(LPSTR, LPCSTR);
 	LPWSTR WINAPI Helper_StrMoveW_S(LPWSTR, LONG, LPCWSTR);
 	LPSTR WINAPI Helper_StrMoveA_S(LPSTR, LONG, LPCSTR);
+
+	LONG WINAPI Helper_StrMidW(LPWSTR pszString, LONG nIndex, UINT nCount);
+	LONG WINAPI Helper_StrMidA(LPSTR pszString, LONG nIndex, UINT nCount);
+	LONG WINAPI Helper_StrRightW(LPWSTR pszString, UINT nCount);
+	LONG WINAPI Helper_StrRightA(LPSTR pszString, UINT nCount);
+	LONG WINAPI Helper_StrLeftW(LPWSTR pszString, UINT nCount);
+	LONG WINAPI Helper_StrLeftA(LPSTR pszString, UINT nCount);
+	void WINAPI Helper_StrTrimLeftW(LPWSTR pszString, LPCWSTR pwhTag);
+	void WINAPI Helper_StrTrimLeftA(LPSTR pszString, LPCSTR pszTag);
+	void WINAPI Helper_StrTrimRightW(LPWSTR pszString, LPCWSTR pszTag);	
+	void WINAPI Helper_StrTrimRightA(LPSTR pszString, LPCSTR pszTag);
+	void WINAPI Helper_StrTrimW(LPWSTR pszString, LPCWSTR pszTag);
+	void WINAPI Helper_StrTrimA(LPSTR pszString, LPCSTR pszTag);
+	void WINAPI Helper_StrUpperW(LPWSTR pszString);
+	void WINAPI Helper_StrUpperA(LPSTR pszString);	
+	LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString);
+	LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString);
+	float WINAPI Helper_StrGetFloatA(LPCSTR pszString);
+	float WINAPI Helper_StrGetFloatA(LPCSTR pszString);
+	LONG WINAPI Helper_StrGetHexW(LPCWSTR pszString);
+	LONG WINAPI Helper_StrGetHexA(LPCSTR pszString);
+	void WINAPI Helper_StrReverseW(LPWSTR pszString);
+	void WINAPI Helper_StrReverseA(LPSTR pszString);
+	
 #ifdef __cplusplus
 }
 #endif

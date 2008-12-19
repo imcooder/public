@@ -23,6 +23,7 @@ typedef     void *            LPVOID;
 typedef     char              CHAR;
 typedef     const CHAR *      LPCSTR;
 typedef     CHAR*             LPCHAR;
+
 //typedef     unsigned LONG     ULONG;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _BYTE_DEFINED
@@ -34,14 +35,16 @@ typedef     BYTE*             LPBYTE;
 #ifndef _WORD_DEFINED
 #define _WORD_DEFINED
 typedef     unsigned short    WORD;
-typedef     WORD*             LPWORD;
 #endif 
+typedef     WORD*             LPWORD;
+typedef     const WORD*       LPCWORD;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _DWORD_DEFINED
 #define _DWORD_DEFINED
 typedef     unsigned long     DWORD;
-typedef     DWORD*            LPDWORD;
 #endif // !_DWORD_DEFINED
+typedef     DWORD*            LPDWORD;
+typedef     const DWORD*      LPCDWORD;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _WCHAR_T_DEFINED
 #define _WCHAR_T_DEFINED

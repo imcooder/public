@@ -484,8 +484,13 @@ void CXModule::FreeLibrary()
 {
 	SAFE_FREE_LIBRARY(m_hModule);
 	m_szModuleFilePath[0] = 0;
+	m_blSucceed = FALSE;
 }
 
+BOOL CXModule::Succeed()
+{
+	return m_hModule != NULL;
+}
 
 
 //////////////////////////////////////////////////////////////////////////

@@ -431,9 +431,11 @@ public:
 	virtual ~CXModule();		
 	virtual BOOL LoadLibrary(LPCTSTR);
 	virtual void FreeLibrary();
+	virtual BOOL Succeed();
 protected:	
 	HMODULE		m_hModule;
 	TCHAR			m_szModuleFilePath[MAX_PATH];
+	BOOL			m_blSucceed;	
 };
 
 #endif
