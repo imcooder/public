@@ -28,23 +28,52 @@ typedef     CHAR*             LPCHAR;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _BYTE_DEFINED
 #define _BYTE_DEFINED
-typedef     unsigned char       BYTE;
-typedef     BYTE*             LPBYTE;
+typedef  unsigned char     BYTE;
 #endif 
+#ifndef _LPBYTE_DEFINED
+#define _LPBYTE_DEFINED
+typedef  BYTE*             LPBYTE;
+#endif 
+#ifndef _LPCBYTE_DEFINED
+#define _LPCBYTE_DEFINED
+typedef const BYTE *			 LPCBYTE;
+#endif
+//////////////////////////////////////////////////////////////////////////
+#ifndef _LPVOID_DEFINED
+#define _LPVOID_DEFINED
+typedef void *							LPVOID;
+#endif
+#ifndef _LPCVOID_DEFINED
+#define _LPCVOID_DEFINED
+typedef const void *				LPCVOID;
+#endif
 //////////////////////////////////////////////////////////////////////////
 #ifndef _WORD_DEFINED
 #define _WORD_DEFINED
 typedef     unsigned short    WORD;
 #endif 
+#ifndef _LPWORD_DEFINED
+#define _LPWORD_DEFINED
 typedef     WORD*             LPWORD;
+#endif
+#ifndef _LPCWORD_DEFINED
+#define _LPCWORD_DEFINED
 typedef     const WORD*       LPCWORD;
+#endif
 //////////////////////////////////////////////////////////////////////////
 #ifndef _DWORD_DEFINED
 #define _DWORD_DEFINED
 typedef     unsigned long     DWORD;
-#endif // !_DWORD_DEFINED
+#endif
+#ifndef _LPDWORD_DEFINED
+#define _LPDWORD_DEFINED
 typedef     DWORD*            LPDWORD;
+#endif
+#ifndef _LPCDWORD_DEFINED
+#define _LPCDWORD_DEFINED
 typedef     const DWORD*      LPCDWORD;
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 #ifndef _WCHAR_T_DEFINED
 #define _WCHAR_T_DEFINED
@@ -166,6 +195,13 @@ typedef   LONG    TError;
 #define MAX_DIR						(512)
 #ifndef MAX_NAME
 #define MAX_NAME          MAX_PATH
+#endif
+
+#ifndef MAX_SIZE_M
+#define MAX_SIZE_M						(512)
+#define MAX_SIZE_S						(256)		
+#define MAX_SIZE_L						(1024)
+#define MAX_SIZE_LL						(2048)
 #endif
 
 #ifndef MAKEWORD
