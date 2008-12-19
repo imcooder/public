@@ -7,6 +7,8 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 *********************************************************************/
 
 #include "stdafx.h"
+#include <wchar.h>
+#include <stdio.h>
 #include "XStrHelper.h"
 #include <mbstring.h>
 
@@ -188,4 +190,417 @@ LPWSTR WINAPI Helper_StrMoveW_S(LPWSTR pszD, LONG nLen, LPCWSTR pszSrc)
 		return FALSE;
 	}
 	return (LPWSTR)memmove_s(pszD, nLen * sizeof(*pszD), pszSrc, (wcslen(pszSrc)) + 1 * sizeof(*pszD));	
+}
+
+LONG WINAPI Helper_StrMidW(LPWSTR pszString, LONG nIndex, UINT nCount)
+{	 
+	LONG nRet = -1;
+	if (!pszString)
+	{
+		return nRet;
+	}	
+	LONG nLength = (LONG)wcslen(pszString);
+	assert(nIndex >= 0 && nIndex + nCount <= nLength);	
+	if (0 != nIndex && nCount > 0)
+	{
+		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
+		pszString[nCount] = 0;  
+#if defined(_DEBUG) || defined(DEBUG)
+		{
+			if (nIndex + nCount < nLength)
+			{
+				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
+			}
+		}  
+#endif
+		nRet = (LONG)wcslen(pszString);
+	}  
+	return nRet;
+}
+LONG WINAPI Helper_StrRightW(LPWSTR pszString, UINT nCount)
+{
+	if (!pszString)
+	{
+		return -1;
+	}
+	return Helper_StrMidW(pszString, _tcslen(pszString) - nCount, nCount);
+}
+LONG WINAPI Helper_StrLeftW(LPWSTR pszString, UINT nCount)
+{
+	if (!pszString)
+	{
+		return -1;
+	}
+	LONG nLength = (LONG)wcslen(pszString);
+	if (nLength >= nCount)
+	{
+			pszString[nCount] = 0;
+			return wcslen(pszString);
+	}
+	return -1;
+}
+void WINAPI Helper_StrTrimLeftW(LPWSTR pszString, LPCWSTR pwhTag)
+{	
+	if (!pwhTag || !pszString)
+	{
+		return;
+	}   
+	if (!pszString[0])
+	{
+		return;
+	}	
+	LONG nLength = (LONG)wcslen(pszString);
+	LONG nAmount = (LONG)wcsspn(pszString, pwhTag);
+	if (nAmount < nLength)
+	{
+		Helper_StrRightW(pszString, nLength - nAmount);
+	}	
+}
+void WINAPI Helper_StrTrimRightW(LPWSTR pszString, LPCWSTR pszTag)
+{
+	if (!pszTag || !pszString)
+	{
+		return;
+	}   
+	LONG nAmount = 0;
+	BOOL blContinue = TRUE;	
+	LONG nLength = (LONG)wcslen(pszString);
+	for (LONG i = 0; i < nLength && blContinue; i++)
+	{    
+		if (NULL != wcschr(pszTag, pszString[nLength - i - 1]))
+		{
+			nAmount ++;
+		}
+		else
+		{
+			blContinue = FALSE;
+		}
+	}  
+	if (!blContinue || nAmount > 0)
+	{
+		Helper_StrLeftW(pszString, nLength - nAmount);
+	}
+}
+void WINAPI Helper_StrTrimW(LPWSTR pszString, LPCWSTR pszTag)
+{
+	Helper_StrTrimLeftW(pszString, pszTag);
+	Helper_StrTrimRightW(pszString, pszTag);
+}
+LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	LONG nValue = 0;
+	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789.-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		swscanf_s(pszIndex, L"%ld", &nValue); 
+#else
+		swscanf(pszIndex, L"%ld", &nValue);
+#endif
+	}
+	return nValue;
+}
+
+float WINAPI Helper_StrGetFloatW(LPCWSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	float flValue = 0.0;
+	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789.-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		swscanf_s(pszIndex, L"%f", &flValue); 
+#else
+		swscanf(pszIndex, L"%f", &flValue); 
+#endif
+	}
+	return flValue;
+}
+
+LONG WINAPI Helper_StrGetHexW(LPCWSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	LONG nValue = 0;
+	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789ABCDEFabcdef-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		swscanf_s(pszIndex, L"%x", &nValue); 
+#else
+		scanf(pszIndex, L"%x", &nValue);
+#endif
+	}
+	return nValue;
+}
+
+
+
+
+
+
+LONG WINAPI Helper_StrMidA(LPSTR pszString, LONG nIndex, UINT nCount)
+{	 
+	LONG nRet = -1;
+	if (!pszString)
+	{
+		return nRet;
+	}	
+	LONG nLength = (LONG)strlen(pszString);
+	assert(nIndex >= 0 && nIndex + nCount <= nLength);	
+	if (0 != nIndex && nCount > 0)
+	{
+		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
+		pszString[nCount] = 0;  
+#if defined(_DEBUG) || defined(DEBUG)
+		{
+			if (nIndex + nCount < nLength)
+			{
+				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
+			}
+		}  
+#endif
+		nRet = (LONG)strlen(pszString);
+	}  
+	return nRet;
+}
+LONG WINAPI Helper_StrRightA(LPSTR pszString, UINT nCount)
+{
+	if (!pszString)
+	{
+		return -1;
+	}
+	return Helper_StrMidA(pszString, strlen(pszString) - nCount, nCount);
+}
+LONG WINAPI Helper_StrLeftA(LPSTR pszString, UINT nCount)
+{
+	if (!pszString)
+	{
+		return -1;
+	}
+	LONG nLength = (LONG)strlen(pszString);
+	if (nLength >= nCount)
+	{
+		pszString[nCount] = 0;
+		return strlen(pszString);
+	}
+	return -1;
+}
+void WINAPI Helper_StrTrimLeftA(LPSTR pszString, LPCSTR pszTag)
+{	
+	if (!pszTag || !pszString)
+	{
+		return;
+	}   
+	if (!pszString[0])
+	{
+		return;
+	}	
+	LONG nLength = (LONG)strlen(pszString);
+	LONG nAmount = (LONG)strspn(pszString, pszTag);
+	if (nAmount < nLength)
+	{
+		Helper_StrRightA(pszString, nLength - nAmount);
+	}	
+}
+
+void WINAPI Helper_StrTrimRightA(LPSTR pszString, LPCSTR pszTag)
+{
+	if (!pszTag || !pszString)
+	{
+		return;
+	}   
+	LONG nAmount = 0;
+	BOOL blContinue = TRUE;	
+	LONG nLength = (LONG)strlen(pszString);
+	for (LONG i = 0; i < nLength && blContinue; i++)
+	{    
+		if (NULL != strchr(pszTag, pszString[nLength - i - 1]))
+		{
+			nAmount ++;
+		}
+		else
+		{
+			blContinue = FALSE;
+		}
+	}  
+	if (!blContinue || nAmount > 0)
+	{
+		Helper_StrLeftA(pszString, nLength - nAmount);
+	}
+}
+void WINAPI Helper_StrTrimA(LPSTR pszString, LPCSTR pszTag)
+{
+	Helper_StrTrimLeftA(pszString, pszTag);
+	Helper_StrTrimRightA(pszString, pszTag);
+}
+LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	LONG nValue = 0;
+	LPCSTR pszIndex = strpbrk(pszString, "0123456789.-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		sscanf_s(pszIndex, "%ld", &nValue); 
+#else
+		sscanf(pszIndex, "%ld", &nValue);
+#endif
+	}
+	return nValue;
+}
+
+float WINAPI Helper_StrGetFloatA(LPCSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	float flValue = 0.0;
+	LPCSTR pszIndex = strpbrk(pszString, "0123456789.-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		sscanf_s(pszIndex, "%f", &flValue); 
+#else
+		sscanf(pszIndex, "%f", &flValue); 
+#endif
+	}
+	return flValue;
+}
+
+LONG WINAPI Helper_StrGetHexA(LPCSTR pszString)
+{
+	if (!pszString)
+	{
+		return 0;
+	}
+	if (!pszString[0])
+	{
+		return 0;
+	}
+
+	LONG nValue = 0;
+	LPCSTR pszIndex = strpbrk(pszString, "0123456789ABCDEFabcdef-+");
+	if (pszIndex) 
+	{
+#if _MSC_VER >= 1000
+		scanf_s(pszIndex, "%x", &nValue); 
+#else
+		scanf(pszIndex, "%x", &nValue);
+#endif
+	}
+	return nValue;
+}
+
+void WINAPI Helper_StrUpperW(LPWSTR pszString)
+{
+	assert(pszString);
+	if (pszString)
+	{
+		return;
+	}
+	if (pszString[0])
+	{
+		return;
+	}
+	 
+#if _MSC_VER >= 1400
+	LONG nLenght = (LONG)wcslen(pszString);
+	_wcsupr_s(pszString, nLenght);
+#else
+	wcsupr(pszString);
+#endif
+}
+
+void WINAPI Helper_StrUpperA(LPSTR pszString)
+{
+	assert(pszString);
+	if (pszString)
+	{
+		return;
+	}
+	if (pszString[0])
+	{
+		return;
+	}
+
+#if _MSC_VER >= 1400
+	LONG nLenght = (LONG)strlen(pszString);
+	_strupr_s(pszString, nLenght);
+#else
+	strupr(pszString);
+#endif
+}
+
+void WINAPI Helper_StrReverseW(LPWSTR pszString)
+{  
+	assert(pszString);
+	if (pszString)
+	{
+		return;
+	}
+	if (pszString[0])
+	{
+		return;
+	}
+#if _MSC_VER > 1000
+	_wcsrev(pszString);
+#else
+	wcsrev(pszString);
+#endif
+}
+void WINAPI Helper_StrReverseA(LPSTR pszString)
+{  
+	assert(pszString);
+	if (pszString)
+	{
+		return;
+	}
+	if (pszString[0])
+	{
+		return;
+	}
+#if _MSC_VER > 1000
+	_strrev(pszString);
+#else
+	strrev(pszString);
+#endif
 }
