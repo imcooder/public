@@ -3,7 +3,9 @@
 #define HWX_CODEEX_H
 #include "XTypeEx.h"
 
-
+#define NUMCONV_NORMAL		0x00000001		// ¶þ©–©–°Ë
+#define NUMCONV_LOWER			0x00000002		// ¶þÇ§Áã°Ë
+#define NUMCONV_UPPER			0x00000004		// ·¡ÇªÁã°Æ
 
 #ifdef __cplusplus
 extern "C"{
@@ -13,6 +15,7 @@ extern "C"{
 	DLLXEXPORT LONG WINAPI TCToSC(LPCWSTR, LPWSTR);	
 	DLLXEXPORT LONG WINAPI SCToTC(LPCWSTR, LPWSTR);	
 	DLLXEXPORT LONG WINAPI HalfToFull(LPCWSTR, LPWSTR);
+	DLLXEXPORT LONG WINAPI NumberToString(double, LPWSTR, DWORD dwFlag);
 #ifdef __cplusplus
 }
 #endif

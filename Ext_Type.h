@@ -197,9 +197,10 @@ typedef   LONG    TError;
 #define MAX_NAME          MAX_PATH
 #endif
 
-#ifndef MAX_SIZE_M
-#define MAX_SIZE_M						(512)
-#define MAX_SIZE_S						(256)		
+#ifndef MAX_SIZE_S
+#define MAX_SIZE_SS						(128)	
+#define MAX_SIZE_S						(256)	
+#define MAX_SIZE_M						(512)	
 #define MAX_SIZE_L						(1024)
 #define MAX_SIZE_LL						(2048)
 #endif

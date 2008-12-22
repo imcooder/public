@@ -1,6 +1,10 @@
 
 
 #include "stdafx.h"
+
+#include "Asci.h"
+#include <iostream>
+#include<sstream>   
 #include "CodeEx.h"
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -2581,3 +2585,173 @@ unsigned short vxTC2SCTable[3209*2]={
 	0xff07,0x2019, 0xffe2,0x300c, 0xffe4,0x2506, 0xfffd,0x25a1
 };
 
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+LPWSTR   g_apszNumNormal[]			= {L"〇", L"一", L"二", L"三", L"四", L"五", L"六", L"七", L"八", L"九"};
+LPWSTR   g_apszNumLower[]				= {L"零", L"一", L"二", L"三", L"四", L"五", L"六", L"七", L"八", L"九"}; 
+LPWSTR   g_apszNumUpper[]				= {L"零", L"壹", L"贰", L"叁", L"肆", L"伍", L"陆", L"柒", L"捌", L"玖"};
+LPWSTR   g_apszInFourLower[]		= {L"" , L"十", L"百", L"千"};  
+LPWSTR   g_apszInFourUpper[]		= {L"" , L"拾", L"佰", L"仟"}; 
+LPWSTR   g_apszFour[]						= {L"" , L"万", L"亿", L"兆"};   
+LPWSTR   g_pszDot								= L"点";  
+LONG			ConvertNum(double, LPTSTR);
+LONG			ConvertNormal(double, LPTSTR);
+LONG ConvertNormal(double dbNum, LPTSTR pszOutput)   
+{   
+	TCHAR szInput[128] = {0};
+	WCHAR szOutput[128] = {0};
+	swprintf_s(szInput, 128, L"%f", dbNum);
+	LONG nLen = (LONG)_tcslen(szInput); 
+	LPCWSTR pszBgn = szInput;
+	while(pszBgn != szInput + nLen)   
+	{
+		if (*pszBgn == '.')
+		{
+			wcscat_s(szOutput, 128, g_pszDot);
+		}
+		else
+		{			
+			wcscat_s(szOutput, 128, g_apszNumLower[(*pszBgn) - '0']);
+		}		
+		pszBgn ++;
+	} 
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOutput);
+	}
+	return  wcslen(szOutput);   
+}
+//读整数.   
+LONG ConvertInteger(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)     
+{   	
+	LONG nLen = (LONG)wcslen(pszInput);   	
+	BOOL blMark0  = FALSE;	//  读0标记.   
+	BOOL blMark   = FALSE;	//	4位都是0   .则blMark   ==   0; 	
+	WCHAR		 szOut[MAX_SIZE_L] = {0};
+	LPCWSTR* ppszNum = NULL, *ppszInFour = NULL, *ppszFour = NULL;
+	if (dwFlag & NUMCONV_UPPER)
+	{
+		ppszNum = (LPCWSTR*)g_apszNumUpper;
+		ppszInFour = (LPCWSTR*)g_apszInFourUpper;
+		ppszFour = (LPCWSTR*)g_apszFour;
+	}
+	else
+	{
+		ppszNum = (LPCWSTR*)g_apszNumLower;
+		ppszInFour = (LPCWSTR*)g_apszInFourLower;
+		ppszFour = (LPCWSTR*)g_apszFour;
+	}
+	if ((LONG)_tcslen(pszInput) == 1 && pszInput[0] == TEXT('0'))
+	{	
+		if (ppszNum[0] && _tcslen(ppszNum[0]))
+		{
+			wcscat_s(szOut, MAX_SIZE_L, ppszNum[0]);
+		}		 
+	}
+	else
+	{
+		for(LONG nIndex = 0; nIndex < nLen; nIndex ++)   
+		{   
+			if (!Asci_IsDigit(pszInput[nIndex]))
+			{
+				continue;
+			}
+			if(pszInput[nIndex] != '0')  
+			{   
+				if(blMark0)   
+				{   
+					if (ppszNum[0] && _tcslen(ppszNum[0]))
+					{
+						wcscat_s(szOut, MAX_SIZE_L, ppszNum[0]);
+					}	
+					blMark0 =  FALSE;
+				}   
+				blMark = TRUE;  
+				if (ppszNum[pszInput[nIndex] - '0'] && wcslen(ppszNum[pszInput[nIndex] - '0']))
+				{
+					wcscat_s(szOut, MAX_SIZE_L, ppszNum[pszInput[nIndex] - '0']);
+				}
+				if (ppszInFour[(nLen - nIndex - 1) % 4] && wcslen(ppszInFour[(nLen - nIndex - 1) % 4]))
+				{
+					wcscat_s(szOut, MAX_SIZE_L, ppszInFour[(nLen - nIndex - 1) % 4]);
+				}				
+			}   
+			else  
+			{   
+				blMark0 = TRUE;   
+			} 
+			if((nLen - nIndex) % 4 == 1)  
+			{ //输出"亿" "万" 等   
+				if(blMark)  
+				{
+					if (ppszFour[(nLen - nIndex) /4] && wcslen(ppszFour[(nLen - nIndex) /4]))
+					{
+						wcscat_s(szOut, MAX_SIZE_L, ppszFour[(nLen - nIndex) /4]);
+					}					
+				}
+				blMark0 = FALSE;   
+				blMark = FALSE;   
+			}         
+		}   
+	}	
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOut);
+	}
+	return wcslen(szOut);   
+}  
+
+//读整数.   
+LONG ConvertINT(DWORD64 dwNum, LPWSTR pszOutput, DWORD dwFlag)     
+{ 
+	WCHAR szInput[MAX_SIZE_S] = {0};	
+	_stprintf_s (szInput, MAX_SIZE_S, TEXT("%I64d"), dwNum);
+	return ConvertInteger(szInput, pszOutput, dwFlag);	
+}   
+   
+LONG WINAPI NumberToString(double dbNum, LPWSTR pszOutput, DWORD dwFlag)   
+{   
+	TCHAR szString[MAX_SIZE_S] = {0}, szDecimal[MAX_SIZE_S] = {0};	
+	if (dwFlag & NUMCONV_NORMAL)
+	{
+		return ConvertNormal(dbNum, pszOutput);
+	}
+
+	ConvertINT(DWORD64(dbNum), szString, dwFlag);	
+	LPCWSTR *ppszNum = NULL;
+	if (dwFlag & NUMCONV_UPPER)
+	{
+		ppszNum = (LPCWSTR*)g_apszNumUpper;
+	}
+	else
+	{
+		ppszNum = (LPCWSTR*)g_apszNumLower;
+	}
+	WCHAR szTmp[MAX_SIZE_S] = {0};
+	swprintf_s(szTmp, MAX_SIZE_S, L"%f", dbNum);
+	LONG nLen = (LONG)wcslen(szTmp); 
+	LPCWSTR pszBgn = szTmp;
+	while(pszBgn != szTmp + nLen)   
+	{
+		if (*pszBgn == '.')
+		{
+			wcscat_s(szDecimal, MAX_SIZE_S, g_pszDot);
+		}
+		else
+		{			
+			wcscat_s(szDecimal, MAX_SIZE_S, ppszNum[(*pszBgn) - '0']);
+		}		
+		pszBgn ++;
+	} 		
+	LPCTSTR pszDot = wcsstr(szDecimal, g_pszDot);
+	if (pszDot)
+	{
+		wcscat_s(szString, MAX_SIZE_S, pszDot);
+	}	
+
+	if (pszOutput)
+	{
+		wcscpy(pszOutput, szString);
+	}	  
+	return wcslen(szString);   
+}
