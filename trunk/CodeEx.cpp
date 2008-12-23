@@ -2595,12 +2595,39 @@ LPWSTR   g_apszInFourUpper[]		= {L"" , L"Ê°", L"°Û", L"Çª"};
 LPWSTR   g_apszFour[]						= {L"" , L"Íò", L"ÒÚ", L"Õ×"};   
 LPWSTR   g_pszDot								= L"µã";  
 LONG			ConvertNum(double, LPTSTR);
-LONG			ConvertNormal(double, LPTSTR);
-LONG ConvertNormal(double dbNum, LPTSTR pszOutput)   
+LONG			ConvertNormalD(double, LPTSTR);
+LONG			ConvertNormalINT(INT64, LPTSTR) ;
+LONG ConvertNormalD(double dbNum, LPTSTR pszOutput)   
 {   
 	TCHAR szInput[128] = {0};
 	WCHAR szOutput[128] = {0};
 	swprintf_s(szInput, 128, L"%f", dbNum);
+	LONG nLen = (LONG)_tcslen(szInput); 
+	LPCWSTR pszBgn = szInput;
+	while(pszBgn != szInput + nLen)   
+	{
+		if (*pszBgn == '.')
+		{
+			wcscat_s(szOutput, 128, g_pszDot);
+		}
+		else
+		{			
+			wcscat_s(szOutput, 128, g_apszNumLower[(*pszBgn) - '0']);
+		}		
+		pszBgn ++;
+	} 
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOutput);
+	}
+	return  wcslen(szOutput);   
+}
+
+LONG ConvertNormalINT(DWORD64 dwNum, LPTSTR pszOutput)   
+{   
+	TCHAR szInput[128] = {0};
+	WCHAR szOutput[128] = {0};
+	swprintf_s(szInput, 128, L"%I64d", dwNum);
 	LONG nLen = (LONG)_tcslen(szInput); 
 	LPCWSTR pszBgn = szInput;
 	while(pszBgn != szInput + nLen)   
@@ -2709,12 +2736,12 @@ LONG ConvertINT(DWORD64 dwNum, LPWSTR pszOutput, DWORD dwFlag)
 	return ConvertInteger(szInput, pszOutput, dwFlag);	
 }   
    
-LONG WINAPI NumberToString(double dbNum, LPWSTR pszOutput, DWORD dwFlag)   
+LONG WINAPI NumberToStringD(double dbNum, LPWSTR pszOutput, DWORD dwFlag)   
 {   
 	TCHAR szString[MAX_SIZE_S] = {0}, szDecimal[MAX_SIZE_S] = {0};	
 	if (dwFlag & NUMCONV_NORMAL)
 	{
-		return ConvertNormal(dbNum, pszOutput);
+		return ConvertNormalD(dbNum, pszOutput);
 	}
 
 	ConvertINT(DWORD64(dbNum), szString, dwFlag);	
@@ -2749,6 +2776,22 @@ LONG WINAPI NumberToString(double dbNum, LPWSTR pszOutput, DWORD dwFlag)
 		wcscat_s(szString, MAX_SIZE_S, pszDot);
 	}	
 
+	if (pszOutput)
+	{
+		wcscpy(pszOutput, szString);
+	}	  
+	return wcslen(szString);   
+}
+
+LONG WINAPI NumberToStringINT(INT64 nNum, LPWSTR pszOutput, DWORD dwFlag)   
+{   
+	TCHAR szString[MAX_SIZE_S] = {0}, szDecimal[MAX_SIZE_S] = {0};	
+	if (dwFlag & NUMCONV_NORMAL)
+	{
+		return ConvertNormalINT((DWORD64)nNum, pszOutput);
+	}
+
+	ConvertINT(DWORD64(nNum), szString, dwFlag);	
 	if (pszOutput)
 	{
 		wcscpy(pszOutput, szString);

@@ -298,7 +298,7 @@ LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
 	}
 
 	LONG nValue = 0;
-	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789.-+");
+	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789-+");
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
@@ -310,7 +310,7 @@ LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
 	return nValue;
 }
 
-float WINAPI Helper_StrGetFloatW(LPCWSTR pszString)
+double WINAPI Helper_StrGetFloatW(LPCWSTR pszString)
 {
 	if (!pszString)
 	{
@@ -470,7 +470,7 @@ LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString)
 	}
 
 	LONG nValue = 0;
-	LPCSTR pszIndex = strpbrk(pszString, "0123456789.-+");
+	LPCSTR pszIndex = strpbrk(pszString, "0123456789-+");
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
@@ -482,7 +482,7 @@ LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString)
 	return nValue;
 }
 
-float WINAPI Helper_StrGetFloatA(LPCSTR pszString)
+double WINAPI Helper_StrGetFloatA(LPCSTR pszString)
 {
 	if (!pszString)
 	{
