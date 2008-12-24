@@ -14,6 +14,7 @@ extern "C"{
 	BOOL WINAPI Asci_IsAlpha( LONG ch);
 	BOOL WINAPI Asci_IsPunctuation(LONG ch);
 	WCHAR WINAPI Asci_HalfToFull( WCHAR);
+	BOOL WINAPI Asci_IsBelongTo(WCHAR, LPCWSTR);
 #ifdef __cplusplus
 }
 #endif

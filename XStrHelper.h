@@ -108,8 +108,8 @@ extern "C"{
 	void WINAPI Helper_StrTrimA(LPSTR pszString, LPCSTR pszTag);
 	void WINAPI Helper_StrUpperW(LPWSTR pszString);
 	void WINAPI Helper_StrUpperA(LPSTR pszString);	
-	LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString);
-	LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString);
+	INT64 WINAPI Helper_StrGetNumberW(LPCWSTR pszString);
+	INT64 WINAPI Helper_StrGetNumberA(LPCSTR pszString);
 	double WINAPI Helper_StrGetFloatW(LPCWSTR pszString);
 	double WINAPI Helper_StrGetFloatA(LPCSTR pszString);
 	LONG WINAPI Helper_StrGetHexW(LPCWSTR pszString);

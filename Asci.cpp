@@ -108,3 +108,17 @@ WCHAR WINAPI Asci_HalfToFull( WCHAR wCharInput)
 	}			
 	return wChar;
 }
+
+BOOL WINAPI Asci_IsBelongTo( WCHAR wChr, LPCWSTR pszCharSet)
+{
+	if (!pszCharSet)
+	{
+		return FALSE;
+	}
+	LPWSTR pszPos = wcschr((LPWSTR)pszCharSet, wChr);
+	if (!pszPos)
+	{
+		return FALSE;
+	}
+	return TRUE;
+}

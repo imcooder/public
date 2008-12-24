@@ -2592,83 +2592,118 @@ LPWSTR   g_apszNumLower[]				= {L"零", L"一", L"二", L"三", L"四", L"五", L"六",
 LPWSTR   g_apszNumUpper[]				= {L"零", L"壹", L"贰", L"叁", L"肆", L"伍", L"陆", L"柒", L"捌", L"玖"};
 LPWSTR   g_apszInFourLower[]		= {L"" , L"十", L"百", L"千"};  
 LPWSTR   g_apszInFourUpper[]		= {L"" , L"拾", L"佰", L"仟"}; 
-LPWSTR   g_apszFour[]						= {L"" , L"万", L"亿", L"兆"};   
+LPWSTR   g_apszInFourLowerFloat[]		= {L"分" , L"角", L"元"};
+LPWSTR   g_apszFour[]						= {L"" , L"万", L"亿", L"兆", L"京", L"垓", L"秭", L"穰", L"沟", L"涧", L"正", L"载", L"极"};  
 LPWSTR   g_pszDot								= L"点";  
-LONG			ConvertNum(double, LPTSTR);
-LONG			ConvertNormalD(double, LPTSTR);
-LONG			ConvertNormalINT(INT64, LPTSTR) ;
-LONG ConvertNormalD(double dbNum, LPTSTR pszOutput)   
-{   
-	TCHAR szInput[128] = {0};
-	WCHAR szOutput[128] = {0};
-	swprintf_s(szInput, 128, L"%f", dbNum);
-	LONG nLen = (LONG)_tcslen(szInput); 
-	LPCWSTR pszBgn = szInput;
-	while(pszBgn != szInput + nLen)   
-	{
-		if (*pszBgn == '.')
-		{
-			wcscat_s(szOutput, 128, g_pszDot);
-		}
-		else
-		{			
-			wcscat_s(szOutput, 128, g_apszNumLower[(*pszBgn) - '0']);
-		}		
-		pszBgn ++;
-	} 
-	if (pszOutput)
-	{
-		_tcscpy(pszOutput, szOutput);
-	}
-	return  wcslen(szOutput);   
-}
-
-LONG ConvertNormalINT(DWORD64 dwNum, LPTSTR pszOutput)   
-{   
-	TCHAR szInput[128] = {0};
-	WCHAR szOutput[128] = {0};
-	swprintf_s(szInput, 128, L"%I64d", dwNum);
-	LONG nLen = (LONG)_tcslen(szInput); 
-	LPCWSTR pszBgn = szInput;
-	while(pszBgn != szInput + nLen)   
-	{
-		if (*pszBgn == '.')
-		{
-			wcscat_s(szOutput, 128, g_pszDot);
-		}
-		else
-		{			
-			wcscat_s(szOutput, 128, g_apszNumLower[(*pszBgn) - '0']);
-		}		
-		pszBgn ++;
-	} 
-	if (pszOutput)
-	{
-		_tcscpy(pszOutput, szOutput);
-	}
-	return  wcslen(szOutput);   
-}
-//读整数.   
-LONG ConvertInteger(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)     
+LONG			ConvertNormalLower(LPCWSTR, LPWSTR);
+LONG			ConvertNormalUpper(LPCWSTR, LPWSTR);
+//// 二〇〇八
+LONG ConvertNormalLower(LPCWSTR szInput, LPTSTR pszOutput)   
 {   	
-	LONG nLen = (LONG)wcslen(pszInput);   	
+	WCHAR szOutput[MAX_SIZE_S] = {0};		
+	LONG nLen = (LONG)_tcslen(szInput); 
+	LPCWSTR pszBgn = szInput;
+	while(pszBgn != szInput + nLen)   
+	{
+		if (Asci_IsDigit(*pszBgn) || *pszBgn == '.')
+		{
+			if (*pszBgn == '.')
+			{
+				wcscat_s(szOutput, MAX_SIZE_S, g_pszDot);
+			}
+			else
+			{			
+				wcscat_s(szOutput, MAX_SIZE_S, g_apszNumNormal[(*pszBgn) - '0']);
+			}	
+		}
+		else
+		{			
+			const LONG nLen = (LONG)wcslen(szOutput);
+			szOutput[nLen] = *pszBgn;
+			szOutput[nLen + 1] = 0;
+		}
+		pszBgn ++;
+	} 
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOutput);
+	}
+	return  wcslen(szOutput);   
+}
+//// 贰零零捌
+LONG ConvertNormalUpper(LPCWSTR szInput, LPTSTR pszOutput)   
+{  	
+	WCHAR szOutput[MAX_SIZE_M] = {0};		
+	LONG nLen = (LONG)_tcslen(szInput); 
+	LPCWSTR pszBgn = szInput;
+	while(pszBgn != szInput + nLen)   
+	{
+		if (Asci_IsDigit(*pszBgn))
+		{
+			if (*pszBgn == '.')
+			{
+				wcscat_s(szOutput, MAX_SIZE_M, g_pszDot);
+			}
+			else
+			{			
+				wcscat_s(szOutput, MAX_SIZE_M, g_apszNumUpper[(*pszBgn) - '0']);
+			}	
+		}
+		else
+		{
+			const LONG nLen = (LONG)wcslen(szOutput);
+			szOutput[nLen] = *pszBgn;
+			szOutput[nLen + 1] = 0;
+		}			
+		pszBgn ++;
+	} 
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOutput);
+	}
+	return  wcslen(szOutput);   
+}
+//// 2,008
+LONG ConvertEn(LPCWSTR pszInput, LPCWSTR pszFloat, LPTSTR pszOutput)   
+{   	
+	WCHAR szOutput[MAX_SIZE_M] = {0};		
+	LONG nLen = (LONG)_tcslen(pszInput); 
+	LPCWSTR pszBgn = pszInput;
+	for (LONG nIndex = 0; nIndex < nLen; nIndex ++)
+	{
+		if (nIndex && !((nLen - nIndex ) % 3))
+		{
+			wcsncat_s(szOutput, MAX_SIZE_S, L",", _TRUNCATE);
+		}		
+		wcsncat_s(szOutput, MAX_SIZE_S, &pszInput[nIndex], 1);
+				
+	}
+	if (pszFloat && pszFloat[0])
+	{
+		wcsncat_s(szOutput, MAX_SIZE_S, L".", _TRUNCATE);
+		wcsncat_s(szOutput, MAX_SIZE_S, pszFloat, _TRUNCATE);
+	}	
+	if (pszOutput)
+	{
+		_tcscpy(pszOutput, szOutput);
+	}
+	return  wcslen(szOutput);   
+}
+//二千零八.   
+LONG ConvertLower(LPCWSTR pszInput, LPWSTR pszOutput)     
+{   
+	const LONG nMaxLen = 52;
+	WCHAR szInput[nMaxLen + 1] = {0};
+	wcsncpy_s(szInput, _countof(szInput), pszInput, _TRUNCATE);
+	LONG nLen = (LONG)wcslen(szInput);   	
 	BOOL blMark0  = FALSE;	//  读0标记.   
 	BOOL blMark   = FALSE;	//	4位都是0   .则blMark   ==   0; 	
 	WCHAR		 szOut[MAX_SIZE_L] = {0};
 	LPCWSTR* ppszNum = NULL, *ppszInFour = NULL, *ppszFour = NULL;
-	if (dwFlag & NUMCONV_UPPER)
-	{
-		ppszNum = (LPCWSTR*)g_apszNumUpper;
-		ppszInFour = (LPCWSTR*)g_apszInFourUpper;
-		ppszFour = (LPCWSTR*)g_apszFour;
-	}
-	else
-	{
-		ppszNum = (LPCWSTR*)g_apszNumLower;
-		ppszInFour = (LPCWSTR*)g_apszInFourLower;
-		ppszFour = (LPCWSTR*)g_apszFour;
-	}
-	if ((LONG)_tcslen(pszInput) == 1 && pszInput[0] == TEXT('0'))
+	ppszNum = (LPCWSTR*)g_apszNumLower;
+	ppszInFour = (LPCWSTR*)g_apszInFourLower;
+	ppszFour = (LPCWSTR*)g_apszFour;
+	if ((LONG)_tcslen(szInput) == 1 && szInput[0] == TEXT('0'))
 	{	
 		if (ppszNum[0] && _tcslen(ppszNum[0]))
 		{
@@ -2679,11 +2714,11 @@ LONG ConvertInteger(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)
 	{
 		for(LONG nIndex = 0; nIndex < nLen; nIndex ++)   
 		{   
-			if (!Asci_IsDigit(pszInput[nIndex]))
+			if (!Asci_IsDigit(szInput[nIndex]))
 			{
 				continue;
 			}
-			if(pszInput[nIndex] != '0')  
+			if(szInput[nIndex] != '0')  
 			{   
 				if(blMark0)   
 				{   
@@ -2694,9 +2729,9 @@ LONG ConvertInteger(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)
 					blMark0 =  FALSE;
 				}   
 				blMark = TRUE;  
-				if (ppszNum[pszInput[nIndex] - '0'] && wcslen(ppszNum[pszInput[nIndex] - '0']))
+				if (ppszNum[szInput[nIndex] - '0'] && wcslen(ppszNum[szInput[nIndex] - '0']))
 				{
-					wcscat_s(szOut, MAX_SIZE_L, ppszNum[pszInput[nIndex] - '0']);
+					wcscat_s(szOut, MAX_SIZE_L, ppszNum[szInput[nIndex] - '0']);
 				}
 				if (ppszInFour[(nLen - nIndex - 1) % 4] && wcslen(ppszInFour[(nLen - nIndex - 1) % 4]))
 				{
@@ -2726,72 +2761,239 @@ LONG ConvertInteger(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)
 		_tcscpy(pszOutput, szOut);
 	}
 	return wcslen(szOut);   
-}  
+} 
+//贰仟零捌
+LONG ConvertUpper(LPCWSTR pszInput, LPWSTR pszOutput)     
+{  
+	const LONG nMaxLen = 52;
+	WCHAR szInput[nMaxLen + 1] = {0};
+	wcsncpy_s(szInput, _countof(szInput), pszInput, _TRUNCATE);	
+	LONG nLen = (LONG)wcslen(szInput);   	
+	BOOL blMark0  = FALSE;	//  读0标记.   
+	BOOL blMark   = FALSE;	//	4位都是0   .则blMark   ==   0; 	
+	WCHAR		 szOut[MAX_SIZE_L] = {0};
+	LPCWSTR* ppszNum = NULL, *ppszInFour = NULL, *ppszFour = NULL;
 
-//读整数.   
-LONG ConvertINT(DWORD64 dwNum, LPWSTR pszOutput, DWORD dwFlag)     
-{ 
-	WCHAR szInput[MAX_SIZE_S] = {0};	
-	_stprintf_s (szInput, MAX_SIZE_S, TEXT("%I64d"), dwNum);
-	return ConvertInteger(szInput, pszOutput, dwFlag);	
-}   
-   
-LONG WINAPI NumberToStringD(double dbNum, LPWSTR pszOutput, DWORD dwFlag)   
-{   
-	TCHAR szString[MAX_SIZE_S] = {0}, szDecimal[MAX_SIZE_S] = {0};	
-	if (dwFlag & NUMCONV_NORMAL)
-	{
-		return ConvertNormalD(dbNum, pszOutput);
-	}
+	ppszNum = (LPCWSTR*)g_apszNumUpper;
+	ppszInFour = (LPCWSTR*)g_apszInFourUpper;
+	ppszFour = (LPCWSTR*)g_apszFour;
 
-	ConvertINT(DWORD64(dbNum), szString, dwFlag);	
-	LPCWSTR *ppszNum = NULL;
-	if (dwFlag & NUMCONV_UPPER)
-	{
-		ppszNum = (LPCWSTR*)g_apszNumUpper;
+	if ((LONG)_tcslen(szInput) == 1 && szInput[0] == TEXT('0'))
+	{	
+		if (ppszNum[0] && _tcslen(ppszNum[0]))
+		{
+			wcscat_s(szOut, MAX_SIZE_L, ppszNum[0]);
+		}		 
 	}
 	else
 	{
-		ppszNum = (LPCWSTR*)g_apszNumLower;
-	}
-	WCHAR szTmp[MAX_SIZE_S] = {0};
-	swprintf_s(szTmp, MAX_SIZE_S, L"%f", dbNum);
-	LONG nLen = (LONG)wcslen(szTmp); 
-	LPCWSTR pszBgn = szTmp;
-	while(pszBgn != szTmp + nLen)   
-	{
-		if (*pszBgn == '.')
-		{
-			wcscat_s(szDecimal, MAX_SIZE_S, g_pszDot);
-		}
-		else
-		{			
-			wcscat_s(szDecimal, MAX_SIZE_S, ppszNum[(*pszBgn) - '0']);
-		}		
-		pszBgn ++;
-	} 		
-	LPCTSTR pszDot = wcsstr(szDecimal, g_pszDot);
-	if (pszDot)
-	{
-		wcscat_s(szString, MAX_SIZE_S, pszDot);
+		for(LONG nIndex = 0; nIndex < nLen; nIndex ++)   
+		{   
+			if (!Asci_IsDigit(szInput[nIndex]))
+			{
+				continue;
+			}
+			if(szInput[nIndex] != '0')  
+			{   
+				if(blMark0)   
+				{   
+					if (ppszNum[0] && _tcslen(ppszNum[0]))
+					{
+						wcscat_s(szOut, MAX_SIZE_L, ppszNum[0]);
+					}	
+					blMark0 =  FALSE;
+				}   
+				blMark = TRUE;  
+				if (ppszNum[szInput[nIndex] - '0'] && wcslen(ppszNum[szInput[nIndex] - '0']))
+				{
+					wcscat_s(szOut, MAX_SIZE_L, ppszNum[szInput[nIndex] - '0']);
+				}
+				if (ppszInFour[(nLen - nIndex - 1) % 4] && wcslen(ppszInFour[(nLen - nIndex - 1) % 4]))
+				{
+					wcscat_s(szOut, MAX_SIZE_L, ppszInFour[(nLen - nIndex - 1) % 4]);
+				}				
+			}   
+			else  
+			{   
+				blMark0 = TRUE;   
+			} 
+			if((nLen - nIndex) % 4 == 1)  
+			{ //输出"亿" "万" 等   
+				if(blMark)  
+				{
+					if (ppszFour[(nLen - nIndex) /4] && wcslen(ppszFour[(nLen - nIndex) /4]))
+					{
+						wcscat_s(szOut, MAX_SIZE_L, ppszFour[(nLen - nIndex) /4]);
+					}					
+				}
+				blMark0 = FALSE;   
+				blMark = FALSE;   
+			}         
+		}   
 	}	
-
 	if (pszOutput)
 	{
-		wcscpy(pszOutput, szString);
+		_tcscpy(pszOutput, szOut);
+	}
+	return wcslen(szOut);   
+} 
+LONG ConvertFloatUpper(LPCWSTR pszInput, LPWSTR pszOutput)
+{
+	WCHAR szTmp[MAX_SIZE_S] = {0};	
+	WCHAR szOutput[MAX_SIZE_M] = {0};
+	wcsncpy_s(szTmp, MAX_SIZE_S, pszInput, _TRUNCATE);
+	Helper_StrTrimRightW(szTmp, TEXT("0"));	
+	if (wcslen(szTmp) > 2)
+	{
+		ConvertNormalUpper(szTmp, szOutput);
+	}
+	else
+	{		
+		wcsncpy_s(szOutput, MAX_SIZE_S, g_apszNumUpper[szTmp[0] - '0'], _TRUNCATE);
+		wcsncat_s(szOutput, MAX_SIZE_S, g_apszInFourLowerFloat[1], _TRUNCATE);
+		if (szTmp[1])
+		{
+			wcsncat_s(szOutput, MAX_SIZE_S, g_apszNumUpper[szTmp[1] - '0'], _TRUNCATE);
+			wcsncat_s(szOutput, MAX_SIZE_S, g_apszInFourLowerFloat[0], _TRUNCATE);
+		}
+	}
+	if (pszOutput)
+	{
+		wcscpy(pszOutput, szOutput);
 	}	  
-	return wcslen(szString);   
+	return (LONG)wcslen(szOutput);   
+}
+LONG ConvertFloatLower(LPCWSTR pszInput, LPWSTR pszOutput)
+{
+	WCHAR szTmp[MAX_SIZE_S] = {0};	
+	WCHAR szOutput[MAX_SIZE_M] = {0};
+	wcsncpy_s(szTmp, MAX_SIZE_S, pszInput, _TRUNCATE);
+	Helper_StrTrimRightW(szTmp, TEXT("0"));	
+	if (wcslen(szTmp) > 2)
+	{
+		ConvertNormalLower(szTmp, szOutput);
+	}
+	else
+	{
+		wcsncpy_s(szOutput, MAX_SIZE_S, g_apszNumLower[szTmp[0] - '0'], _TRUNCATE);
+		wcsncat_s(szOutput, MAX_SIZE_S, g_apszInFourLowerFloat[1], _TRUNCATE);
+		if (szTmp[1])
+		{
+			wcsncat_s(szOutput, MAX_SIZE_S, g_apszNumUpper[szTmp[1] - '0'], _TRUNCATE);
+			wcsncat_s(szOutput, MAX_SIZE_S, g_apszInFourLowerFloat[0], _TRUNCATE);
+		}
+	}
+	if (pszOutput)
+	{
+		wcscpy(pszOutput, szOutput);
+	}	  
+	return (LONG)wcslen(szOutput);   
 }
 
-LONG WINAPI NumberToStringINT(INT64 nNum, LPWSTR pszOutput, DWORD dwFlag)   
+LONG WINAPI NumberToString(LPCWSTR pszInput, LPWSTR pszOutput, DWORD dwFlag)   
 {   
-	TCHAR szString[MAX_SIZE_S] = {0}, szDecimal[MAX_SIZE_S] = {0};	
+	if (!pszInput)
+	{
+		return -1;
+	}
+	WCHAR szInput[MAX_SIZE_S] = {0};		
+	wcsncpy_s(szInput, _countof(szInput), pszInput, _TRUNCATE);
+	Helper_StrTrimW(szInput, L" \t");
+	size_t unExclude = wcsspn(szInput, TEXT("0123456789."));
+	if (unExclude != _tcslen(szInput))
+	{		
+		return -1;
+	}		
+	if (!szInput[0])
+	{
+		if (pszOutput)
+		{
+			*pszOutput = 0;
+		}
+		return 0;
+	}
+	TCHAR szString[MAX_SIZE_S] = {0}, szFloatResult[MAX_SIZE_SS] = {0};
+	WCHAR szInteger[MAX_SIZE_SS] = {0};
+	WCHAR szFloat[MAX_SIZE_SS] = {0};
+	ZeroMemory(szInteger, sizeof(szInteger));
+	ZeroMemory(szFloat, sizeof(szFloat));
+	WCHAR szSeps[]   = L".";
+	LPWSTR pszToken = NULL;	
+	LPWSTR pszNextToken = NULL;
+	WCHAR szForTok[MAX_SIZE_S] = {0};
+	wcsncpy_s(szForTok, _countof(szForTok), szInput, _TRUNCATE);
+	pszToken = wcstok_s(szForTok, szSeps, &pszNextToken);	
+	while (pszToken)
+	{
+		if (!szInteger[0])
+		{
+			wcsncpy_s(szInteger, pszToken, MAX_SIZE_SS);
+		}
+		else
+		{
+			if (pszToken[0])
+			{
+				wcsncpy_s(szFloat, pszToken, MAX_SIZE_SS);
+				break;
+			}			
+		}
+		pszToken = wcstok_s( NULL, szSeps, &pszNextToken);		
+	}
+	DWORD64 dwValue = 0;	
+	dwValue = Helper_StrGetNumberW(szInteger);
 	if (dwFlag & NUMCONV_NORMAL)
 	{
-		return ConvertNormalINT((DWORD64)nNum, pszOutput);
+		return ConvertNormalLower(szInput, pszOutput);
+	}
+	else if (dwFlag & NUMCONV_NORMAL_UPPER)
+	{
+		return ConvertNormalUpper(szInput, pszOutput);
+	}
+	else if (dwFlag & NUMCONV_EN)
+	{
+		return ConvertEn(szInteger, szFloat, pszOutput);	
+	}	
+	else if (dwFlag & NUMCONV_LOWER)
+	{		
+		ConvertLower(szInteger, szString);
+		if (szFloat[0])
+		{
+			ConvertFloatLower(szFloat, szFloatResult);
+			if (wcslen(szFloat) > 2)
+			{
+				wcsncat_s(szString, _countof(szString), g_pszDot, _TRUNCATE);
+			}
+			else
+			{
+				wcsncat_s(szString, _countof(szString), g_apszInFourLowerFloat[2], _TRUNCATE);
+			}
+			wcsncat_s(szString, _countof(szString), szFloatResult, _TRUNCATE);				
+		}
+	}
+	else if (dwFlag & NUMCONV_UPPER)
+	{
+		if (wcslen(szFloat) > 2)
+		{
+			ConvertUpper(szInteger, szString);		
+			if (szFloat[0])
+			{
+				ConvertFloatUpper(szFloat, szFloatResult);
+				wcsncat_s(szString, _countof(szString), g_pszDot, _TRUNCATE);
+				wcsncat_s(szString, _countof(szString), szFloatResult, _TRUNCATE);
+			}
+		}
+		else
+		{
+			ConvertUpper(szInteger, szString);		
+			if (szFloat[0])
+			{
+				ConvertFloatUpper(szFloat, szFloatResult);
+				wcsncat_s(szString, _countof(szString), g_apszInFourLowerFloat[2], _TRUNCATE);
+				wcsncat_s(szString, _countof(szString), szFloatResult, _TRUNCATE);
+			}
+		}		
 	}
 
-	ConvertINT(DWORD64(nNum), szString, dwFlag);	
 	if (pszOutput)
 	{
 		wcscpy(pszOutput, szString);

@@ -15,16 +15,7 @@
 #include "XDebug.h"
 #endif
 
-typedef     short             SHORT;
-typedef     SHORT*            LPSHORT;
-typedef     long              LONG;
-typedef     LONG*             LPLONG;
-typedef     void *            LPVOID;
-typedef     char              CHAR;
-typedef     const CHAR *      LPCSTR;
-typedef     CHAR*             LPCHAR;
 
-//typedef     unsigned LONG     ULONG;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _BYTE_DEFINED
 #define _BYTE_DEFINED
@@ -39,6 +30,47 @@ typedef  BYTE*             LPBYTE;
 typedef const BYTE *			 LPCBYTE;
 #endif
 //////////////////////////////////////////////////////////////////////////
+#ifndef _CHAR_DEFINED
+#define _CHAR_DEFINED
+typedef     char             CHAR;
+#endif
+#ifndef _LPSTR_DEFINED
+#define _LPSTR_DEFINED
+typedef     CHAR*						 LPSTR;
+#endif
+#ifndef _LPCSTR_DEFINED
+#define _LPCSTR_DEFINED
+typedef     const CHAR*      LPCSTR;
+#endif
+//////////////////////////////////////////////////////////////////////////
+#ifndef _SHORT_DEFINED
+#define _SHORT_DEFINED
+typedef		short								SHORT;
+#endif // !_SHORT_DEFINED
+#ifndef _LPSHORT_DEFINED
+#define _LPSHORT_DEFINED
+typedef		SHORT*							LPSHORT;
+#endif // !_LPSHORT_DEFINED
+#ifndef _LPCSHORT_DEFINED
+#define _LPCSHORT_DEFINED
+typedef		const SHORT*				LPCSHORT;
+#endif // !_LPCSHORT_DEFINED
+
+//////////////////////////////////////////////////////////////////////////
+#ifndef _LONG_DEFINED
+#define _LONG_DEFINED
+typedef		long								LONG;
+#endif // !_LONG_DEFINED
+#ifndef _LPLONG_DEFINED
+#define _LPLONG_DEFINED
+typedef		LONG*									LPLONG;
+#endif // !_LPLONG_DEFINED
+#ifndef _LPCLONG_DEFINED
+#define _LPCLONG_DEFINED
+typedef const LONG*						LPCLONG;
+#endif // !_LPCLONG_DEFINED
+
+//////////////////////////////////////////////////////////////////////////
 #ifndef _LPVOID_DEFINED
 #define _LPVOID_DEFINED
 typedef void *							LPVOID;
@@ -50,24 +82,24 @@ typedef const void *				LPCVOID;
 //////////////////////////////////////////////////////////////////////////
 #ifndef _WORD_DEFINED
 #define _WORD_DEFINED
-typedef     unsigned short    WORD;
+typedef  unsigned short    WORD;
 #endif 
 #ifndef _LPWORD_DEFINED
 #define _LPWORD_DEFINED
-typedef     WORD*             LPWORD;
+typedef  WORD*             LPWORD;
 #endif
 #ifndef _LPCWORD_DEFINED
 #define _LPCWORD_DEFINED
-typedef     const WORD*       LPCWORD;
+typedef  const WORD*       LPCWORD;
 #endif
 //////////////////////////////////////////////////////////////////////////
 #ifndef _DWORD_DEFINED
 #define _DWORD_DEFINED
-typedef     unsigned long     DWORD;
+typedef   unsigned long     DWORD;
 #endif
 #ifndef _LPDWORD_DEFINED
 #define _LPDWORD_DEFINED
-typedef     DWORD*            LPDWORD;
+typedef   DWORD*            LPDWORD;
 #endif
 #ifndef _LPCDWORD_DEFINED
 #define _LPCDWORD_DEFINED
@@ -75,20 +107,38 @@ typedef     const DWORD*      LPCDWORD;
 #endif
 
 //////////////////////////////////////////////////////////////////////////
-#ifndef _WCHAR_T_DEFINED
-#define _WCHAR_T_DEFINED
-typedef     unsigned short    WCHAR;
-#endif
-//////////////////////////////////////////////////////////////////////////
+#ifndef	_WCHAR_T_DEFINED
+#define	_WCHAR_T_DEFINED
+typedef unsigned short				wchar_t;
+#endif //_WCHAR_T_DEFINED
 #ifndef _WCHAR_DEFINED
 #define _WCHAR_DEFINED
 typedef     wchar_t           WCHAR;
-typedef     const WCHAR *     LPCWSTR;  
+#endif //_WCHAR_DEFINED
+#ifndef _LPWSTR_DEFINED
+#define _LPWSTR_DEFINED
 typedef     WCHAR *           LPWSTR;
-#endif 
+#endif //_LPWSTR_DEFINED
+#ifndef _LPCWSTR_DEFINED
+#define _LPCWSTR_DEFINED
+typedef     const WCHAR *     LPCWSTR; 
+#endif //_LPCWSTR_DEFINED
 //////////////////////////////////////////////////////////////////////////
+#ifndef _LPCWSTR_DEFINED
+#define _LPCWSTR_DEFINED
+typedef     const WCHAR *     LPCWSTR; 
+#endif //_LPCWSTR_DEFINED
+//////////////////////////////////////////////////////////////////////////
+#ifndef _SIZE_T_DEFINED
+#define _SIZE_T_DEFINED
+typedef unsigned int size_t;
+#endif //_SIZE_T_DEFINED
+//////////////////////////////////////////////////////////////////////////
+
 typedef  TCHAR *  LPTSTR;
-typedef  const TCHAR *LPCTSTR;
+typedef  const TCHAR *				LPCTSTR;
+//////////////////////////////////////////////////////////////////////////
+
 
 #ifndef BOOL
 typedef int     BOOL;
@@ -224,21 +274,21 @@ typedef   LONG    TError;
 #define _T_Point_
 typedef struct tagTPoint
 {
-  SHORT  x;
-  SHORT  y;
+	SHORT  x;
+	SHORT  y;
 } TPoint, *LPTPoint;
 #endif
 
 typedef struct tagCnd4
 {
-  WORD  m_wDistance;  
-  WORD  m_wIndex;
+	WORD  m_wDistance;  
+	WORD  m_wIndex;
 } TCnd4, *LPTCnd4;
 
 typedef struct tagCnd8
 {
-  int    m_nIndex;
-  int    m_nDistance;
+	int    m_nIndex;
+	int    m_nDistance;
 }TCnd8, *LPTCnd8;
 //函数参数前 表示传入, 传出
 #define HWX_IN    
@@ -290,26 +340,26 @@ typedef struct tagCnd8
 #define SAFE_DELETE_HMENU(hMenu) \
 	if(hMenu) \
 { \
-		::DestroyMenu(hMenu); \
-		hMenu = NULL; \
+	::DestroyMenu(hMenu); \
+	hMenu = NULL; \
 }
- 
+
 //#define SAFE_DELETE_OBJECT(obj)
 #undef SAFE_DELETE_OBJECT
 #define SAFE_DELETE_OBJECT(hObj) \
 	if (hObj) \
-	{\
+{\
 	::DeleteObject(hObj);\
 	hObj = NULL;\
-	}
+}
 
 #undef SAFE_FREE_LIBRARY
 #define SAFE_FREE_LIBRARY(hModel) \
 	if (hModel)\
-	{\
-		::FreeLibrary(hModel);\
-		hModel = NULL;\
-	}
+{\
+	::FreeLibrary(hModel);\
+	hModel = NULL;\
+}
 
 #undef SAFE_CLOSE_HANDLE
 #define SAFE_CLOSE_HANDLE(hHandle) \
