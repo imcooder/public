@@ -286,7 +286,7 @@ void WINAPI Helper_StrTrimW(LPWSTR pszString, LPCWSTR pszTag)
 	Helper_StrTrimLeftW(pszString, pszTag);
 	Helper_StrTrimRightW(pszString, pszTag);
 }
-LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
+INT64 WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
 {
 	if (!pszString)
 	{
@@ -297,15 +297,11 @@ LONG WINAPI Helper_StrGetNumberW(LPCWSTR pszString)
 		return 0;
 	}
 
-	LONG nValue = 0;
+	INT64 nValue = 0;
 	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789-+");
 	if (pszIndex) 
 	{
-#if _MSC_VER >= 1000
-		swscanf_s(pszIndex, L"%ld", &nValue); 
-#else
-		swscanf(pszIndex, L"%ld", &nValue);
-#endif
+		nValue = _wtoi64(pszIndex);
 	}
 	return nValue;
 }
@@ -320,16 +316,12 @@ double WINAPI Helper_StrGetFloatW(LPCWSTR pszString)
 	{
 		return 0;
 	}
-
-	float flValue = 0.0;
+	double flValue = 0;
 	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789.-+");
 	if (pszIndex) 
 	{
-#if _MSC_VER >= 1000
-		swscanf_s(pszIndex, L"%f", &flValue); 
-#else
-		swscanf(pszIndex, L"%f", &flValue); 
-#endif
+		//swscanf_s(pszIndex, L"%30lf", &flValue);
+		flValue = _wtof(pszIndex);
 	}
 	return flValue;
 }
@@ -458,7 +450,7 @@ void WINAPI Helper_StrTrimA(LPSTR pszString, LPCSTR pszTag)
 	Helper_StrTrimLeftA(pszString, pszTag);
 	Helper_StrTrimRightA(pszString, pszTag);
 }
-LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString)
+INT64 WINAPI Helper_StrGetNumberA(LPCSTR pszString)
 {
 	if (!pszString)
 	{
@@ -469,14 +461,14 @@ LONG WINAPI Helper_StrGetNumberA(LPCSTR pszString)
 		return 0;
 	}
 
-	LONG nValue = 0;
+	INT64 nValue = 0;
 	LPCSTR pszIndex = strpbrk(pszString, "0123456789-+");
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
-		sscanf_s(pszIndex, "%ld", &nValue); 
+		sscanf_s(pszIndex, "%I64d", &nValue); 
 #else
-		sscanf(pszIndex, "%ld", &nValue);
+		sscanf(pszIndex, "%I64d", &nValue);
 #endif
 	}
 	return nValue;
@@ -493,7 +485,7 @@ double WINAPI Helper_StrGetFloatA(LPCSTR pszString)
 		return 0;
 	}
 
-	float flValue = 0.0;
+	double flValue = 0.0;
 	LPCSTR pszIndex = strpbrk(pszString, "0123456789.-+");
 	if (pszIndex) 
 	{
