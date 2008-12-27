@@ -8,6 +8,33 @@
 #include "CodeEx.h"
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
+
+LONG WINAPI UTF16ToUTF8( LPCWSTR pszUTF16, LPSTR pszUTF8 )
+{
+	if (!pszUTF16)
+	{
+		return -1;
+	}	
+	LONG nLen = WideCharToMultiByte( CP_UTF8, 0, pszUTF16,	-1,	NULL, 0, NULL, NULL );
+	if (pszUTF8)
+	{
+		nLen = WideCharToMultiByte( CP_UTF8, 0, pszUTF16,	-1, pszUTF8, nLen, NULL, NULL );
+		pszUTF8[nLen] = 0;
+	}	
+	return nLen;
+}
+
+LONG WINAPI UTF8ToUTF16( LPCSTR pszUTF8, LPWSTR pszUTF16 )
+{	
+	LONG nLen = MultiByteToWideChar( CP_UTF8, 0, pszUTF8, 	-1,	NULL, 0);
+	if (pszUTF16)
+	{
+		nLen = MultiByteToWideChar( CP_UTF8, 0, pszUTF8, -1,	pszUTF16, nLen);
+		pszUTF16[nLen] = 0;
+	}			
+	return nLen;
+}
+/*
 LONG WINAPI UTF16ToUTF8(LPCWSTR pszUTF16, CHAR* pszUTF8)
 {		
 	if (!pszUTF16)
@@ -134,7 +161,7 @@ LONG WINAPI UTF8ToUTF16(const CHAR *pszUTF8, LPWSTR pszUTF16)
 	}	
 	return nLen;
 }
-
+*/
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 unsigned short fullWidthChars[95]=
