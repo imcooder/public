@@ -173,11 +173,16 @@ typedef void*     HANDLE;
 #endif
 
 
+typedef enum
+{
+	SUCCESS							=				0L,
+	INVALID_FUNCTION		=       1L,
+	FILE_NOT_FOUND      =       2L,
+	INVALID_HANDLE			=       6L,
+	NOT_ENOUGH_MEMORY		=       8L,
+	INVALID_DATA				=       13L
+} TError;
 
-#ifndef   _TERROR_DEFINED
-#define   _TERROR_DEFINED
-typedef   LONG    TError;  
-#endif
 
 
 #ifndef ASSERT
@@ -196,8 +201,6 @@ typedef   LONG    TError;
 #endif    
 #endif
 #define verify   VERIFY
-
-
 
 #ifndef _abs
 #define _abs(a) (((a)>0)?(a):(-(a)))

@@ -41,7 +41,7 @@ extern "C"
 	//ÊÍ·ÅÄÚ´æ
 	DLLXEXPORT void WINAPI		XTraceW(LPCWSTR, ...);	
 	DLLXEXPORT void WINAPI		XTraceA(LPCSTR , ...);
-	DLLXEXPORT void WINAPI	    XForceTraceW(LPCWSTR, ...);	
+	DLLXEXPORT void WINAPI	  XForceTraceW(LPCWSTR, ...);	
 	DLLXEXPORT void WINAPI		XForceTraceA(LPCSTR , ...);
 	
 #ifdef __cplusplus
