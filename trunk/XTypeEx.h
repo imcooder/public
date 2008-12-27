@@ -4,11 +4,6 @@
 #include "Ext_Type.h"
 
 
-#ifdef _X86_
-   #define DebugBreak() _asm { int 3 }
-#endif
-
-
 #define SelectFont(hDC, hFont) \
    ((HFONT) ::SelectObject((hDC), (HGDIOBJ) (HFONT) (hFont)))
 
@@ -22,14 +17,7 @@
    ( (fn) ((m_hWnd), (int) (LOWORD(wParam)), (HWND)(lParam), (UINT) HIWORD(wParam)), 0L)
 
 
-#ifndef FORCEASSERT
-#define FORCEASSERT(expr) \
-if (!(expr))  \
-{      \
-	XForceTraceW(L"%s In Files %s Line:%d", _CRT_WIDE(#expr), _CRT_WIDE(__FILE__), __LINE__);  \
-	DebugBreak();   \
-}
-#endif
+
 
 #ifdef _XSTRING_ //include <string>
 #ifndef _TSTRING_DEFINED

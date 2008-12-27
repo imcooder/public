@@ -11,6 +11,21 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 
 
 
+#ifdef _X86_
+#define DebugBreak() _asm { int 3 }
+#endif
+
+#ifndef FORCEASSERT
+#define FORCEASSERT(expr) \
+	if (!(expr))  \
+{      \
+	XForceTraceW(L"%s In Files %s Line:%d", _CRT_WIDE(#expr), _CRT_WIDE(__FILE__), __LINE__);  \
+	DebugBreak();   \
+}
+#endif
+
+
+
 #ifndef TRACE
 #if defined(DEBUG) || defined(_DEBUG)
 #define TRACE		XTrace

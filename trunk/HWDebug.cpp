@@ -6,7 +6,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 作者:		xuejuntao xuejuntao@hanwang.com.cn 2008/10/06
 *********************************************************************/
 #include "stdafx.h"
-#include "XDebug.h"
+#include "HWDebug.h"
 #include <stdio.h>
 #include <memory>
 

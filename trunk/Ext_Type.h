@@ -11,10 +11,6 @@
 #define DLLXEXPORT   //__declspec(dllimport) 
 #endif
 
-#ifndef TRACE
-#include "XDebug.h"
-#endif
-
 
 //////////////////////////////////////////////////////////////////////////
 #ifndef _BYTE_DEFINED
