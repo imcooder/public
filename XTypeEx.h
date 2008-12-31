@@ -23,9 +23,9 @@
 #ifndef _TSTRING_DEFINED
 #define _TSTRING_DEFINED
 #if defined(UNICODE) || defined(_UNICODE)
-typedef wstring		TSTRING;
+typedef std::wstring		TSTRING;
 #else
-typedef string		TSTRING;
+typedef std::string		TSTRING;
 #endif
 #endif
 #endif

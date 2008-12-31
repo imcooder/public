@@ -134,7 +134,7 @@ LONG WINAPI Helper_GetPathDirectoryW(LPCWSTR pwhFilePath, LPWSTR szDirectory)
 	WCHAR szPath[MAX_PATH] = {0};
 	if(0 == _wsplitpath_s(pwhFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
 	{
-		wcscat_s(szPath, MAX_PATH, szDir);
+		wcsncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);
 		nLen = wcslen(szPath) + 1;		
 	}
 	if (szDirectory)
@@ -150,7 +150,7 @@ LONG WINAPI Helper_GetPathDirectoryA(LPCSTR pchFilePath, LPSTR szDirectory)
 	CHAR szPath[MAX_PATH] = {0};
 	if(0 == _splitpath_s(pchFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
 	{
-		strcat_s(szPath, szDir);		
+		strncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);		
 		nLen = strlen(szPath) + 1;
 	}
 		if (szDirectory)

@@ -53,4 +53,3 @@ LONG WINAPI LoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
 	return dwFileLen;
 }
 
-
