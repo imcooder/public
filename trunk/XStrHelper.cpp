@@ -596,3 +596,23 @@ void WINAPI Helper_StrReverseA(LPSTR pszString)
 	strrev(pszString);
 #endif
 }
+
+void WINAPI Helper_StrReplaceW( LPWSTR pszString, WCHAR A, WCHAR B)
+{
+	LPWSTR pszA = wcschr(pszString, A);
+	while(pszA)
+	{
+		*pszA ++ = B;		
+		pszA = wcschr(pszA, A);
+	}
+}
+
+void WINAPI Helper_StrReplaceA( LPSTR pszString, CHAR A, CHAR B)
+{	
+	LPSTR pszA = strchr(pszString, A);
+	while(pszA)
+	{
+		*pszA ++ = B;		
+		pszA = strchr(pszA, A);
+	}	
+}
