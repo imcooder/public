@@ -220,6 +220,12 @@ typedef enum
 #define  _max3(a, b, c) (_max(_max((a), (b)), (c)))
 #endif
 
+#ifndef _countof
+#define _countof
+#define _countof(_Array) (sizeof(_Array) / sizeof(*_Array))
+#endif
+
+
 #define INRANGE(low, Num, High) (((low) <= (Num)) && ((Num) <= (High)))
 
 #define MIN_CHAR        (0x80)        
@@ -247,11 +253,13 @@ typedef enum
 #endif
 
 #ifndef MAX_SIZE_S
+#define MAX_SIZE_SSS					(64)	
 #define MAX_SIZE_SS						(128)	
 #define MAX_SIZE_S						(256)	
 #define MAX_SIZE_M						(512)	
 #define MAX_SIZE_L						(1024)
 #define MAX_SIZE_LL						(2048)
+#define MAX_SIZE_LLL					(4096)
 #endif
 
 #ifndef MAKEWORD
