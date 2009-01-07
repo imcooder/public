@@ -26,9 +26,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 
 #ifndef DEBUG_ERROR
 #define DEBUG_ERROR(expr) \
-	if (expr)  \
+	if (0)  \
 {      \
-	FORCETRACE(TEXT("%s In Files %s Line:%d"), expr, _CRT_WIDE(__FILE__), __LINE__);  \
+	XForceTraceW(TEXT("%s In Files %s Line:%d"), expr, _CRT_WIDE(__FILE__), __LINE__);  \
 	DebugBreak();   \
 }
 #endif
