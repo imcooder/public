@@ -63,6 +63,32 @@ DLLXEXPORT LONG WINAPI UCS4ToUTF16( const DWORD* pdwUCS4,SIZE_T nCount, LPWSTR p
 	}
 	return nLen;
 }
+
+/* ×ª»»UTF16±àÂëµ½UCS4±àÂë */
+LONG WINAPI UTF16ToUCS4( LPCWSTR pUTF16Str, LPDWORD pdwCode )
+{
+	WCHAR w1 = 0, w2 = 0;
+
+	w1 = pUTF16Str[0];
+	if( w1 >= 0xD800 && w1 <= 0xDBFF )
+	{
+		w2 = pUTF16Str[1];
+		if( w2 >= 0xDC00 && w2 <= 0xDFFF )
+		{
+			*pdwCode = (w2 & 0x03FF) + (((w1 & 0x03FF) + 0x40) << 10);
+			return 2;
+		}
+		else
+		{
+			return 0;	// ·Ç·¨UTF16±àÂë
+		}
+	}
+	else
+	{
+		*pdwCode = w1;
+		return 1;
+	}
+}
 /*
 LONG WINAPI UTF16ToUTF8(LPCWSTR pszUTF16, CHAR* pszUTF8)
 {		
