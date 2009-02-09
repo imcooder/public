@@ -6,7 +6,7 @@
 #if _MSC_VER > 1000
 #pragma once
 #endif 
-
+#include "Ext_Type.h"
 #include <accctrl.h>
 #include <winbase.h>
 #include <windows.h>
