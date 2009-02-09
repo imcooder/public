@@ -66,7 +66,7 @@ DWORD GetFontCell( HDC hDC)
 	DWORD dwRet = 0;
 	if (GetTextMetrics(hDC, &tm))
 	{		
-		dwRet = MAKELONG(tm.tmHeight, tm.tmAveCharWidth);
+		dwRet = MAKELONG(tm.tmHeight, tm.tmHeight);
 	}
 	else
 	{
