@@ -501,26 +501,27 @@ BOOL CXModule::Succeed()
 
 BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type) 
 { 
-#if WINVER >= 0x0600
-	//return true;
-	CXSystemVersion xSystemVersion;
+#if WINVER >= 0x0600	
 	BOOL  blRet = TRUE;  
-	if (xSystemVersion.IsWinVistaOrGreater())
-	{	
-		blRet = FALSE;		
-		PSECURITY_DESCRIPTOR pSD = NULL;      
-		PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
-		BOOL fSaclPresent = FALSE;  
-		BOOL fSaclDefaulted = FALSE;  
-
-		if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
+	{
+		CXSystemVersion xSystemVersion;		
+		if (xSystemVersion.IsWinVistaOrGreater())
 		{	
-			if (GetSecurityDescriptorSacl(pSD, &fSaclPresent, &pSacl, &fSaclDefaulted))
-			{
-				blRet = (ERROR_SUCCESS  == SetSecurityInfo(hObject, type,   LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl));
-			} 			
-			LocalFree ( pSD );
-		}		
+			blRet = FALSE;		
+			PSECURITY_DESCRIPTOR pSD = NULL;      
+			PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
+			BOOL fSaclPresent = FALSE;  
+			BOOL fSaclDefaulted = FALSE;  
+
+			if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
+			{	
+				if (GetSecurityDescriptorSacl(pSD, &fSaclPresent, &pSacl, &fSaclDefaulted))
+				{
+					blRet = (ERROR_SUCCESS  == SetSecurityInfo(hObject, type,   LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl));
+				} 			
+				LocalFree ( pSD );
+			}		
+		}
 	}
 	return blRet;
 #else
@@ -528,27 +529,28 @@ BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type)
 #endif
 }
 BOOL Helper_SetFileToLowIntegrity(LPCTSTR pszFileName)
-{
-	
+{	
 #if WINVER >= 0x0600
-	CXSystemVersion xSystemVersion;
 	BOOL  b = TRUE; 
-	if (xSystemVersion.IsWinVistaOrGreater())
-	{	 
-		b = FALSE;		
-		PSECURITY_DESCRIPTOR pSD = NULL;      
-		PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
-		BOOL fSaclPresent = FALSE;  
-		BOOL fSaclDefaulted = FALSE;  
+	{
+		CXSystemVersion xSystemVersion;		
+		if (xSystemVersion.IsWinVistaOrGreater())
+		{	 
+			b = FALSE;		
+			PSECURITY_DESCRIPTOR pSD = NULL;      
+			PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
+			BOOL fSaclPresent = FALSE;  
+			BOOL fSaclDefaulted = FALSE;  
 
-		if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1,	&pSD, NULL))
-		{
-			if (GetSecurityDescriptorSacl(pSD, &fSaclPresent,	&pSacl, &fSaclDefaulted))
+			if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1,	&pSD, NULL))
 			{
-				b = ERROR_SUCCESS == SetNamedSecurityInfo((LPTSTR)pszFileName, SE_FILE_OBJECT,  LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl);
-			}
-			LocalFree ( pSD );
-		}	
+				if (GetSecurityDescriptorSacl(pSD, &fSaclPresent,	&pSacl, &fSaclDefaulted))
+				{
+					b = ERROR_SUCCESS == SetNamedSecurityInfo((LPTSTR)pszFileName, SE_FILE_OBJECT,  LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl);
+				}
+				LocalFree ( pSD );
+			}	
+		}
 	}
 	return b;
 #else

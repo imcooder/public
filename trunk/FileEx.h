@@ -6,7 +6,8 @@
 
 
 #ifdef _UNICODE
-#define LoadFile			LoadFileW
+
+#define LoadFile				 LoadFileW
 #define HWIsFileInUse    XIsFileInUseW
 #define HWCreateDir      XCreateDirW
 #define HWGenCurPath     XGenCurPathW

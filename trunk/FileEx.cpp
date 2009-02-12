@@ -16,6 +16,8 @@ LONG WINAPI LoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
 {
 	DWORD dwFileLen = 0;
 	FILE *pf = NULL;
+	LONG *pnBuffer = NULL;
+	DWORD dwSize = 0;
 	*ppFileContent = NULL;
 	pf = fopen( pszFileName, "rb");
 	if( NULL == pf )
@@ -24,22 +26,26 @@ LONG WINAPI LoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
 	}
 	fseek( pf, 0, SEEK_END );
 	dwFileLen = ftell( pf );	
-	*ppFileContent = new BYTE[dwFileLen];		
+	dwSize = ((dwFileLen >> 2) + 1);	
+	VERIFY(pnBuffer = new LONG[dwSize]);			
 	if( NULL == *ppFileContent )
 	{
 		fclose( pf );
 		return -1;
 	}
-	ZeroMemory(*ppFileContent, dwFileLen * sizeof(**ppFileContent));
+	ZeroMemory(pnBuffer, sizeof(*pnBuffer) * dwSize);		
 	fseek( pf, 0, SEEK_SET );
-	fread( *ppFileContent, 1, dwFileLen, pf );
+	fread( pnBuffer, 1, dwFileLen, pf );
 	fclose( pf );
+	*ppFileContent = (LPBYTE)pnBuffer;
 	return dwFileLen;
 }
 LONG WINAPI LoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
 {
 	DWORD dwFileLen = 0;
 	FILE *pf = NULL;
+	LONG *pnBuffer = NULL;
+	DWORD dwSize = 0;
 	*ppFileContent = NULL;
 	pf = _wfopen( pszFileName, L"rb");
 	if( NULL == pf )
@@ -48,16 +54,18 @@ LONG WINAPI LoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
 	}
 	fseek( pf, 0, SEEK_END );
 	dwFileLen = ftell( pf );	
-	*ppFileContent = new BYTE[dwFileLen];		
+	dwSize = ((dwFileLen >> 2) + 1);	
+	VERIFY(pnBuffer = new LONG[dwSize]);			
 	if( NULL == *ppFileContent )
 	{
 		fclose( pf );
 		return -1;
 	}
-	ZeroMemory(*ppFileContent, dwFileLen * sizeof(**ppFileContent));
+	ZeroMemory(pnBuffer, sizeof(*pnBuffer) * dwSize);		
 	fseek( pf, 0, SEEK_SET );
-	fread( *ppFileContent, 1, dwFileLen, pf );
+	fread( pnBuffer, 1, dwFileLen, pf );
 	fclose( pf );
+	*ppFileContent = (LPBYTE)pnBuffer;
 	return dwFileLen;
 }
 
