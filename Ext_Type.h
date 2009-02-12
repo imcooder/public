@@ -227,7 +227,42 @@ typedef enum
 
 
 #define INRANGE(low, Num, High) (((low) <= (Num)) && ((Num) <= (High)))
+//	
+#ifndef POINTSTOPOINT
+#define POINTSTOPOINT(pt, pts)                          \
+{ (pt).x = (LONG)(SHORT)LOWORD(*(LONG*)&pts);   \
+	(pt).y = (LONG)(SHORT)HIWORD(*(LONG*)&pts); }
+#endif
 
+#ifndef POINTTOPOINTS
+#define POINTTOPOINTS(pt)      (MAKELONG((short)((pt).x), (short)((pt).y)))
+#endif
+
+#ifndef MAKEWPARAM
+#define MAKEWPARAM(l, h)      ((WPARAM)(DWORD)MAKELONG((l), (h)))
+#endif
+
+#ifndef MAKELPARAM
+#define MAKELPARAM(l, h)      ((LPARAM)(DWORD)MAKELONG((l), (h)))
+#endif
+
+#ifndef MAKELRESULT
+#define MAKELRESULT(l, h)     ((LRESULT)(DWORD)MAKELONG((l), (h)))
+#endif
+// Language ID
+#ifndef MAKELANGID
+#define MAKELANGID(p, s)       ((((WORD  )(s)) << 10) | (WORD  )(p))
+#endif
+
+#ifndef PRIMARYLANGID
+#define PRIMARYLANGID(lgid)    ((WORD  )(lgid) & 0x3ff)
+#endif
+
+#ifndef SUBLANGID
+#define SUBLANGID(lgid)        ((WORD  )(lgid) >> 10)
+#endif
+
+//	
 #define MIN_CHAR        (0x80)        
 #define MAX_CHAR        (0x7f)        
 #define MIN_SHORT       (0x8000)      
@@ -393,6 +428,11 @@ typedef struct tagCnd8
 	::DeleteDC(hDC);\
 	hDC = NULL;\
 } 
+//////////////////////////////////////////////////////////////////////////
+#undef SetControlText
+#define SetControlText(hWnd, nID, szText)			::SetWindowText(::GetDlgItem((hWnd), (nID)), (szText))
+
+		
 
 
 
