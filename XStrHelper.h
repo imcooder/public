@@ -33,7 +33,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StrGetHex			Helper_StrGetHexW
 #define StrReverse		Helper_StrReverseW
 #define StrReplace		Helper_StrReplaceW
-
+#define StrRemove			Helper_StrRemoveW
 
 #else
 
@@ -57,7 +57,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StrGetHex			Helper_StrGetHexA
 #define StrReverse		Helper_StrReverseA
 #define StrReplace		Helper_StrReplaceA
-
+#define StrRemove			Helper_StrRemoveA
 
 
 #endif
@@ -119,6 +119,8 @@ extern "C"{
 	void WINAPI Helper_StrReverseA(LPSTR pszString);
 	void WINAPI Helper_StrReplaceW(LPWSTR pszString, WCHAR, WCHAR);
 	void WINAPI Helper_StrReplaceA(LPSTR pszString, CHAR, CHAR);
+	void WINAPI Helper_StrRemoveW( LPWSTR, WCHAR);
+	void WINAPI Helper_StrRemoveA( LPSTR, CHAR);
 #ifdef __cplusplus
 }
 #endif

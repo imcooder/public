@@ -28,7 +28,7 @@ LONG WINAPI LoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
 	dwFileLen = ftell( pf );	
 	dwSize = ((dwFileLen >> 2) + 1);	
 	VERIFY(pnBuffer = new LONG[dwSize]);			
-	if( NULL == *ppFileContent )
+	if( !pnBuffer )
 	{
 		fclose( pf );
 		return -1;
@@ -56,7 +56,7 @@ LONG WINAPI LoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
 	dwFileLen = ftell( pf );	
 	dwSize = ((dwFileLen >> 2) + 1);	
 	VERIFY(pnBuffer = new LONG[dwSize]);			
-	if( NULL == *ppFileContent )
+	if( !pnBuffer)
 	{
 		fclose( pf );
 		return -1;
