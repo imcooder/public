@@ -14,9 +14,8 @@ void WINAPI		ForceMessageBoxA(LPCSTR);
 void WINAPI		ForceMessageBoxW(LPCWSTR);
 
 void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
-{ 
-	const LONG cnMaxLen = 1024;
-	WCHAR athBuffer[cnMaxLen];
+{ 	
+	WCHAR szBuffer[MAX_SIZE_L] = {0};
 	LPWSTR pwhBuffer = NULL;	
 	
 	LONG nLen = 0;
@@ -28,10 +27,10 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 		va_end(argList);	
 		return;
 	}
-	if (nLen < cnMaxLen)
+	if (nLen < _countof(szBuffer))
 	{
-		pwhBuffer = athBuffer;
-		vswprintf_s(pwhBuffer, cnMaxLen - 1, pwhFormat, argList); 
+		pwhBuffer = szBuffer;
+		vswprintf_s(pwhBuffer, MAX_SIZE_L - 1, pwhFormat, argList); 
 		OutputDebugStringW(pwhBuffer);
 	}
 	else
@@ -47,8 +46,7 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 
 void WINAPI XTraceA(LPCSTR pchFormat, ...)
 { 	
-	const LONG cnMaxLen = 1024;
-	CHAR athBuffer[cnMaxLen];
+	CHAR szBuffer[MAX_SIZE_L];
 	LPSTR pchBuffer = NULL;	
 
 	LONG nLen = 0;
@@ -60,10 +58,78 @@ void WINAPI XTraceA(LPCSTR pchFormat, ...)
 		va_end(argList);	
 		return;
 	}
-	if (nLen < cnMaxLen)
+	if (nLen < _countof(szBuffer))
 	{
-		pchBuffer = athBuffer;
-		vsprintf_s(pchBuffer, cnMaxLen - 1, pchFormat, argList); 
+		pchBuffer = szBuffer;
+		vsprintf_s(pchBuffer, MAX_SIZE_L - 1, pchFormat, argList); 
+		OutputDebugStringA(pchBuffer);
+	}
+	else
+	{
+		if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
+		{
+			vsprintf_s(pchBuffer, nLen + 1, pchFormat, argList);
+			OutputDebugStringA(pchBuffer);
+		}			
+	}	
+	va_end(argList);	
+}
+DLLXEXPORT void WINAPI XTraceExW( BOOL bCondition, LPCWSTR pwhFormat, ... )
+{
+	if (!bCondition)
+	{
+		return;
+	}
+	WCHAR szBuffer[MAX_SIZE_L] = {0};
+	LPWSTR pwhBuffer = NULL;
+	LONG nLen = 0;
+	va_list argList;
+	va_start(argList, pwhFormat);
+	nLen = _vscwprintf(pwhFormat, argList);
+	if (nLen	< 0)
+	{
+		va_end(argList);	
+		return;
+	}
+	if (nLen < _countof(szBuffer))
+	{
+		pwhBuffer = szBuffer;
+		vswprintf_s(pwhBuffer, MAX_SIZE_L - 1, pwhFormat, argList); 
+		OutputDebugStringW(pwhBuffer);
+	}
+	else
+	{
+		if(pwhBuffer = (LPWSTR)_alloca((nLen + 2) * sizeof(WCHAR)))
+		{
+			vswprintf_s(pwhBuffer, nLen + 1, pwhFormat, argList);
+			OutputDebugStringW(pwhBuffer);
+		}
+	}	
+	va_end(argList);	
+}
+
+DLLXEXPORT void WINAPI XTraceExA( BOOL bCondition, LPCSTR pchFormat, ... )
+{
+	if (bCondition)
+	{
+		return;
+	}	
+	CHAR szBuffer[MAX_SIZE_L] = {0};
+	LPSTR pchBuffer = NULL;	
+
+	LONG nLen = 0;
+	va_list argList;
+	va_start(argList, pchFormat);
+	nLen = _vscprintf(pchFormat, argList);
+	if (nLen	< 0)
+	{
+		va_end(argList);	
+		return;
+	}
+	if (nLen < _countof(szBuffer))
+	{
+		pchBuffer = szBuffer;
+		vsprintf_s(pchBuffer, MAX_SIZE_L - 1, pchFormat, argList); 
 		OutputDebugStringA(pchBuffer);
 	}
 	else
@@ -77,11 +143,9 @@ void WINAPI XTraceA(LPCSTR pchFormat, ...)
 	va_end(argList);	
 }
 
-
 void WINAPI XForceTraceW(LPCWSTR pwhFormat, ...)
-{ 
-	const LONG cnMaxLen = 1024;
-	WCHAR athBuffer[cnMaxLen];
+{ 	
+	WCHAR szBuffer[MAX_SIZE_L];
 	LPWSTR pwhBuffer = NULL;	
 
 	LONG nLen = 0;
@@ -93,10 +157,10 @@ void WINAPI XForceTraceW(LPCWSTR pwhFormat, ...)
 		va_end(argList);	
 		return;
 	}
-	if (nLen < cnMaxLen)
+	if (nLen < _countof(szBuffer))
 	{
-		pwhBuffer = athBuffer;
-		vswprintf_s(pwhBuffer, cnMaxLen - 1, pwhFormat, argList); 
+		pwhBuffer = szBuffer;
+		vswprintf_s(pwhBuffer, MAX_SIZE_L - 1, pwhFormat, argList); 
 		ForceMessageBoxW(pwhBuffer);
 	}
 	else
@@ -111,11 +175,9 @@ void WINAPI XForceTraceW(LPCWSTR pwhFormat, ...)
 }
 
 void WINAPI XForceTraceA(LPCSTR pchFormat, ...)
-{ 	
-	const LONG cnMaxLen = 1024;
-	CHAR athBuffer[cnMaxLen];
+{ 		
+	CHAR szBuffer[MAX_SIZE_L];
 	LPSTR pchBuffer = NULL;	
-
 	LONG nLen = 0;
 	va_list argList;
 	va_start(argList, pchFormat);
@@ -125,10 +187,10 @@ void WINAPI XForceTraceA(LPCSTR pchFormat, ...)
 		va_end(argList);	
 		return;
 	}
-	if (nLen < cnMaxLen)
+	if (nLen < MAX_SIZE_L)
 	{
-		pchBuffer = athBuffer;
-		vsprintf_s(pchBuffer, cnMaxLen - 1, pchFormat, argList); 
+		pchBuffer = szBuffer;
+		vsprintf_s(pchBuffer, MAX_SIZE_L - 1, pchFormat, argList); 
 		ForceMessageBoxA(pchBuffer);
 	}
 	else
@@ -155,3 +217,4 @@ void WINAPI ForceMessageBoxW(LPCWSTR pszMsg)
 	GetModuleFileNameW(NULL, szTitle, MAX_PATH - 1);
 	MessageBoxW(GetActiveWindow(), pszMsg, szTitle, MB_OK);
 }
+
