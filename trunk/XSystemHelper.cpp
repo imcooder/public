@@ -501,7 +501,7 @@ BOOL CXModule::Succeed()
 
 BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type) 
 { 
-#if WINVER >= 0x0600	
+#if (WINVER >= 0x0600)	
 	BOOL  blRet = TRUE;  
 	{
 		CXSystemVersion xSystemVersion;		
@@ -530,7 +530,7 @@ BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type)
 }
 BOOL Helper_SetFileToLowIntegrity(LPCTSTR pszFileName)
 {	
-#if WINVER >= 0x0600
+#if (WINVER >= 0x0600)
 	BOOL  b = TRUE; 
 	{
 		CXSystemVersion xSystemVersion;		

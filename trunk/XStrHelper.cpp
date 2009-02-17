@@ -616,3 +616,43 @@ void WINAPI Helper_StrReplaceA( LPSTR pszString, CHAR A, CHAR B)
 		pszA = strchr(pszA, A);
 	}	
 }
+
+void WINAPI Helper_StrRemoveW( LPWSTR pszString, WCHAR A)
+{
+	LPWSTR pszIndexA = pszString, pszIndexB = pszString;
+	if (!pszString)
+	{
+		return;
+	}
+	while (*pszIndexB)
+	{
+		if (*pszIndexB != A)
+		{
+			*pszIndexA = *pszIndexB;
+			pszIndexA ++;
+		}
+		pszIndexB ++;
+	}	
+	*pszIndexA = 0;
+	return;
+}
+
+void WINAPI Helper_StrRemoveA( LPSTR pszString, CHAR A)
+{	
+	LPSTR pszIndexA = pszString, pszIndexB = pszString;
+	if (!pszString)
+	{
+		return;
+	}
+	while (*pszIndexB)
+	{
+		if (*pszIndexB != A)
+		{
+			*pszIndexA = *pszIndexB;
+			pszIndexA ++;
+		}
+		pszIndexB ++;
+	}	
+	*pszIndexA = 0;
+	return;
+}
