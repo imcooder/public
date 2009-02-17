@@ -10,6 +10,13 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include <Ext_Type.h>
 
 
+#if defined(DEBUG) || defined(_DEBUG)
+#define HWDEBUG
+#else 
+#undef HWDEBUG
+#endif
+
+
 
 #ifdef _X86_
 #define DebugBreak() _asm { int 3 }
@@ -34,17 +41,32 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #endif
 
 #ifndef TRACE
-#if defined(DEBUG) || defined(_DEBUG)
+#if defined(HWDEBUG)
 #define TRACE		XTrace
 #else 
 #define TRACE		__noop
 #endif
 #endif
 
+#ifndef TRACEEX
+#if defined(HWDEBUG)
+#define TRACEEX		XTraceEx
+#else 
+#define TRACEEX		__noop
+#endif
+#endif
+
+
 #ifdef UNICODE
 #define XTrace		XTraceW
 #else 
 #define XTrace		XTraceA
+#endif
+
+#ifdef UNICODE
+#define XTraceEx		XTraceExW
+#else 
+#define XTrace		XTraceExA
 #endif
 
 #ifdef UNICODE
@@ -55,7 +77,6 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 
 
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -63,6 +84,8 @@ extern "C"
 	//释放内存
 	DLLXEXPORT void WINAPI		XTraceW(LPCWSTR, ...);	
 	DLLXEXPORT void WINAPI		XTraceA(LPCSTR , ...);
+	DLLXEXPORT void WINAPI		XTraceExW(BOOL, LPCWSTR, ...);	
+	DLLXEXPORT void WINAPI		XTraceExA(BOOL, LPCSTR , ...);
 	DLLXEXPORT void WINAPI	  XForceTraceW(LPCWSTR, ...);	
 	DLLXEXPORT void WINAPI		XForceTraceA(LPCSTR , ...);
 	
