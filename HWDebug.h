@@ -48,6 +48,17 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #endif
 #endif
 
+#ifndef HWTRACE
+#if defined(HWDEBUG)
+#define HWTRACE		XTrace
+#else 
+#define HWTRACE		__noop
+#endif
+#endif
+
+
+
+
 #ifndef TRACEEX
 #if defined(HWDEBUG)
 #define TRACEEX		XTraceEx

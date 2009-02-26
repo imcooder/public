@@ -557,3 +557,76 @@ BOOL Helper_SetFileToLowIntegrity(LPCTSTR pszFileName)
 	return TRUE;
 #endif
 }
+
+
+
+BOOL Helper_GetProcessElevation(BOOL* pIsElevation) 
+{
+	BOOL bIsAdmin = FALSE;
+	BOOL bIsElevation = FALSE;
+#if (WINVER >= 0x0600)
+	{
+		HANDLE hToken = NULL;
+		DWORD dwSize;
+		TOKEN_ELEVATION_TYPE ElevationType;
+		// Get current process token
+		if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
+		{
+			bIsAdmin = IsUserAnAdmin();
+		}	
+		else
+		{
+			// Retrieve elevation type information
+			if (GetTokenInformation(hToken, TokenElevationType,	&ElevationType, sizeof(TOKEN_ELEVATION_TYPE), &dwSize)) 
+			{
+				// Create the SID corresponding to the Administrators group
+				BYTE adminSID[SECURITY_MAX_SID_SIZE];
+				dwSize = sizeof(adminSID);
+				CreateWellKnownSid(WinBuiltinAdministratorsSid, NULL, &adminSID, &dwSize);
+				if (ElevationType == TokenElevationTypeLimited) 
+				{
+					// Get handle to linked token (will have one if we are lua)
+					HANDLE hUnfilteredToken = NULL;
+					GetTokenInformation(hToken, TokenLinkedToken, (VOID*)&hUnfilteredToken, sizeof(HANDLE), &dwSize);
+
+					// Check if this original token contains admin SID
+					CheckTokenMembership(hUnfilteredToken, &adminSID, &bIsAdmin); 
+					// Don't forget to close the unfiltered token
+					CloseHandle(hUnfilteredToken);
+				} 
+				else 
+				{
+					bIsAdmin = IsUserAnAdmin();					
+				}
+			}
+			else
+			{
+				bIsAdmin = IsUserAnAdmin();
+			}		
+		}		
+
+		CloseHandle(hToken);		
+		if	(TokenElevationTypeDefault == ElevationType && TokenElevationTypeLimited == ElevationType)
+		{
+			
+		}
+		else if (TokenElevationTypeFull == ElevationType)
+		{
+			bIsElevation = FALSE;
+		}
+		
+		return bIsAdmin;
+	}
+#else
+	{
+		bIsAdmin = IsUserAnAdmin();
+	}
+#endif
+	if (pIsElevation)
+	{
+		*pIsElevation = bIsElevation;
+	}
+	return bIsAdmin;
+}
+
+
