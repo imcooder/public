@@ -13,8 +13,26 @@
 #include <Sddl.h> 
 #include <AclAPI.h>
 
+#ifndef SECURITY_MANDATORY_UNTRUSTED_RID
+#define SECURITY_MANDATORY_UNTRUSTED_RID            (0x00000000L)
+#endif
+#ifndef SECURITY_MANDATORY_LOW_RID
+#define SECURITY_MANDATORY_LOW_RID                  (0x00001000L)
+#endif
+#ifndef SECURITY_MANDATORY_MEDIUM_RID
+#define SECURITY_MANDATORY_MEDIUM_RID               (0x00002000L)
+#endif
+#ifndef SECURITY_MANDATORY_HIGH_RID
+#define SECURITY_MANDATORY_HIGH_RID                 (0x00003000L)
+#endif
+#ifndef SECURITY_MANDATORY_SYSTEM_RID
+#define SECURITY_MANDATORY_SYSTEM_RID               (0x00004000L)
+#endif
+
 BOOL Helper_SetObjectToLowIntegrity( HANDLE, SE_OBJECT_TYPE = SE_KERNEL_OBJECT);
+LONG Helper_GetObjectIntegrityLevel(HANDLE, SE_OBJECT_TYPE = SE_KERNEL_OBJECT);
 BOOL Helper_SetFileToLowIntegrity(LPCTSTR);
+LONG Helper_GetFileIntegrityLevel(LPTSTR);
 
 class CXSystemVersion : public OSVERSIONINFO
 {
