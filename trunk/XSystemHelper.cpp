@@ -495,6 +495,39 @@ BOOL CXModule::Succeed()
 
 //////////////////////////////////////////////////////////////////////////
 
+LONG Helper_GetObjectIntegrityLevel(HANDLE hHandle, SE_OBJECT_TYPE  objectType)
+{	
+	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
+	PSECURITY_DESCRIPTOR pSD = NULL;  
+	PACL acl = 0;
+	if (ERROR_SUCCESS == ::GetSecurityInfo(hHandle,
+		objectType,
+		LABEL_SECURITY_INFORMATION,
+		0,
+		0,
+		0,
+		&acl,
+		&pSD))
+	{		
+		if (0 != acl && 0 < acl->AceCount)
+		{
+			ASSERT(1 == acl->AceCount);
+			SYSTEM_MANDATORY_LABEL_ACE* ace = 0;
+			if(::GetAce(acl, 0,	reinterpret_cast<void**>(&ace)))
+			{
+				ASSERT(0 != ace);
+				SID* sid = reinterpret_cast<SID*>(&ace->SidStart);
+				integrityLevel = sid->SubAuthority[0];
+			}			
+		}
+		if (pSD)
+		{
+			LocalFree ( pSD );
+		}
+	}		
+	return integrityLevel;
+}
+
 #ifndef LABEL_SECURITY_INFORMATION
 #define LABEL_SECURITY_INFORMATION       (0x00000010L)
 #endif
@@ -528,6 +561,42 @@ BOOL Helper_SetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type)
 	return TRUE;
 #endif
 }
+
+
+LONG Helper_GetFileIntegrityLevel(LPTSTR pszFilePath)
+{	
+	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
+	PSECURITY_DESCRIPTOR pSD = NULL;  
+	PACL acl = 0;
+	if (ERROR_SUCCESS == ::GetNamedSecurityInfo(pszFilePath,
+		SE_FILE_OBJECT,
+		LABEL_SECURITY_INFORMATION,
+		0,
+		0,
+		0,
+		&acl,
+		&pSD))
+	{		
+		if (0 != acl && 0 < acl->AceCount)
+		{
+			ASSERT(1 == acl->AceCount);
+			SYSTEM_MANDATORY_LABEL_ACE* ace = 0;
+			if(::GetAce(acl, 0,	reinterpret_cast<void**>(&ace)))
+			{
+				ASSERT(0 != ace);
+				SID* sid = reinterpret_cast<SID*>(&ace->SidStart);
+				integrityLevel = sid->SubAuthority[0];
+			}			
+		}
+		if (pSD)
+		{
+			LocalFree ( pSD );
+		}
+	}		
+	return integrityLevel;
+}
+
+
 BOOL Helper_SetFileToLowIntegrity(LPCTSTR pszFileName)
 {	
 #if (WINVER >= 0x0600)
@@ -629,4 +698,53 @@ BOOL Helper_GetProcessElevation(BOOL* pIsElevation)
 	return bIsAdmin;
 }
 
+
+
+LONG Helper_GetProcessIntegrityLevel(DWORD dwProcessId)
+{	
+	OSVERSIONINFO OSVersion;
+	ZeroMemory( &OSVersion, sizeof( OSVersion ));
+	OSVersion.dwOSVersionInfoSize = sizeof( OSVersion );
+	GetVersionEx( &OSVersion );
+
+	DWORD dwIL = SECURITY_MANDATORY_HIGH_RID;
+	if(OSVersion.dwMajorVersion >= 6)
+	{//Vista
+		HANDLE hToken = NULL;
+		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessId);
+		if(hProcess)
+		{
+			if(OpenProcessToken(hProcess, TOKEN_QUERY, &hToken))
+			{
+				PTOKEN_MANDATORY_LABEL pTIL = NULL;
+				DWORD dwSize=0;
+				if (!GetTokenInformation(hToken, TokenIntegrityLevel, NULL, 0, &dwSize) 
+					&& ERROR_INSUFFICIENT_BUFFER==GetLastError() && dwSize)
+				{
+					pTIL = (PTOKEN_MANDATORY_LABEL)HeapAlloc(GetProcessHeap(), 0, dwSize);
+				}
+
+				if(pTIL && GetTokenInformation(hToken, TokenIntegrityLevel, pTIL, dwSize, &dwSize))
+				{
+					LPBYTE lpb = GetSidSubAuthorityCount(pTIL->Label.Sid);
+					if(lpb)
+					{
+						dwIL = *GetSidSubAuthority(pTIL->Label.Sid, *lpb - 1);
+					}						
+				}
+				if(pTIL)
+				{
+					HeapFree(GetProcessHeap(), 0, pTIL);
+				}
+				CloseHandle(hToken);
+			}
+			CloseHandle(hProcess);
+		}
+		else 
+		{
+			dwIL = SECURITY_MANDATORY_UNTRUSTED_RID;
+		}
+	}	
+	return dwIL;
+}
 
