@@ -16,7 +16,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #undef HWDEBUG
 #endif
 
-
+#ifndef TRACE
+#define TRACE		HWTRACE
+#endif
 
 #ifdef _X86_
 #define DebugBreak() _asm { int 3 }
@@ -40,13 +42,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 }
 #endif
 
-#ifndef TRACE
-#if defined(HWDEBUG)
-#define TRACE		XTrace
-#else 
-#define TRACE		__noop
-#endif
-#endif
+
 
 #ifndef HWTRACE
 #if defined(HWDEBUG)
