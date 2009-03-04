@@ -57,6 +57,81 @@ LONG WINAPI HalfToFull(LPCWSTR pszSrc, LPWSTR pszDst)
 	return nIndex;
 }
 
+LONG WINAPI PunEnToCn(LPCWSTR lpszInput, LPWSTR lpszOutput)
+{
+	static BOOL blSingleQuotBegin = TRUE; 
+	static BOOL blDoubleQuotBegin = TRUE; 
+	if (!lpszInput || !lpszOutput)
+	{
+		return 0;
+	}
+	LONG nLen = (LONG)wcslen(lpszInput);
+	if (!nLen)
+	{
+		return 0;
+	}
+	LONG nIndex = 0;
+	for (nIndex = 0; nIndex < nLen; nIndex ++)
+	{
+		lpszOutput[nIndex] = lpszInput[nIndex];
+		if (Asci_IsPunctuation(lpszOutput[nIndex]))
+		{
+			lpszOutput[nIndex] = Asci_HalfToFull(lpszOutput[nIndex]);
+			switch(lpszOutput[nIndex])
+			{
+			case 0XFF04:    /* ¡ç->£¤ */
+				lpszOutput[nIndex] = TEXT('£¤');
+				break;
+			case 0XFF0E:    /* £®-> ¡£*/
+				lpszOutput[nIndex] = TEXT('¡£');
+				break;
+			case 0XFF1C:    /* £¼->¡¶ */
+				lpszOutput[nIndex] = TEXT('¡¶');
+				break;
+			case 0XFF1E:    /* £¾->¡· */
+				lpszOutput[nIndex] = TEXT('¡·');
+				break;
+			case 0XFF3C:    /* £Ü->¡¢ */
+				lpszOutput[nIndex] = TEXT('¡¢');
+				break;
+			case 0XFF3E:    /* £Þ-> ¡­¡­ */
+				lpszOutput[nIndex] = TEXT('¡­¡­');
+				break;
+			case 0XFF3F:    /* £ß->¡ª¡ª */
+				lpszOutput[nIndex] = TEXT('¡ª¡ª');
+				break;
+			case 0XFF07:    /* £§-> ¡®¡¯*/
+				if (blSingleQuotBegin)
+				{
+					lpszOutput[nIndex] = TEXT('¡®');
+				}
+				else
+				{
+					lpszOutput[nIndex] = TEXT('¡¯');
+				}
+				blSingleQuotBegin = !blSingleQuotBegin;
+				break;
+			case 0XFF02:
+				if (blDoubleQuotBegin)
+				{
+					lpszOutput[nIndex] = TEXT('¡°');
+				}
+				else
+				{
+					lpszOutput[nIndex] = TEXT('¡±');
+				}
+				blDoubleQuotBegin = !blDoubleQuotBegin;
+				break;
+			case 0XFF40:    /* £à -> */
+				lpszOutput[nIndex] = TEXT('¡¤');
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	return nIndex;
+}
 ///////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
 const size_t vxSC2TCTableSize =8189;
