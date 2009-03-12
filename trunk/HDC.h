@@ -19,4 +19,7 @@ BOOL Draw3dRect(HDC hDC, int x, int y, int cx, int cy,
 BOOL MoveTo(HDC hDC, int x, int y);
 DWORD GetFontCell(HDC);
 
+
+BOOL SetPoint(POINT*, LONG, LONG);
+
 #endif //HWX_HDC_H
