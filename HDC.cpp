@@ -74,3 +74,14 @@ DWORD GetFontCell( HDC hDC)
 	}	
 	return dwRet;
 }
+
+BOOL SetPoint( POINT* ptPoint, LONG x, LONG y)
+{
+	if (!ptPoint)
+	{
+		return FALSE;
+	}
+	ptPoint->x = x;
+	ptPoint->y = y;
+	return TRUE;
+}
