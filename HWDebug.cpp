@@ -17,7 +17,11 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 { 	
 	WCHAR szBuffer[MAX_SIZE_L] = {0};
 	LPWSTR pwhBuffer = NULL;	
-	
+	{
+		WCHAR szThreadID[50] = {0};
+		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("ThreadID %d\n"), GetCurrentThreadId());
+		OutputDebugStringW(szThreadID);
+	}
 	LONG nLen = 0;
 	va_list argList;
 	va_start(argList, pwhFormat);
