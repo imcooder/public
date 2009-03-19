@@ -428,6 +428,9 @@ typedef struct tagCnd8
 	::DeleteDC(hDC);\
 	hDC = NULL;\
 } 
+
+
+
 //////////////////////////////////////////////////////////////////////////
 #undef SetControlText
 #define SetControlText(hWnd, nID, szText)			::SetWindowText(::GetDlgItem((hWnd), (nID)), (szText))

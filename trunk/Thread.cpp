@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <tlhelp32.h>
 #include <Winternl.h>
-#include <winnt.h>
+//#include <winnt.h>
 
 BOOL ListProcessThreads( DWORD dwOwnerPID ) 
 { 
@@ -65,11 +65,12 @@ typedef struct _THREAD_BASIC_INFORMATION
 	KPRIORITY  BasePriority;
 } THREAD_BASIC_INFORMATION, *PTHREAD_BASIC_INFORMATION;
 
+/*
 
-DWORD WINAPI GetThreadId( HANDLE hThread )
+DWORD WINAPI GetThreadID( HANDLE hThread )
 {
 	DWORD dwThreadId = 0;
-#if (WINVER >= 0x0600) 
+#if (WINVER >= 0x0600)	
 	{
 		dwThreadId = ::GetThreadId(hThread);
 	}
@@ -102,3 +103,4 @@ DWORD WINAPI GetThreadId( HANDLE hThread )
 	return dwThreadId;
 }
 
+*/
