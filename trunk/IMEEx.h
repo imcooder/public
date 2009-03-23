@@ -3,5 +3,5 @@
 #pragma once
 
 HKL WINAPI GetHKLByIMEFileName(LPCTSTR);
-
+DWORD WINAPI FindIME(LPCTSTR);
 #endif//HWX_IMEEX_H
