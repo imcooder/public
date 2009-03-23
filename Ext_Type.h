@@ -429,7 +429,13 @@ typedef struct tagCnd8
 	hDC = NULL;\
 } 
 
-
+#undef SAFE_REG_CLOSEKEY
+#define SAFE_REG_CLOSEKEY(hKey) \
+	if (hKey)\
+{\
+	::RegCloseKey(hKey);\
+	hKey = NULL;\
+} 
 
 //////////////////////////////////////////////////////////////////////////
 #undef SetControlText
