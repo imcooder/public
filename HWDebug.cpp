@@ -9,21 +9,70 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include "HWDebug.h"
 #include <stdio.h>
 #include <memory>
+#include <XStrHelper.h>
 
+#define LOGINSTANCENAME				_T("HWX_DEBUG_MUTEX")
+#define HWFILE_PATH_U					L"c:\\HWLog.log"				
+#define HWFILE_PATH						"c:\\HWLog.log"	
 void WINAPI		ForceMessageBoxA(LPCSTR);
 void WINAPI		ForceMessageBoxW(LPCWSTR);
+void WINAPI		DebugStringW(LPCWSTR);
+void WINAPI		DebugStringA(LPCSTR);
+void WINAPI		DebugStringFileW(LPCWSTR, LPCWSTR);
+void WINAPI		DebugStringFileA(LPCSTR, LPCSTR);
+
+//////////////////////////////////////////////////////////////////////////
+class CLogLock
+{
+public:
+	CLogLock()
+	{ //创建Log互斥变量
+		if (!(m_MutexLog = OpenMutex(MUTEX_ALL_ACCESS, TRUE, LOGINSTANCENAME)))
+		{    
+			VERIFY(m_MutexLog = CreateMutex(NULL, FALSE, LOGINSTANCENAME));
+		} 		
+	}
+	~CLogLock()
+	{
+		if (m_MutexLog)
+		{
+			CloseHandle(m_MutexLog);
+			m_MutexLog = NULL;
+		}  
+	}
+	CLogLock& GetInstance()
+	{
+		static CLogLock tLog;
+		return tLog;
+	}
+	BOOL Lock()
+	{  
+		return WaitForSingleObject(m_MutexLog, INFINITE) == WAIT_OBJECT_0;
+	}
+	BOOL UnLock()
+	{
+		return ::ReleaseMutex(m_MutexLog);
+	}
+protected:
+	HANDLE m_MutexLog;
+};
+///////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 { 	
 	WCHAR szBuffer[MAX_SIZE_L] = {0};
 	LPWSTR pwhBuffer = NULL;	
-/*
 	{
 		WCHAR szThreadID[50] = {0};
-		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("ThreadID %d\n"), GetCurrentThreadId());
-		OutputDebugStringW(szThreadID);
-	}*/
-
+		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("%d\tThreadID %d\n"), GetTickCount(), GetCurrentThreadId());
+		DebugStringW(szThreadID);
+	}
 	LONG nLen = 0;
 	va_list argList;
 	va_start(argList, pwhFormat);
@@ -37,14 +86,14 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 	{
 		pwhBuffer = szBuffer;
 		vswprintf_s(pwhBuffer, MAX_SIZE_L - 1, pwhFormat, argList); 
-		OutputDebugStringW(pwhBuffer);
+		DebugStringW(pwhBuffer);
 	}
 	else
 	{
 		if(pwhBuffer = (LPWSTR)_alloca((nLen + 2) * sizeof(WCHAR)))
 		{
 			vswprintf_s(pwhBuffer, nLen + 1, pwhFormat, argList);
-			OutputDebugStringW(pwhBuffer);
+			DebugStringW(pwhBuffer);
 		}
 	}	
 	va_end(argList);	
@@ -68,14 +117,14 @@ void WINAPI XTraceA(LPCSTR pchFormat, ...)
 	{
 		pchBuffer = szBuffer;
 		vsprintf_s(pchBuffer, MAX_SIZE_L - 1, pchFormat, argList); 
-		OutputDebugStringA(pchBuffer);
+		DebugStringA(pchBuffer);
 	}
 	else
 	{
 		if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
 		{
 			vsprintf_s(pchBuffer, nLen + 1, pchFormat, argList);
-			OutputDebugStringA(pchBuffer);
+			DebugStringA(pchBuffer);
 		}			
 	}	
 	va_end(argList);	
@@ -101,14 +150,14 @@ DLLXEXPORT void WINAPI XTraceExW( BOOL bCondition, LPCWSTR pwhFormat, ... )
 	{
 		pwhBuffer = szBuffer;
 		vswprintf_s(pwhBuffer, MAX_SIZE_L - 1, pwhFormat, argList); 
-		OutputDebugStringW(pwhBuffer);
+		DebugStringW(pwhBuffer);
 	}
 	else
 	{
 		if(pwhBuffer = (LPWSTR)_alloca((nLen + 2) * sizeof(WCHAR)))
 		{
 			vswprintf_s(pwhBuffer, nLen + 1, pwhFormat, argList);
-			OutputDebugStringW(pwhBuffer);
+			DebugStringW(pwhBuffer);
 		}
 	}	
 	va_end(argList);	
@@ -136,14 +185,14 @@ DLLXEXPORT void WINAPI XTraceExA( BOOL bCondition, LPCSTR pchFormat, ... )
 	{
 		pchBuffer = szBuffer;
 		vsprintf_s(pchBuffer, MAX_SIZE_L - 1, pchFormat, argList); 
-		OutputDebugStringA(pchBuffer);
+		DebugStringA(pchBuffer);
 	}
 	else
 	{
 		if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
 		{
 			vsprintf_s(pchBuffer, nLen + 1, pchFormat, argList);
-			OutputDebugStringA(pchBuffer);
+			DebugStringA(pchBuffer);
 		}			
 	}	
 	va_end(argList);	
@@ -222,5 +271,73 @@ void WINAPI ForceMessageBoxW(LPCWSTR pszMsg)
 	WCHAR szTitle[MAX_PATH];
 	GetModuleFileNameW(NULL, szTitle, MAX_PATH - 1);
 	MessageBoxW(GetActiveWindow(), pszMsg, szTitle, MB_OK);
+}
+	
+void WINAPI DebugStringW( LPCWSTR pszDebugInfo)
+{
+	if (!pszDebugInfo)
+	{
+		return;
+	}
+#ifdef HWFORCEFILE
+	{
+		DebugStringFileW(HWFILE_PATH_U, pszDebugInfo);
+	}
+#else
+	{
+		OutputDebugStringW(pszDebugInfo);
+	}
+#endif	
+}
+void WINAPI DebugStringA( LPCSTR pszDebugInfo)
+{
+	if (!pszDebugInfo)
+	{
+		return;
+	}
+#ifdef HWFORCEFILE
+	{
+		DebugStringFileA(HWFILE_PATH, pszDebugInfo);
+	}
+#else
+	{
+		OutputDebugStringA(pszDebugInfo);
+	}
+#endif	
+}
+void WINAPI DebugStringFileW(LPCWSTR pszFile, LPCWSTR pszDebugInfo)
+{
+	if (!pszDebugInfo)
+	{
+		return;
+	}
+	FILE *pFile= NULL;
+	pFile = _wfopen(pszFile, L"a");
+	if (pFile)
+	{
+		LPSTR pszContent = WCharToChar(pszDebugInfo);
+		if (pszContent)
+		{
+			fwrite(pszContent, sizeof(CHAR), strlen(pszContent), pFile);
+			fclose(pFile); 
+			pFile = NULL;
+			SAFE_DELETE_AR(pszContent);
+		}
+	}  
+}
+void WINAPI DebugStringFileA(LPCSTR pszFile, LPCSTR pszDebugInfo)
+{
+	if (!pszDebugInfo)
+	{
+		return;
+	}
+	FILE *pFile= NULL;
+	pFile = fopen(pszFile, "a");
+	if (pFile)
+	{
+		fwrite(pszDebugInfo, sizeof(char), strlen(pszDebugInfo), pFile);
+		fclose(pFile); 
+		pFile = NULL;
+	}  
 }
 

@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "XSystemHelper.h"
 #include "Ext_Type.h"
-
+#include <shlobj.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
