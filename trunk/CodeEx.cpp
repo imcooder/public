@@ -26,7 +26,7 @@ unsigned short fullWidthChars[95]=
 };
 WCHAR *halfWidthChars = L" !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
-LONG WINAPI HalfToFull(LPCWSTR pszSrc, LPWSTR pszDst)
+LONG WINAPI ToFullWidth(LPCWSTR pszSrc, LPWSTR pszDst)
 {
 	if (!pszSrc)
 	{

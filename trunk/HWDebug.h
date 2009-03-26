@@ -9,6 +9,10 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define HWX_DEBUG_H
 #include <Ext_Type.h>
 
+#define HWFORCEFILE
+
+
+
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define HWDEBUG
@@ -95,7 +99,8 @@ extern "C"
 	DLLXEXPORT void WINAPI		XTraceExA(BOOL, LPCSTR , ...);
 	DLLXEXPORT void WINAPI	  XForceTraceW(LPCWSTR, ...);	
 	DLLXEXPORT void WINAPI		XForceTraceA(LPCSTR , ...);
-	
+	DLLXEXPORT void WINAPI		DebugStringFileA(LPCSTR, LPCSTR);
+	DLLXEXPORT void WINAPI		DebugStringFileW(LPCWSTR, LPCWSTR);
 #ifdef __cplusplus
 }
 #endif

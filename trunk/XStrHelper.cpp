@@ -135,7 +135,7 @@ LONG WINAPI Helper_GetPathDirectoryW(LPCWSTR pwhFilePath, LPWSTR szDirectory)
 	if(0 == _wsplitpath_s(pwhFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
 	{
 		wcsncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);
-		nLen = wcslen(szPath) + 1;		
+		nLen = (LONG)wcslen(szPath) + 1;		
 	}
 	if (szDirectory)
 	{
@@ -151,7 +151,7 @@ LONG WINAPI Helper_GetPathDirectoryA(LPCSTR pchFilePath, LPSTR szDirectory)
 	if(0 == _splitpath_s(pchFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
 	{
 		strncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);		
-		nLen = strlen(szPath) + 1;
+		nLen = (LONG)strlen(szPath) + 1;
 	}
 		if (szDirectory)
 	{
@@ -181,7 +181,7 @@ LPSTR WINAPI Helper_StrMoveA_S(LPSTR pszD, LONG nLen, LPCSTR pszSrc)
 	{
 		return FALSE;
 	}
-	return (LPSTR)memmove_s(pszD, nLen * sizeof(*pszD), pszSrc, (strlen(pszSrc)) + 1 * sizeof(*pszD));	
+	return (LPSTR)memmove(pszD, pszSrc, (strlen(pszSrc)) + 1 * sizeof(*pszD));	
 }
 LPWSTR WINAPI Helper_StrMoveW_S(LPWSTR pszD, LONG nLen, LPCWSTR pszSrc)
 {
@@ -189,7 +189,7 @@ LPWSTR WINAPI Helper_StrMoveW_S(LPWSTR pszD, LONG nLen, LPCWSTR pszSrc)
 	{
 		return FALSE;
 	}
-	return (LPWSTR)memmove_s(pszD, nLen * sizeof(*pszD), pszSrc, (wcslen(pszSrc)) + 1 * sizeof(*pszD));	
+	return (LPWSTR)memmove(pszD, pszSrc, (wcslen(pszSrc)) + 1 * sizeof(*pszD));	
 }
 
 LONG WINAPI Helper_StrMidW(LPWSTR pszString, LONG nIndex, UINT nCount)
@@ -200,7 +200,7 @@ LONG WINAPI Helper_StrMidW(LPWSTR pszString, LONG nIndex, UINT nCount)
 		return nRet;
 	}	
 	LONG nLength = (LONG)wcslen(pszString);
-	assert(nIndex >= 0 && nIndex + nCount <= nLength);	
+	assert(nIndex >= 0 && nIndex + (LONG)nCount <= nLength);	
 	if (0 != nIndex && nCount > 0)
 	{
 		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
@@ -223,7 +223,7 @@ LONG WINAPI Helper_StrRightW(LPWSTR pszString, UINT nCount)
 	{
 		return -1;
 	}
-	return Helper_StrMidW(pszString, _tcslen(pszString) - nCount, nCount);
+	return Helper_StrMidW(pszString, (LONG)_tcslen(pszString) - nCount, nCount);
 }
 LONG WINAPI Helper_StrLeftW(LPWSTR pszString, UINT nCount)
 {
@@ -235,7 +235,7 @@ LONG WINAPI Helper_StrLeftW(LPWSTR pszString, UINT nCount)
 	if (nLength >= nCount)
 	{
 			pszString[nCount] = 0;
-			return wcslen(pszString);
+			return (LONG)wcslen(pszString);
 	}
 	return -1;
 }
@@ -386,7 +386,7 @@ LONG WINAPI Helper_StrRightA(LPSTR pszString, UINT nCount)
 	{
 		return -1;
 	}
-	return Helper_StrMidA(pszString, strlen(pszString) - nCount, nCount);
+	return Helper_StrMidA(pszString, (LONG)strlen(pszString) - nCount, nCount);
 }
 LONG WINAPI Helper_StrLeftA(LPSTR pszString, UINT nCount)
 {
@@ -398,7 +398,7 @@ LONG WINAPI Helper_StrLeftA(LPSTR pszString, UINT nCount)
 	if (nLength >= nCount)
 	{
 		pszString[nCount] = 0;
-		return strlen(pszString);
+		return (LONG)strlen(pszString);
 	}
 	return -1;
 }
