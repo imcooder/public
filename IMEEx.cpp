@@ -51,12 +51,12 @@ DWORD WINAPI FindIME(LPCTSTR pszLayoutFile)
 	DWORD		dwKLID = 0;
 	if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE,	_T("System\\CurrentControlSet\\Control\\Keyboard Layouts"), 0,	KEY_READ,	&hKey) != ERROR_SUCCESS )
 	{		
-		TRACE(TEXT("FindIME: RegOpenKeyEx System\\CurrentControlSet\\Control\\Keyboard Layouts Error\n"));
+		HWTRACE(TEXT("FindIME: RegOpenKeyEx System\\CurrentControlSet\\Control\\Keyboard Layouts Error\n"));
 		return dwKLID;
 	}
 	if (!hKey)
 	{
-		TRACE(TEXT("FindIME: !hKey\n"));
+		HWTRACE(TEXT("FindIME: !hKey\n"));
 		return dwKLID;
 	}
 	if(ERROR_SUCCESS != RegQueryInfoKey(hKey, 0, 0, 0, &dwCount, 0, 0, 0, 0, 0, 0, 0))   

@@ -21,5 +21,5 @@ DWORD GetFontCell(HDC);
 
 
 BOOL SetPoint(POINT*, LONG, LONG);
-
+BOOL IsPointNull(const POINT*);
 #endif //HWX_HDC_H
