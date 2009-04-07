@@ -11,5 +11,5 @@
 #include <windef.h>
 
 BOOL WINAPI IsRectNULL(const RECT *);
-
+BOOL WINAPI MoveRectTo(LPRECT, int, int);
 #endif //HWX_RECT_H

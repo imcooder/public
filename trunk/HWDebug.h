@@ -9,7 +9,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define HWX_DEBUG_H
 #include <Ext_Type.h>
 
-#define HWFORCEFILE
+//#define HWFORCEFILE
 
 
 

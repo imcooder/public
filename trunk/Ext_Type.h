@@ -299,10 +299,23 @@ typedef enum
 
 #ifndef MAKEWORD
 #define MAKEWORD(a, b)      ((WORD)(((BYTE)((DWORD)(a) & 0xff))   | ((WORD)((BYTE)((DWORD)(b) & 0xff))) << 8))
+#endif
+#ifndef MAKEDWORD
+#define MAKEDWORD						MAKELONG
+#endif
+#ifndef MAKELONG
 #define MAKELONG(a, b)      ((LONG)(((WORD)((DWORD)(a) & 0xffff)) | ((DWORD)((WORD)((DWORD)(b) & 0xffff))) << 16))
+#endif
+#ifndef LOWORD
 #define LOWORD(l)           ((WORD)((DWORD)(l) & 0xffff))
+#endif
+#ifndef HIWORD
 #define HIWORD(l)           ((WORD)((DWORD)(l) >> 16))
+#endif
+#ifndef LOBYTE
 #define LOBYTE(w)           ((BYTE)((DWORD)(w) & 0xff))
+#endif
+#ifndef HIBYTE
 #define HIBYTE(w)           ((BYTE)((DWORD_PTR)(w) >> 8))
 #endif
 //±Ê»­½áÊø±ê¼Ç

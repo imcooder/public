@@ -122,3 +122,8 @@ BOOL WINAPI Asci_IsBelongTo( WCHAR wChr, LPCWSTR pszCharSet)
 	}
 	return TRUE;
 }
+
+BOOL WINAPI Asci_IsSpace( LONG ch )
+{
+	return ch == TEXT(' ');
+}

@@ -68,11 +68,15 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 { 	
 	WCHAR szBuffer[MAX_SIZE_L] = {0};
 	LPWSTR pwhBuffer = NULL;	
+/*
 	{
-		WCHAR szThreadID[50] = {0};
-		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("%d\tThreadID %d\n"), GetTickCount(), GetCurrentThreadId());
+		WCHAR szThreadID[MAX_PATH + MAX_NAME] = {0};
+		WCHAR szMuduleName[MAX_NAME] = {0};
+		GetModuleFileName(NULL, szMuduleName, MAX_NAME);
+		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("%d\tPID:%d TID:%d Name:%s\n"), GetTickCount(), GetCurrentProcessId(), GetCurrentThreadId(), szMuduleName);
 		DebugStringW(szThreadID);
-	}
+	}*/
+
 	LONG nLen = 0;
 	va_list argList;
 	va_start(argList, pwhFormat);

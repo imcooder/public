@@ -3,6 +3,8 @@
 #include "XSystemHelper.h"
 #include "Ext_Type.h"
 #include <shlobj.h>
+#include "HWDebug.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -158,7 +160,7 @@ CXTPMultiMonitor::CXTPMultiMonitor()
 	m_modUser32.Init(TEXT("User32.dll"));
 	if (!m_modUser32)
 	{
-		TRACE(_T("WARNING: Could not locate User32.dll.\n"));
+		HWTRACE(_T("WARNING: Could not locate User32.dll.\n"));
 	}
 
 	if (!m_modUser32 ||
@@ -476,7 +478,7 @@ BOOL CXModule::LoadLibrary( LPCTSTR pszPath)
 	}
 	else
 	{		
-		TRACE(TEXT("LoadLibrary %s failed\n"), pszPath);
+		HWTRACE(TEXT("LoadLibrary %s failed\n"), pszPath);
 	}	
 	return blReturn;
 }

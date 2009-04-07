@@ -85,3 +85,12 @@ BOOL SetPoint( POINT* ptPoint, LONG x, LONG y)
 	ptPoint->y = y;
 	return TRUE;
 }
+
+BOOL IsPointNull( const POINT* ptPoint)
+{
+	if (!ptPoint)
+	{
+		return FALSE;
+	}
+	return !ptPoint->x && !ptPoint->y;
+}
