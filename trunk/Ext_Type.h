@@ -249,6 +249,10 @@ typedef enum
 #ifndef MAKELRESULT
 #define MAKELRESULT(l, h)     ((LRESULT)(DWORD)MAKELONG((l), (h)))
 #endif
+
+#ifndef MAKEDWORD
+#define MAKEDWORD							MAKELONG
+#endif
 // Language ID
 #ifndef MAKELANGID
 #define MAKELANGID(p, s)       ((((WORD  )(s)) << 10) | (WORD  )(p))
