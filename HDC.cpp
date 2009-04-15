@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "HDC.h"
-
+#include "Rect.h"
 BOOL FillSolidRect(HDC hDC, const RECT* pRC, COLORREF crColor)
 {
 	HBRUSH hBrush = NULL, hOldBrush = NULL;
@@ -93,4 +93,63 @@ BOOL IsPointNull( const POINT* ptPoint)
 		return FALSE;
 	}
 	return !ptPoint->x && !ptPoint->y;
+}
+
+COLORREF DarkenColor(COLORREF crColor, double dFactor)
+{
+	if (dFactor > 0.0 && dFactor <= 1.0)
+	{
+		BYTE red,green,blue,lightred,lightgreen,lightblue;
+		red = GetRValue(crColor);
+		green = GetGValue(crColor);
+		blue = GetBValue(crColor);
+		lightred = (BYTE)(red - (dFactor * red));
+		lightgreen = (BYTE)(green - (dFactor * green));
+		lightblue = (BYTE)(blue - (dFactor * blue));
+		crColor = RGB(lightred, lightgreen, lightblue);
+	} 
+	return crColor;
+}
+
+BOOL WINAPI HDCDarker(HDC hDC, const LPRECT pRect, double dFactor)
+{
+	ASSERT(pRect);
+	if (!pRect)
+	{
+		return FALSE;
+	}	
+	COLORREF	crPixel = 0;
+	RECT rtArea = *pRect;	
+	NormalizeRect(&rtArea);
+	for (DWORD dwLoopX = rtArea.left; dwLoopX <= rtArea.right; dwLoopX ++)
+	{
+		for (DWORD dwLoopY = rtArea.top; dwLoopY <= rtArea.bottom; dwLoopY ++)
+		{
+			crPixel = ::GetPixel(hDC, dwLoopX, dwLoopY);
+			::SetPixel(hDC, dwLoopX, dwLoopY, DarkenColor(crPixel, dFactor));			
+		} 
+	} 
+	return TRUE;
+} 
+
+BOOL WINAPI HDCGray( HDC hDC, const LPRECT pRect)
+{
+	ASSERT(pRect);
+	if (!pRect)
+	{
+		return FALSE;
+	}	
+	COLORREF	crPixel = 0, crNew = 0;
+	RECT rtArea = *pRect;	
+	NormalizeRect(&rtArea);
+	for (DWORD dwLoopX = rtArea.left;  dwLoopX <= rtArea.right; dwLoopX ++)
+	{
+		for (DWORD dwLoopY = rtArea.top; dwLoopY <= rtArea.bottom; dwLoopY ++)
+		{
+			crPixel = ::GetPixel(hDC, dwLoopX, dwLoopY);
+			crNew = (BYTE)((GetRValue(crPixel) * 0.299) + (GetGValue(crPixel) * 0.587) + (GetBValue(crPixel) * 0.114));
+			::SetPixel(hDC, dwLoopX, dwLoopY, crNew);			
+		} 
+	} 
+	return TRUE;
 }

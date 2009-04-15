@@ -22,4 +22,6 @@ DWORD GetFontCell(HDC);
 
 BOOL SetPoint(POINT*, LONG, LONG);
 BOOL IsPointNull(const POINT*);
+BOOL WINAPI HDCDarker(HDC, const LPRECT, double );
+BOOL WINAPI HDCGray(HDC, const LPRECT);
 #endif //HWX_HDC_H
