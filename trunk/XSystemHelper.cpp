@@ -464,7 +464,7 @@ CXModule::CXModule()
 }
 CXModule::~CXModule()
 {
-	SAFE_FREE_LIBRARY(m_hModule);
+	FreeLibrary();
 }
 
 BOOL CXModule::LoadLibrary( LPCTSTR pszPath)
