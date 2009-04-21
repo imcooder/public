@@ -111,7 +111,7 @@ COLORREF DarkenColor(COLORREF crColor, double dFactor)
 	return crColor;
 }
 
-BOOL WINAPI HDCDarker(HDC hDC, const LPRECT pRect, double dFactor)
+BOOL WINAPI HDCDarker(HDC hDC, const LPRECT pRect, double dFactor, COLORREF crTransparent)
 {
 	ASSERT(pRect);
 	if (!pRect)
@@ -126,7 +126,10 @@ BOOL WINAPI HDCDarker(HDC hDC, const LPRECT pRect, double dFactor)
 		for (DWORD dwLoopY = rtArea.top; dwLoopY <= rtArea.bottom; dwLoopY ++)
 		{
 			crPixel = ::GetPixel(hDC, dwLoopX, dwLoopY);
-			::SetPixel(hDC, dwLoopX, dwLoopY, DarkenColor(crPixel, dFactor));			
+			if (crPixel != crTransparent)
+			{
+				::SetPixel(hDC, dwLoopX, dwLoopY, DarkenColor(crPixel, dFactor));		
+			}				
 		} 
 	} 
 	return TRUE;
