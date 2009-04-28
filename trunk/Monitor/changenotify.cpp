@@ -19,7 +19,8 @@ CChangeMonitor::~CChangeMonitor( void )
 BOOL CChangeMonitor::StartMoniter( DWORD dwMonId, HWND hWnd ) 
 { 
 	// 判断是否已经启动监视 
-	if (!m_hThread) 
+	//HWTRACE(TEXT("StartMoniter Begin")); 
+	if (m_hThread) 
 	{ 
 		SetLastError( ERROR_NOTIFY_ALREADY_START ); 
 		HWTRACE(TEXT("LastError:%d"), GetLastError()); 
@@ -37,12 +38,14 @@ BOOL CChangeMonitor::StartMoniter( DWORD dwMonId, HWND hWnd )
 	// 创建监视线程 
 	m_hThread = CreateThread(NULL, 0, ChangeMonitorThread, (LPVOID)this, CREATE_SUSPENDED, &m_dwThreadId ); 
 	ASSERT(m_hThread); 
+	//HWTRACE(TEXT("StartMoniter End")); 
 	return TRUE; 
 } 
 
 void CChangeMonitor::EndMoniter( void ) 
 { 
 	// 判断线程是否存在 
+	HWTRACE(TEXT("EndMoniter Begin")); 
 	if ( m_hThread ) 
 	{ 
 		// 判断线程是否结束 
@@ -71,6 +74,7 @@ void CChangeMonitor::EndMoniter( void )
 		SAFE_CLOSE_HANDLE(m_hThread);
 		m_dwThreadId = 0; 
 	} 
+	HWTRACE(TEXT("EndMoniter Begin")); 
 	m_hWnd = NULL; // 通知窗体置零 
 } 
 
@@ -95,6 +99,7 @@ void CChangeMonitor::Resume( void )
 void CChangeMonitor::SendNotify( UINT nMsg ) 
 { 
 	// 检查通知窗体句柄是否存在 
+	HWTRACE(TEXT("SendNotify:%d"), GetLastError()); 
 	ASSERT(m_hWnd); 
 	if (!m_hWnd)
 	{
@@ -105,6 +110,7 @@ void CChangeMonitor::SendNotify( UINT nMsg )
 	{ 
 		HWTRACE(TEXT("LastError:%d"), GetLastError()); 
 	} 
+	HWTRACE(TEXT("SendNotify 1:%d"), GetLastError()); 
 } 
 
 DWORD CALLBACK ChangeMonitorThread( LPVOID pParam ) 
@@ -129,9 +135,9 @@ DWORD CALLBACK ChangeMonitorThread( LPVOID pParam )
 		case WAIT_OBJECT_0: // 通知已接收 
 			{
 				// 向接收者发送通知消息 
-			pChaMon->SendNotify( WM_MONITER_CHANGED ); 
-			// 继续下一次等待 
-			pChaMon->CallNextMoniter(); 
+				pChaMon->SendNotify( WM_MONITER_CHANGED ); 
+				// 继续下一次等待 
+				pChaMon->CallNextMoniter(); 
 			}
 			break; 
 		case WAIT_TIMEOUT: 
@@ -229,28 +235,28 @@ CRegistryMonitor::~CRegistryMonitor( void )
 BOOL CRegistryMonitor::StartMoniter( DWORD dwMonId, HWND hWnd, HKEY hRoot, 
 																		LPCTSTR lpSubKey, DWORD dwFilter ) 
 { 
-	// 调用父类同名函数 
+	// 打开注册表键
+	LONG lr = RegOpenKeyEx( hRoot, lpSubKey, 0, KEY_NOTIFY, &m_hKey ); 
+	if ( ERROR_SUCCESS != lr ) 
+	{ 		
+		HWTRACE(TEXT("LastError:%d"), GetLastError()); 
+		return FALSE; 
+	} 
+	// 调用父类同名函数 	
 	if ( ! __super::StartMoniter( dwMonId, hWnd ) ) 
 	{ 
 		return FALSE; 
 	} 
 	// 成员数据赋值 
 	m_dwFilter = dwFilter; 
-	// 打开注册表键 
-	LONG lr; 
-	lr = RegOpenKeyEx( hRoot, lpSubKey, 0, KEY_NOTIFY, &m_hKey ); 
-	if ( ERROR_SUCCESS != lr ) 
-	{ 
-		HWTRACE(TEXT("LastError:%d"), GetLastError()); 
-		return FALSE; 
-	} 
-	// 创建通知事件句柄 
+	 	
+	// 创建通知事件句柄 	
 	m_hNotify = CreateEvent( NULL, FALSE, FALSE, NULL ); 
 	ASSERT( NULL != m_hNotify ); 
 	// 开始监视 
 	CallNextMoniter(); 
 	// 启动监视线程 
-	VERIFY( ResumeThread(m_hThread)); 
+	VERIFY( ResumeThread(m_hThread)); 	
 	return TRUE; 
 } 
 

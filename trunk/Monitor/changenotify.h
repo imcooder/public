@@ -31,9 +31,8 @@ protected:
 	DWORD m_dwMonId; 
 	HANDLE m_hThread; 
 	HWND m_hWnd; 
-	DWORD m_dwThreadId; 
-
-	friend DWORD CALLBACK ChangeMonitorThread( LPVOID pParam ); 
+	DWORD m_dwThreadId;
+	friend DWORD CALLBACK ChangeMonitorThread(LPVOID pParam); 
 }; 
 
 
