@@ -206,7 +206,7 @@ LONG WINAPI Helper_StrMidW(LPWSTR pszString, LONG nIndex, UINT nCount)
 		pszString[nCount] = 0;  
 #if defined(_DEBUG) || defined(DEBUG)
 		{
-			if (nIndex + nCount < nLength)
+			if (nIndex + (LONG)nCount < nLength)
 			{
 				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
 			}
@@ -231,7 +231,7 @@ LONG WINAPI Helper_StrLeftW(LPWSTR pszString, UINT nCount)
 		return -1;
 	}
 	LONG nLength = (LONG)wcslen(pszString);
-	if (nLength >= nCount)
+	if (nLength >= (LONG)nCount)
 	{
 			pszString[nCount] = 0;
 			return (LONG)wcslen(pszString);
@@ -362,14 +362,14 @@ LONG WINAPI Helper_StrMidA(LPSTR pszString, LONG nIndex, UINT nCount)
 		return nRet;
 	}	
 	LONG nLength = (LONG)strlen(pszString);
-	assert(nIndex >= 0 && nIndex + nCount <= nLength);	
+	assert(nIndex >= 0 && nIndex + (LONG)nCount <= nLength);	
 	if (0 != nIndex && nCount > 0)
 	{
 		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
 		pszString[nCount] = 0;  
 #if defined(_DEBUG) || defined(DEBUG)
 		{
-			if (nIndex + nCount < nLength)
+			if (nIndex + nCount < (LONG)nLength)
 			{
 				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
 			}
@@ -394,7 +394,7 @@ LONG WINAPI Helper_StrLeftA(LPSTR pszString, UINT nCount)
 		return -1;
 	}
 	LONG nLength = (LONG)strlen(pszString);
-	if (nLength >= nCount)
+	if (nLength >= (LONG)nCount)
 	{
 		pszString[nCount] = 0;
 		return (LONG)strlen(pszString);

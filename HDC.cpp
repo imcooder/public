@@ -121,9 +121,9 @@ BOOL WINAPI HDCDarker(HDC hDC, const LPRECT pRect, double dFactor, COLORREF crTr
 	COLORREF	crPixel = 0;
 	RECT rtArea = *pRect;	
 	NormalizeRect(&rtArea);
-	for (DWORD dwLoopX = rtArea.left; dwLoopX <= rtArea.right; dwLoopX ++)
+	for (DWORD dwLoopX = (DWORD)rtArea.left; dwLoopX <= (DWORD)rtArea.right; dwLoopX ++)
 	{
-		for (DWORD dwLoopY = rtArea.top; dwLoopY <= rtArea.bottom; dwLoopY ++)
+		for (DWORD dwLoopY = (DWORD)rtArea.top; dwLoopY <= (DWORD)rtArea.bottom; dwLoopY ++)
 		{
 			crPixel = ::GetPixel(hDC, dwLoopX, dwLoopY);
 			if (crPixel != crTransparent)
