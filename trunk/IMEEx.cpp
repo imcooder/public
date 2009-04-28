@@ -43,10 +43,9 @@ DWORD WINAPI FindIME(LPCTSTR pszLayoutFile)
 {   
 	DWORD   dwCount = 0;   
 	TCHAR		szSubkeyName[MAX_SIZE_M];   
-	HKEY		hKeySub; 
-	HKEY		hKey = NULL;
-	HKEY		hChildKey;
-	DWORD		dwDisposition;
+	HKEY		hKeySub = NULL; 
+	HKEY		hKey = NULL;	
+	DWORD		dwDisposition = 0;
 	TCHAR		szLayoutFile[MAX_NAME] = {0};
 	DWORD		dwKLID = 0;
 	if ( RegOpenKeyEx(HKEY_LOCAL_MACHINE,	_T("System\\CurrentControlSet\\Control\\Keyboard Layouts"), 0,	KEY_READ,	&hKey) != ERROR_SUCCESS )
