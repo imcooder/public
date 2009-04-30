@@ -32,9 +32,11 @@
 #endif
 
 
+/*
 #ifdef __cplusplus
 extern "C"{
-#endif
+#endif*/
+
 	//////////////////////////////////////////////////////////////////////////
 	// >= 0 :file size
 	// -1   :	Not enough memory
@@ -71,8 +73,10 @@ extern "C"{
 	DLLXEXPORT  BOOL    WINAPI    XRemoveFileA(LPCSTR );
 	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryW(LPCWSTR , BOOL blDelAll);
 	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryA(LPCSTR , BOOL blDelAll);
+/*
 #ifdef __cplusplus
 }
-#endif
+#endif*/
+
 
 #endif//HWX_FILEEX_H

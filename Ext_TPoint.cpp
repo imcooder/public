@@ -150,10 +150,12 @@ CTPoint::operator const CPoint()
 {
   return CPoint(x, y);
 }
+/*
 CTPoint::operator const Point_T()
 {
   return Point_T::createPoint(x, y);
-}
+}*/
+
 #ifdef _GDIPLUS_H
   CTPoint::operator const Gdiplus::Point() const
   {
