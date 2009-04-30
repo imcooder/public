@@ -292,13 +292,17 @@ typedef enum
 #endif
 
 #ifndef MAX_SIZE_S
+#define MAX_SIZE_SSSS					(32)
 #define MAX_SIZE_SSS					(64)	
 #define MAX_SIZE_SS						(128)	
 #define MAX_SIZE_S						(256)	
 #define MAX_SIZE_M						(512)	
 #define MAX_SIZE_L						(1024)
+#define MAX_SIZE_LM						(1024 + 512)
 #define MAX_SIZE_LL						(2048)
+#define MAX_SIZE_LLM					(2048 + 1024)
 #define MAX_SIZE_LLL					(4096)
+#define MAX_SIZE_LLLL					(8192)
 #endif
 
 #ifndef MAKEWORD

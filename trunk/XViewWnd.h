@@ -8,8 +8,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #pragma once
 
 #include "stdafx.h"
+#include "HWXString.h"
 
-class DLLXEXPORT CXViewWnd : public CScrollView
+class CXViewWnd : public CScrollView
 {  
   DECLARE_DYNCREATE(CXViewWnd)
 public: 

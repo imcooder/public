@@ -10,7 +10,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include <vector>
 #include <algorithm>
 using namespace std;
-using namespace Gdiplus;
+//using namespace Gdiplus;
 #ifdef _DEBUG
 #undef THIS_FILE
 static char BASED_CODE THIS_FILE[] = __FILE__;
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CXViewWnd, CScrollView)
 	ON_WM_SETFOCUS()	
 	ON_WM_DESTROY()
 	ON_WM_CREATE() 
-	ON_WM_CONTEXTMENU()
+	ON_WM_CONTEXTMENU()	
 	//}}AFX_MSG_MAP
 	// Standard printing commands
 	ON_COMMAND(ID_FILE_PRINT, OnFilePrint)

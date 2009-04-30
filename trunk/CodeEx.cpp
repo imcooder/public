@@ -61,6 +61,7 @@ LONG WINAPI PunEnToCn(LPCWSTR lpszInput, LPWSTR lpszOutput)
 {
 	static BOOL blSingleQuotBegin = TRUE; 
 	static BOOL blDoubleQuotBegin = TRUE; 
+	static BOOL blZhongKuohaoBegin = TRUE;
 	if (!lpszInput || !lpszOutput)
 	{
 		return 0;
@@ -71,66 +72,189 @@ LONG WINAPI PunEnToCn(LPCWSTR lpszInput, LPWSTR lpszOutput)
 		return 0;
 	}
 	LONG nIndex = 0;
+	LONG nOutIndex = 0;
+	HWTRACE(TEXT("lpszInput : %s\n"), lpszOutput);
 	for (nIndex = 0; nIndex < nLen; nIndex ++)
-	{
-		lpszOutput[nIndex] = lpszInput[nIndex];
-		if (Asci_IsPunctuation(lpszOutput[nIndex]))
+	{		
+		if (Asci_IsPunctuation(lpszInput[nIndex]))
 		{
-			lpszOutput[nIndex] = Asci_HalfToFull(lpszOutput[nIndex]);
-			switch(lpszOutput[nIndex])
+			TCHAR chFull = Asci_HalfToFull(lpszInput[nIndex]);
+			switch(chFull)
 			{
 			case 0XFF04:    /* ¡ç->£¤ */
-				lpszOutput[nIndex] = TEXT('£¤');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('£¤');
+					}
+					nOutIndex ++; 
+				}
 				break;
 			case 0XFF0E:    /* £®-> ¡£*/
-				lpszOutput[nIndex] = TEXT('¡£');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('¡£');
+					}		
+					nOutIndex ++;
+				}
 				break;
 			case 0XFF1C:    /* £¼->¡¶ */
-				lpszOutput[nIndex] = TEXT('¡¶');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('¡¶');
+					}
+					nOutIndex ++;
+				}
 				break;
 			case 0XFF1E:    /* £¾->¡· */
-				lpszOutput[nIndex] = TEXT('¡·');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('¡·');
+					}
+					nOutIndex ++;
+				}
+				break;	
+			case 0XFF3B:		// [  ¡¾
+				{					
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = 0x3010;
+					}						
+					nOutIndex ++;				
+				}
 				break;
 			case 0XFF3C:    /* £Ü->¡¢ */
-				lpszOutput[nIndex] = TEXT('¡¢');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('¡¢');
+					}		
+					nOutIndex ++;
+				}
+				break;
+			case 0xFF3D:		// ]  
+				{			
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = 0x3011;
+					}						
+					nOutIndex ++;
+				}
 				break;
 			case 0XFF3E:    /* £Þ-> ¡­¡­ */
-				lpszOutput[nIndex] = TEXT('¡­¡­');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] =  0X2026;
+						lpszOutput[nOutIndex + 1] =  0X2026;
+					}			
+					nOutIndex += 2;
+				}
 				break;
 			case 0XFF3F:    /* £ß->¡ª¡ª */
-				lpszOutput[nIndex] = TEXT('¡ª¡ª');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = 0X2014;
+						lpszOutput[nOutIndex + 1] = 0X2014;
+					}
+					nOutIndex += 2;
+				}
 				break;
 			case 0XFF07:    /* £§-> ¡®¡¯*/
-				if (blSingleQuotBegin)
 				{
-					lpszOutput[nIndex] = TEXT('¡®');
+					if (blSingleQuotBegin)
+					{
+						if (lpszOutput)
+						{
+							lpszOutput[nOutIndex] = 0x2018;
+						}
+						nOutIndex ++;
+					}
+					else
+					{
+						if (lpszOutput)
+						{
+							lpszOutput[nOutIndex] = 0x2019;
+						}		
+						nOutIndex ++;
+					}
+					blSingleQuotBegin = !blSingleQuotBegin;
 				}
-				else
-				{
-					lpszOutput[nIndex] = TEXT('¡¯');
-				}
-				blSingleQuotBegin = !blSingleQuotBegin;
 				break;
 			case 0XFF02:
-				if (blDoubleQuotBegin)
 				{
-					lpszOutput[nIndex] = TEXT('¡°');
+					if (blDoubleQuotBegin)
+					{
+						if (lpszOutput)
+						{
+							lpszOutput[nOutIndex] = TEXT('¡°');							
+						}		
+						nOutIndex ++;
+					}
+					else
+					{
+						if (lpszOutput)
+						{
+							lpszOutput[nOutIndex] = TEXT('¡±');
+						}		
+						nOutIndex ++;
+					}
+					blDoubleQuotBegin = !blDoubleQuotBegin;
 				}
-				else
-				{
-					lpszOutput[nIndex] = TEXT('¡±');
-				}
-				blDoubleQuotBegin = !blDoubleQuotBegin;
 				break;
 			case 0XFF40:    /* £à -> */
-				lpszOutput[nIndex] = TEXT('¡¤');
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = TEXT('¡¤');
+					}		
+					nOutIndex ++;
+				}
+				break;
+			case 0XFF5B:		// { ¡º
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = 0x300E;
+					}		
+					nOutIndex ++;
+				}
+				break;
+			case 0xFF5D:		// }  ¡»
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = 0x300F;
+					}		
+					nOutIndex ++;
+				}
 				break;
 			default:
+				{
+					if (lpszOutput)
+					{
+						lpszOutput[nOutIndex] = chFull;
+					}
+					nOutIndex ++;
+				}
 				break;
 			}
 		}
+		else
+		{
+			if (lpszOutput)
+			{
+				lpszOutput[nOutIndex] = lpszInput[nIndex];
+			}
+			nOutIndex ++;
+		}
 	}
-	return nIndex;
+	HWTRACE(TEXT("lpszInput : %s  %s\n"), lpszInput, lpszOutput);
+	return nOutIndex;
 }
 ///////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

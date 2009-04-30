@@ -20,7 +20,7 @@ public:
   CTPoint(const POINT&);
   CTPoint(const CPoint &);
   CTPoint(const CTPoint &);
-  ~CTPoint();
+  virtual ~CTPoint();
   
   BOOL operator==(const CTPoint &) const;
   BOOL operator==(const POINT &) const;
