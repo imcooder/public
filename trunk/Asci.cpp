@@ -87,7 +87,7 @@ BOOL WINAPI Asci_IsPunctuation( LONG ch )
 {
 	if (ch < 0x7F)
 	{
-		if (!Asci_IsAlpha(ch) && !Asci_IsDigit(ch))
+		if (ch != TEXT('\t') && !Asci_IsAlpha(ch) && !Asci_IsDigit(ch))
 		{
 			return 1;
 		}
@@ -98,14 +98,27 @@ BOOL WINAPI Asci_IsPunctuation( LONG ch )
 WCHAR WINAPI Asci_HalfToFull( WCHAR wCharInput)
 {	
 	WCHAR wChar = wCharInput;
-	if (wCharInput == TEXT(' '))
+	switch(wChar)
 	{
-		wChar = 0x3000;			
-	}
-	else if (wCharInput <= 0x7F)
-	{
-		wChar = wCharInput + 0xFEE0;
-	}			
+	case TEXT(' '):
+		{
+			wChar = 0x3000;	
+		}
+		break;
+	case TEXT('\t'):
+		{
+			wChar = TEXT('\t');
+		}
+		break;
+	default:
+		{
+			if (wChar <= 0x7F)
+			{
+				wChar = wChar + 0xFEE0;
+			}			
+		}
+		break;
+	}		
 	return wChar;
 }
 

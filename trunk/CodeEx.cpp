@@ -329,7 +329,7 @@ LONG WINAPI TCToSC(LPCWSTR pszTC, LPWSTR pszSC)
 		WCHAR whChr = MapTCToSC(pszTC[nIndex]);
 		if (pszSC)
 		{
-			if (!pszSC[nIndex]) 
+			if (!whChr) 
 			{
 				pszSC[nIndex] = pszTC[nIndex]; 
 			}
@@ -354,7 +354,7 @@ LONG WINAPI SCToTC(LPCWSTR pszSC, LPWSTR pszTC)
 		WCHAR whChr = MapSCToTC(pszSC[nIndex]);
 		if (pszTC)
 		{
-			if (!pszTC[nIndex]) 
+			if (!whChr) 
 			{
 				pszTC[nIndex] = pszSC[nIndex]; 
 			}

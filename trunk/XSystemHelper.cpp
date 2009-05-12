@@ -750,3 +750,72 @@ LONG Helper_GetProcessIntegrityLevel(DWORD dwProcessId)
 	return dwIL;
 }
 
+
+PSID name_to_PSID(LPCTSTR pszFileName)
+{
+	SID_NAME_USE snu;
+	TCHAR	szDomainName[512] = {0};
+	DWORD	dwSidLen, dwNameLen;
+	PSID  *pSid = NULL;
+	dwSidLen = 512;
+	pSid = (PSID*)calloc(1, dwSidLen);
+	dwNameLen = sizeof(szDomainName);
+	if ( !LookupAccountName(NULL, pszFileName, pSid, &dwSidLen, szDomainName, &dwNameLen, &snu) ) 
+	{
+		free(pSid);
+		return	NULL;
+	}
+	return	pSid;
+}
+
+PACL	GenerateACL()
+{
+	PACL	pAcl = NULL;
+	DWORD	szAcl = 0;
+	PSID	sids[2];
+	DWORD	AceMask;
+
+	sids[0] = name_to_PSID(TEXT("everyone"));
+	sids[1] = name_to_PSID(TEXT("administrators"));
+	szAcl = sizeof(ACL) + ((sizeof(ACCESS_ALLOWED_ACE)-sizeof(DWORD))*sizeof(sids)/sizeof(PSID)) + GetLengthSid(sids[0]) + GetLengthSid(sids[1]);
+	pAcl = (PACL) LocalAlloc(LPTR, szAcl);
+	if ( !InitializeAcl(pAcl, szAcl, ACL_REVISION) ) 
+	{
+		LocalFree(pAcl);
+		return	NULL;
+	}
+	AceMask = (1<<30) | (1<<31);
+	if ( !AddAccessAllowedAce(pAcl, ACL_REVISION, AceMask, sids[0]) ) 
+	{
+		LocalFree(pAcl);
+		return	NULL;
+	}
+	AceMask = (1<<28);
+	if ( !AddAccessAllowedAce(pAcl, ACL_REVISION, AceMask, sids[1]) ) 
+	{
+		LocalFree(pAcl);
+		return	NULL;
+	}
+	return	pAcl;
+};
+
+int AddAccessUser(LPTSTR pszFileName)
+{
+	if (!pszFileName)
+	{
+		return -1;
+	}
+	int	retval = 1;
+	PACL myacl = GenerateACL();
+
+	if ( ERROR_SUCCESS!=SetNamedSecurityInfo(pszFileName, SE_FILE_OBJECT, 	DACL_SECURITY_INFORMATION, 	NULL, NULL, myacl, NULL) ) 
+	{
+		retval = 0;
+	}
+
+	if ( NULL!=myacl ) 
+	{
+		LocalFree(myacl);
+	}
+	return retval;
+}
