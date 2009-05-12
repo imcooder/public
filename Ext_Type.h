@@ -254,6 +254,7 @@ typedef enum
 #define MAKEDWORD							MAKELONG
 #endif
 // Language ID
+typedef WORD   LANGID;
 #ifndef MAKELANGID
 #define MAKELANGID(p, s)       ((((WORD  )(s)) << 10) | (WORD  )(p))
 #endif
