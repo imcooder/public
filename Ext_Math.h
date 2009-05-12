@@ -10,7 +10,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define _HWXUE_Ext_Math_INC
 #include "Ext_Type.h"
 //求点到线段的最短距离 及最短距离点
-LONG Mth_GetMinDist(const HWPoint &tPtA, const HWPoint &tPtB, const HWPoint &tPtC, HWPoint &tNearestPt);
+//LONG Mth_GetMinDist(const HWPoint &tPtA, const HWPoint &tPtB, const HWPoint &tPtC, HWPoint &tNearestPt);
 LONG DivRound(long x, long div);
 LONG MulDivRound(long x, long mul, long div);
 
