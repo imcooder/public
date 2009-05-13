@@ -10,6 +10,7 @@ extern "C"{
 	BOOL WINAPI IsVKeyNumPad(LONG);	
 	BOOL WINAPI IsVKeyNum( LONG);	
 	BOOL WINAPI IsVKeyF(LONG);
+	BOOL WINAPI IsVKeySys(LONG);
 #ifdef __cplusplus
 }
 #endif
