@@ -402,61 +402,61 @@ typedef struct tagCnd8
 
 #undef SAFE_DELETE_HMENU
 #define SAFE_DELETE_HMENU(hMenu) \
-	if(hMenu) \
+	if((hMenu)) \
 { \
-	::DestroyMenu(hMenu); \
-	hMenu = NULL; \
+	::DestroyMenu((hMenu)); \
+	(hMenu) = NULL; \
 }
 
 //#define SAFE_DELETE_OBJECT(obj)
 #undef SAFE_DELETE_OBJECT
 #define SAFE_DELETE_OBJECT(hObj) \
-	if (hObj) \
+	if ((hObj)) \
 {\
-	::DeleteObject(hObj);\
-	hObj = NULL;\
+	::DeleteObject((hObj));\
+	(hObj) = NULL;\
 }
 
 #undef SAFE_FREE_LIBRARY
 #define SAFE_FREE_LIBRARY(hModel) \
-	if (hModel)\
+	if ((hModel))\
 {\
-	::FreeLibrary(hModel);\
-	hModel = NULL;\
+	::FreeLibrary((hModel));\
+	(hModel) = NULL;\
 }
 
 #undef SAFE_CLOSE_HANDLE
 #define SAFE_CLOSE_HANDLE(hHandle) \
-	if (hHandle)\
+	if ((hHandle))\
 {\
-	::CloseHandle(hHandle);\
-	hHandle = NULL;\
+	::CloseHandle((hHandle));\
+	(hHandle) = NULL;\
 } 
 
 
 #undef SAFE_DESTROY_WINDOW
 #define SAFE_DESTROY_WINDOW(hWindow) \
-	if (::IsWindow(hWindow))\
+	if (::IsWindow((hWindow)))\
 {\
-	::DestroyWindow(hWindow);\
-	hWindow = NULL;\
+	::DestroyWindow((hWindow));\
+	(hWindow) = NULL;\
 } 
 
 
 #undef SAFE_DELETE_DC
 #define SAFE_DELETE_DC(hDC) \
-	if (hDC)\
+	if ((hDC))\
 {\
-	::DeleteDC(hDC);\
-	hDC = NULL;\
+	::DeleteDC((hDC));\
+	(hDC) = NULL;\
 } 
 
 #undef SAFE_REG_CLOSEKEY
 #define SAFE_REG_CLOSEKEY(hKey) \
-	if (hKey)\
+	if ((hKey))\
 {\
-	::RegCloseKey(hKey);\
-	hKey = NULL;\
+	::RegCloseKey((hKey));\
+	(hKey) = NULL;\
 } 
 
 //////////////////////////////////////////////////////////////////////////
