@@ -457,44 +457,6 @@ void CXTPLockGuard::UnLockThread()
 
 //////////////////////////////////////////////////////////////////////////
 
-CXModule::CXModule()
-: m_hModule(NULL)
-{		
-	m_szModuleFilePath[0] = 0;
-}
-CXModule::~CXModule()
-{
-	FreeLibrary();
-}
-
-BOOL CXModule::LoadLibrary( LPCTSTR pszPath)
-{
-	BOOL blReturn = FALSE;
-	FreeLibrary();
-	if (m_hModule = ::LoadLibrary(pszPath))
-	{		
-		_tcscpy_s(m_szModuleFilePath, MAX_PATH, pszPath);
-		blReturn = TRUE;
-	}
-	else
-	{		
-		HWTRACE(TEXT("LoadLibrary %s failed\n"), pszPath);
-	}	
-	return blReturn;
-}
-void CXModule::FreeLibrary()
-{
-	SAFE_FREE_LIBRARY(m_hModule);
-	m_szModuleFilePath[0] = 0;
-	m_blSucceed = FALSE;
-}
-
-BOOL CXModule::Succeed()
-{
-	return m_hModule != NULL;
-}
-
-
 //////////////////////////////////////////////////////////////////////////
 
 LONG Helper_GetObjectIntegrityLevel(HANDLE hHandle, SE_OBJECT_TYPE  objectType)
