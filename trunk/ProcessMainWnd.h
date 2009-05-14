@@ -7,7 +7,7 @@ class CProcessMainWndArray
     std::vector<HWND> m_vHwnd;
 public:
     CProcessMainWndArray(DWORD = 0);
-    ~CProcessMainWndArray();
+    virtual ~CProcessMainWndArray();
 protected:
     static BOOL __stdcall EnumProc(HWND hWnd, LPARAM lParam);
 protected:
