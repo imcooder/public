@@ -332,6 +332,153 @@ LONG WINAPI UTF16ToUTF32( LPCWSTR pUTF16Str, LPDWORD pdwCode )
 		return 1;
 	}
 }
+
+LPWSTR WINAPI HWCharNext( LPCWSTR pszStr)
+{
+	LPWSTR pszNext = (LPWSTR)pszStr;	
+	if (!pszNext)
+	{
+		return pszNext;
+	}	
+	WCHAR w1 = 0, w2 = 0;
+	DWORD dwLen = wcslen(pszNext);		
+	w1 = pszNext[0];
+	if( w1 >= 0xD800 && w1 <= 0xDBFF )
+	{
+		w2 = pszNext[1];
+		if( w2 >= 0xDC00 && w2 <= 0xDFFF )
+		{			
+			pszNext += 2;
+		}
+		else
+		{
+			pszNext = NULL;
+		}
+	}
+	else
+	{
+		pszNext += 1;
+	}
+	return pszNext;
+}
+LONG WINAPI HWCharCount( LPCWSTR pszStr)
+{
+	if (!pszStr)
+	{
+		return -1;
+	}
+	LONG nCount = 0;	
+	LPCTSTR pszIndex = pszStr;	
+	while(pszIndex[0])
+	{		
+		nCount ++;
+		pszIndex = HWCharNext(pszIndex);		
+	}
+	return nCount;
+}
+LPWSTR WINAPI HWStrLocate(LPCWSTR pszStr, DWORD dwIdx)
+{
+	LPWSTR pszLocate = (LPWSTR)pszStr;
+	if (!pszStr)
+	{
+		return pszLocate;
+	}		
+	while (pszLocate && pszLocate[0] && dwIdx)
+	{
+		dwIdx --;
+		pszLocate = HWCharNext(pszLocate);
+	}
+	if (dwIdx)
+	{
+		pszLocate = NULL;
+	}
+	else if (pszLocate && !pszLocate[0])
+	{
+		pszLocate = NULL;
+	}
+	return pszLocate;
+}
+
+DWORD WINAPI HWGetChar(LPCWSTR pszStr, DWORD dwIdx)
+{
+	DWORD dwCode = 0;
+	LPWSTR pszLocate = HWStrLocate(pszStr, dwIdx);
+	if (pszLocate)
+	{
+		WORD w1 = pszLocate[0];
+		if( w1 >= 0xD800 && w1 <= 0xDBFF )
+		{
+			WORD w2 = pszLocate[1];
+			if( w2 >= 0xDC00 && w2 <= 0xDFFF )
+			{			
+				dwCode = MAKELONG(w2, w1);
+			}
+			else
+			{
+				dwCode = 0;
+			}
+		}
+		else
+		{
+			dwCode = MAKELONG(w1, 0);
+		}
+	}
+	return dwCode;
+}
+LPWSTR WINAPI HWCharPrev(LPCWSTR lpszStart, LPCWSTR lpszCurrent)
+{
+	if (!lpszStart || !lpszCurrent)
+	{
+		return NULL;
+	}
+	WCHAR w1 = 0, w2 = 0;
+	LPTSTR pszPre = NULL;
+	if (lpszCurrent <= lpszStart)
+	{
+		return NULL;
+	}
+	if (0 >= lpszCurrent - lpszStart)
+	{
+		return NULL;
+	}
+	else if (1 == lpszCurrent - lpszStart)
+	{
+		w2 = *lpszStart;
+		if( !(w2 >= 0xD800 && w2 <= 0xDBFF) )
+		{
+			pszPre = (LPWSTR)lpszStart;
+		}		
+	}
+	else if (1 < lpszCurrent - lpszStart)
+	{
+		w1 = *(lpszCurrent - 2);
+		w2 = *(lpszCurrent - 1);
+		if( w1 >= 0xD800 && w1 <= 0xDBFF )
+		{			
+			if( w2 >= 0xDC00 && w2 <= 0xDFFF )
+			{			
+				pszPre = (LPWSTR)(lpszCurrent - 2);
+			}
+			else
+			{
+				pszPre = NULL;	
+			}
+		}
+		else
+		{
+			if (!(w2 >= 0xD800 && w2 <= 0xDBFF))
+			{
+				pszPre = (LPWSTR)(lpszCurrent - 1);
+			}
+			else 
+			{
+				pszPre = NULL;
+			}
+		}
+	}	
+	return pszPre;
+}
+
 /*
 LONG WINAPI UTF16ToUTF8(LPCWSTR pszUTF16, CHAR* pszUTF8)
 {		
