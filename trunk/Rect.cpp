@@ -148,6 +148,19 @@ void WINAPI InflateRect(LPRECT lpRect, SIZE size)
 	}
 	InflateRect(lpRect, size.cx, size.cy);	
 }
+
+void WINAPI InflateRect( LPRECT lpRect, int x, int y, int xx, int yy)
+{
+	ASSERT(lpRect);
+	if (!lpRect)
+	{		
+		return;
+	}
+	lpRect->left += x;
+	lpRect->top += y;
+	lpRect->right += xx;
+	lpRect->bottom += yy;
+}
 void WINAPI DeflateRect(LPRECT lpRect, int x, int y) 
 { 
 	ASSERT(lpRect);

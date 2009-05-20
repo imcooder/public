@@ -23,6 +23,7 @@ void WINAPI RectSwapTopBottom(LPRECT);
 BOOL WINAPI IsRectEmpty(const LPRECT) ;
 BOOL WINAPI PtInRect(const LPRECT, POINT);
 void WINAPI InflateRect(LPRECT, SIZE);
+void WINAPI InflateRect(LPRECT, int, int, int, int);
 void WINAPI DeflateRect(LPRECT, int, int) ;
 void WINAPI DeflateRect(LPRECT, SIZE) ;
 void WINAPI OffsetRect(LPRECT, POINT);
