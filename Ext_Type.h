@@ -459,6 +459,15 @@ typedef struct tagCnd8
 	(hKey) = NULL;\
 } 
 
+#undef SAFE_KILLTIMER
+#define SAFE_KILLTIMER(hWnd, dwTimerID) \
+	if (::IsWindow((hWnd)) && (dwTimerID))\
+{\
+	::KillTimer((hWnd), (dwTimerID));\
+	(dwTimerID) = NULL;\
+} 
+
+
 //////////////////////////////////////////////////////////////////////////
 #undef SetControlText
 #define SetControlText(hWnd, nID, szText)			::SetWindowText(::GetDlgItem((hWnd), (nID)), (szText))
