@@ -37,7 +37,8 @@ BOOL CHWThread::Terminate()
 	if (m_hThread)
 	{
 		HWTRACE(TEXT("CHWThread::Terminate Begin\n"));
-		SetEvent(m_hTerminateEvent);				
+	//SetEvent(m_hTerminateEvent);		
+		TerminateThread(m_hTerminateEvent, 0);
 		WaitForSingleObject(m_hThread, INFINITE);	
 		SAFE_CLOSE_HANDLE(m_hThread);		
 		HWTRACE(TEXT("CHWThread::Terminate End\n"));
