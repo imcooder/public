@@ -59,6 +59,7 @@ void CChangeMonitor::EndMoniter( void )
 			// 使线程继续，以便结束 
 			Resume(); 
 			// 等待线程退出 
+
 			DWORD dwWaitResult = WaitForSingleObject( m_hThread, INFINITE ); 
 			ASSERT( WAIT_FAILED != dwWaitResult ); 
 			// 如果等待超时，强制结束线程 
@@ -208,7 +209,10 @@ void CDirectoryMonitor::CallNextMoniter( void )
 
 DWORD CDirectoryMonitor::WaitNotify( void ) 
 { 
-	return WaitForSingleObject( m_hNotify, 0 ); 
+	HWTRACE(TEXT("CDirectoryMonitor::WaitNotify Begin\n"));
+	DWORD dwRet = WaitForSingleObject( m_hNotify, 0 ); 
+	HWTRACE(TEXT("CDirectoryMonitor::WaitNotify End\n"));
+	return dwRet;
 } 
 
 
@@ -286,6 +290,9 @@ void CRegistryMonitor::CallNextMoniter( void )
 
 DWORD CRegistryMonitor::WaitNotify( void ) 
 { 
-	return WaitForSingleObject( m_hNotify, 0 ); 
+	//HWTRACE(TEXT("CRegistryMonitor::WaitNotify Begin\n"));
+	DWORD dwRet = WaitForSingleObject( m_hNotify, 0 ); 
+	//HWTRACE(TEXT("CRegistryMonitor::WaitNotify End\n"));
+	return dwRet;
 } 
 

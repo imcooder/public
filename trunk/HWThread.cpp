@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include <windows.h> 
 #include "HWThread.h"
-
+#include "HWSecurity.h"
 
 void CHWThread::TryExit(DWORD dwTime)
 {
@@ -10,11 +10,13 @@ void CHWThread::TryExit(DWORD dwTime)
 	{
 		return;
 	}		
+	HWTRACE(TEXT("CHWThread::TryExit Begin\n"));
 	if(WAIT_OBJECT_0 == WaitForSingleObject(m_hTerminateEvent, dwTime))   
 	{			
 		ResetEvent(m_hTerminateEvent);		
 		ExitThread(NULL);			
 	}
+	HWTRACE(TEXT("CHWThread::TryExit End\n"));
 }
 
 CHWThread::CHWThread()
@@ -34,9 +36,11 @@ BOOL CHWThread::Terminate()
 {
 	if (m_hThread)
 	{
+		HWTRACE(TEXT("CHWThread::Terminate Begin\n"));
 		SetEvent(m_hTerminateEvent);				
 		WaitForSingleObject(m_hThread, INFINITE);	
 		SAFE_CLOSE_HANDLE(m_hThread);		
+		HWTRACE(TEXT("CHWThread::Terminate End\n"));
 	}
 	else
 	{
