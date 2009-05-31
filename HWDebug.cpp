@@ -322,6 +322,9 @@ void WINAPI DebugStringFileW(LPCWSTR pszFile, LPCWSTR pszDebugInfo)
 		LPSTR pszContent = WCharToChar(pszDebugInfo);
 		if (pszContent)
 		{
+			CHAR szInfo[MAX_SIZE_S] = {0};
+			sprintf_s(szInfo, _countof(szInfo), "%d\t PID:%d TID:%d\t", GetTickCount(), GetCurrentProcessId(), GetCurrentThreadId());
+			fwrite(szInfo, sizeof(CHAR), strlen(szInfo), pFile);
 			fwrite(pszContent, sizeof(CHAR), strlen(pszContent), pFile);
 			fclose(pFile); 
 			pFile = NULL;
@@ -339,6 +342,9 @@ void WINAPI DebugStringFileA(LPCSTR pszFile, LPCSTR pszDebugInfo)
 	pFile = fopen(pszFile, "a");
 	if (pFile)
 	{
+		CHAR szInfo[MAX_SIZE_S] = {0};
+		sprintf_s(szInfo, _countof(szInfo), "%d\t PID:%d TID:%d\t",GetTickCount(), GetCurrentProcessId(), GetCurrentThreadId());
+		fwrite(szInfo, sizeof(CHAR), strlen(szInfo), pFile);
 		fwrite(pszDebugInfo, sizeof(char), strlen(pszDebugInfo), pFile);
 		fclose(pFile); 
 		pFile = NULL;

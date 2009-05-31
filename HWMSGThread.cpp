@@ -46,11 +46,12 @@ BOOL CHWMSGThread::CreateThread()
 	HWTRACE(TEXT("CHWMSGThread::Create Thread %d\n"), m_hThread);
 	if ( INVALID_HANDLE_VALUE == m_hThread)
 	{
+		HWTRACE(TEXT("CHWMSGThread::Create Thread  End\n"));
 		return FALSE;
 	}
 	//wait thread start event to avoid PostThreadMessage return errno:1444
 	::WaitForSingleObject(m_hStartEvent,INFINITE);
-
+	HWTRACE(TEXT("CHWMSGThread::Create Thread End\n"));
 	return TRUE;
 }
 
@@ -58,10 +59,12 @@ BOOL CHWMSGThread::Release()
 {
 	if (m_hThread)
 	{		
+		HWTRACE(TEXT("CHWMSGThread::Release\n"));
 		if (WAIT_OBJECT_0 != WaitForSingleObject(m_hThread, 0))
 		{
 			HWTRACE(TEXT("The Thread is runing, can not Release\n"));
 		}		
+		HWTRACE(TEXT("CHWMSGThread::Release End\n"));
 		CloseHandle(m_hThread);
 		m_hThread = NULL;
 	}
@@ -91,7 +94,11 @@ LRESULT CHWMSGThread::_ThreadProc()
 
 BOOL CHWMSGThread::Terminate()
 {				
-	//TRACE(TEXT(" CHWMSGThread::Terminate Starting............ %d\n"), GetThreadId(m_hThread));
+#if WINVER >= 0x0600
+	{
+		TRACE(TEXT(" CHWMSGThread::Terminate Starting............ %d\n"), GetThreadId(m_hThread));
+	}
+#endif
 	if (m_hThread)
 	{		
 		/*
@@ -103,7 +110,7 @@ BOOL CHWMSGThread::Terminate()
 		TerminateThread(m_hThread, 0);
 		WaitForSingleObject(m_hThread, INFINITE);
 		//CloseHandle(m_hThread);
-		//m_hThread = NULL;	
+		m_hThread = NULL;	
 
 		HWTRACE(TEXT("End Terminate\n"));
 	}			
