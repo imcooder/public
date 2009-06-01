@@ -105,5 +105,36 @@ extern "C"
 }
 #endif
 
+#define _CALL_INVALID_PARAMETER_FUNC(funcname, expr) funcname(NULL, NULL, NULL, 0, 0)
+#define _INVALID_PARAMETER(expr) _CALL_INVALID_PARAMETER_FUNC(_invalid_parameter, expr)
+
+#define _ASSERT_EXPR(expr, msg) \
+	(void) ((!!(expr)) || \
+	(1 != _CrtDbgReportW(_CRT_ASSERT, _CRT_WIDE(__FILE__), __LINE__, NULL, msg)) || \
+	(_CrtDbgBreak(), 0))
+
+
+#ifndef _VALIDATE_RETURN
+#define _VALIDATE_RETURN( expr, errorcode, retexpr )                           \
+{                                                                          \
+	int _Expr_val=!!(expr);                                                \
+	_ASSERT_EXPR( ( _Expr_val ), _CRT_WIDE(#expr) );                       \
+	if ( !( _Expr_val ) )                                                  \
+{                                                                      \
+	int errno = errorcode;                                                 \
+	_INVALID_PARAMETER(_CRT_WIDE(#expr) );                             \
+	return ( retexpr );                                                \
+}                                                                      \
+}
+#endif  /* _VALIDATE_RETURN */
+
+
+
+
+
+
+
+
+
 
 #endif//HWX_DEBUG_H
