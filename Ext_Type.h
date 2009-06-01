@@ -3,8 +3,9 @@
 
 #include <assert.h>
 #include <wtypes.h> 
-#include <CRTDbg.h>
+//#include <CRTDbg.h>
 #include <tchar.h>
+
 #ifdef XEXPORT
 #define DLLXEXPORT   __declspec(dllexport) 
 #else
@@ -221,7 +222,7 @@ typedef enum
 #endif
 
 #ifndef _countof
-#define _countof
+//#define _countof
 #define _countof(_Array) (sizeof(_Array) / sizeof(*_Array))
 #endif
 

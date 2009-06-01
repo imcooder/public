@@ -7,10 +7,12 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 *********************************************************************/
 
 #include "stdafx.h"
+#include "XStrHelper.h"
+#include <crtdefs.h>
 #include <wchar.h>
 #include <stdio.h>
-#include "XStrHelper.h"
 #include <stdlib.h>
+#include <string.h>
 void WINAPI Helper_StrChrChrA(LPSTR strString, const CHAR& A, const CHAR& B)
 {
   if (!strString)
@@ -133,7 +135,7 @@ LONG WINAPI Helper_GetPathDirectoryW(LPCWSTR pwhFilePath, LPWSTR szDirectory)
 	WCHAR szPath[MAX_PATH] = {0};
 	if(0 == _wsplitpath_s(pwhFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
 	{
-		wcsncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);
+		StringCchCatW(szPath, _countof(szPath), szDir);
 		nLen = (LONG)wcslen(szPath) + 1;		
 	}
 	if (szDirectory)
@@ -144,18 +146,40 @@ LONG WINAPI Helper_GetPathDirectoryW(LPCWSTR pwhFilePath, LPWSTR szDirectory)
 }
 LONG WINAPI Helper_GetPathDirectoryA(LPCSTR pchFilePath, LPSTR szDirectory)
 {
-	LONG nLen = 0;
-	CHAR szDir[MAX_DIR] = {0};
+	LONG nLen = 0;	
 	CHAR szPath[MAX_PATH] = {0};
-	if(0 == _splitpath_s(pchFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
+#ifdef WINCE
 	{
-		strncat_s(szPath, MAX_PATH, szDir, _TRUNCATE);		
-		nLen = (LONG)strlen(szPath) + 1;
+		LPWSTR pszPath = CharToWChar(pchFilePath);
+		if (pszPath)
+		{
+			WCHAR szDir[MAX_PATH] = {0};
+			Helper_GetPathDirectoryW(pszPath, szDir);
+			LPSTR pszDir = WCharToChar(szDir);
+			if (szDirectory)
+			{
+				nLen = (LONG)strlen(pszDir) + 1;
+				strcpy_s(szDirectory, nLen, pszDir);
+			}
+			SAFE_DELETE_AR(pszDir);
+		}
+		SAFE_DELETE_AR(pszPath);
 	}
+#else
+	{
+		CHAR szDir[MAX_DIR] = {0};		
+		if(0 == _splitpath_s(pchFilePath, szPath, MAX_PATH, szDir, MAX_DIR, NULL, 0, NULL, 0))
+		{
+			StringCchCatA(szPath, _countof(szPath), szDir);		
+			nLen = (LONG)strlen(szPath) + 1;
+		}
 		if (szDirectory)
-	{
-		strcpy_s(szDirectory, nLen, szPath);
+		{
+			strcpy_s(szDirectory, nLen, szPath);
+		}
 	}
+#endif
+	
 	return nLen;
 }
 LPSTR WINAPI Helper_StrMoveA(LPSTR pszD, LPCSTR pszSrc)
@@ -319,8 +343,12 @@ double WINAPI Helper_StrGetFloatW(LPCWSTR pszString)
 	LPCWSTR pszIndex = wcspbrk(pszString, L"0123456789.-+");
 	if (pszIndex) 
 	{
-		//swscanf_s(pszIndex, L"%30lf", &flValue);
-		flValue = _wtof(pszIndex);
+#if __STDC_WANT_SECURE_LIB__
+		swscanf(pszIndex, L"%lf", &flValue);
+#else
+		swscanf_s(pszIndex, L"%lf", &flValue);
+#endif
+		//flValue = _wtof(pszIndex);		atof
 	}
 	return flValue;
 }
@@ -341,7 +369,15 @@ LONG WINAPI Helper_StrGetHexW(LPCWSTR pszString)
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
-		swscanf_s(pszIndex, L"%x", &nValue); 
+#ifdef WINCE
+		{
+			swscanf(pszIndex, L"%x", &nValue); 
+		}
+#else
+		{
+			swscanf_s(pszIndex, L"%x", &nValue); 
+		}
+#endif	
 #else
 		scanf(pszIndex, L"%x", &nValue);
 #endif
@@ -465,7 +501,16 @@ INT64 WINAPI Helper_StrGetNumberA(LPCSTR pszString)
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
-		sscanf_s(pszIndex, "%I64d", &nValue); 
+
+#ifdef WINCE
+		{
+			sscanf(pszIndex, "%I64d", &nValue); 
+		}
+#else
+		{
+			sscanf_s(pszIndex, "%I64d", &nValue); 
+		}
+#endif		
 #else
 		sscanf(pszIndex, "%I64d", &nValue);
 #endif
@@ -489,7 +534,15 @@ double WINAPI Helper_StrGetFloatA(LPCSTR pszString)
 	if (pszIndex) 
 	{
 #if _MSC_VER >= 1000
-		sscanf_s(pszIndex, "%f", &flValue); 
+#ifdef WINCE
+		{
+			sscanf(pszIndex, "%f", &flValue); 
+		}
+#else
+		{
+			sscanf_s(pszIndex, "%f", &flValue); 
+		}
+#endif		
 #else
 		sscanf(pszIndex, "%f", &flValue); 
 #endif
@@ -512,8 +565,16 @@ LONG WINAPI Helper_StrGetHexA(LPCSTR pszString)
 	LPCSTR pszIndex = strpbrk(pszString, "0123456789ABCDEFabcdef-+");
 	if (pszIndex) 
 	{
-#if _MSC_VER >= 1000
+#if _MSC_VER >= 1000		
+#ifdef WINCE
+		{
+			scanf(pszIndex, "%x", &nValue);
+		}
+#else
+		{
 		scanf_s(pszIndex, "%x", &nValue); 
+		}
+#endif	
 #else
 		scanf(pszIndex, "%x", &nValue);
 #endif
@@ -534,8 +595,16 @@ void WINAPI Helper_StrUpperW(LPWSTR pszString)
 	}
 	 
 #if _MSC_VER >= 1400
-	LONG nLenght = (LONG)wcslen(pszString);
-	_wcsupr_s(pszString, nLenght);
+#ifdef WINCE
+	{
+		wcsupr(pszString);
+	}
+#else
+	{
+		LONG nLenght = (LONG)wcslen(pszString);
+		wcsupr_s(pszString, nLenght);
+	}
+#endif	
 #else
 	wcsupr(pszString);
 #endif
@@ -554,8 +623,17 @@ void WINAPI Helper_StrUpperA(LPSTR pszString)
 	}
 
 #if _MSC_VER >= 1400
-	LONG nLenght = (LONG)strlen(pszString);
-	_strupr_s(pszString, nLenght);
+#ifdef WINCE
+	{
+		_strupr(pszString);
+	}
+#else
+	{
+		LONG nLenght = (LONG)strlen(pszString);
+		_strupr_s(pszString, nLenght);
+	}
+#endif	
+
 #else
 	strupr(pszString);
 #endif

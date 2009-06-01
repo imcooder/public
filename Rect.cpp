@@ -1,7 +1,7 @@
 
 #include "stdafx.h"
 #include "Rect.h"
-
+#include "Ext_Type.h"
 
 BOOL WINAPI IsRectNULL( const RECT * pRect)
 {
