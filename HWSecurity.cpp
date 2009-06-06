@@ -4,7 +4,7 @@
 #include "Ext_Type.h"
 #include <shlobj.h>
 #include "HWDebug.h"
-
+#include <String.h>
 
 
 //////////////////////////////////////////////////////////////////////////

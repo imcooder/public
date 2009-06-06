@@ -96,14 +96,14 @@ BOOL CHWMSGThread::Terminate()
 {				
 #if WINVER >= 0x0600
 	{
-		TRACE(TEXT(" CHWMSGThread::Terminate Starting............ %d\n"), GetThreadId(m_hThread));
+		HWTRACE(TEXT(" CHWMSGThread::Terminate Starting............ %d\n"), GetThreadId(m_hThread));
 	}
 #endif
 	if (m_hThread)
 	{		
 		/*
 		PostMessage(WM_QUIT, 0, 0);		
-		TRACE(TEXT("Begin Terminate\n"));
+		HWTRACE(TEXT("Begin Terminate\n"));
 		WaitForSingleObject(m_hThread, INFINITE);
 		//SAFE_CLOSE_HANDLE(m_hThread);*/	
 

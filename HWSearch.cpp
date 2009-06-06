@@ -10,7 +10,7 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include "HWDebug.h"
 #include <stdio.h>
 #include <memory>
-
+#include <errno.h>
 #if defined (_M_CEE)
 #define __fileDECL  __clrcall
 #else  /* defined (_M_CEE) */
@@ -66,9 +66,31 @@ void * WINAPI HWbsearch (const void *key, const void *base, size_t num, size_t w
 	int result;
 
 	/* validation section */
-	_VALIDATE_RETURN(base != NULL || num == 0, EINVAL, NULL);
-	_VALIDATE_RETURN(width > 0, EINVAL, NULL);
-	_VALIDATE_RETURN(compare != NULL, EINVAL, NULL);
+	//_VALIDATE_RETURN(base != NULL || num == 0, EINVAL, NULL);
+	if (base != NULL || num == 0)
+	{
+	}
+	else
+	{
+		return NULL;
+	}
+	//_VALIDATE_RETURN(width > 0, EINVAL, NULL);
+	if (width > 0)
+	{
+	}
+	else
+	{
+		return NULL;
+	}	
+	//_VALIDATE_RETURN(compare != NULL, EINVAL, NULL);
+	if (compare != NULL)
+	{
+
+	}
+	else
+	{
+		return NULL;
+	}
 
 	/*
 	We allow a NULL key here because it breaks some older code and because we do not dereference
