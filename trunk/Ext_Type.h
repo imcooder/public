@@ -183,12 +183,14 @@ typedef enum
 
 
 #ifndef ASSERT
-#define ASSERT(str)		_ASSERT(str)
+#define ASSERT(str)		assert(str)
 #endif
 
+/*
 #ifndef assert
 #define assert(str)		ASSERT(str)
-#endif
+#endif*/
+
 
 #ifndef VERIFY
 #ifdef _DEBUG

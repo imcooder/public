@@ -60,7 +60,7 @@ void CChangeMonitor::EndMoniter( void )
 			Resume(); 
 			// 等待线程退出 
 
-			DWORD dwWaitResult = WaitForSingleObject( m_hThread, INFINITE ); 
+			DWORD dwWaitResult = WaitForSingleObject( m_hThread, 500 ); 
 			ASSERT( WAIT_FAILED != dwWaitResult ); 
 			// 如果等待超时，强制结束线程 
 			if ( WAIT_TIMEOUT == dwWaitResult ) 

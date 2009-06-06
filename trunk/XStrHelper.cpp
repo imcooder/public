@@ -7,12 +7,14 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 *********************************************************************/
 
 #include "stdafx.h"
-#include "XStrHelper.h"
 #include <crtdefs.h>
+#include "XStrHelper.h"
 #include <wchar.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <StrSafe.h>
+
 void WINAPI Helper_StrChrChrA(LPSTR strString, const CHAR& A, const CHAR& B)
 {
   if (!strString)
@@ -593,21 +595,7 @@ void WINAPI Helper_StrUpperW(LPWSTR pszString)
 	{
 		return;
 	}
-	 
-#if _MSC_VER >= 1400
-#ifdef WINCE
-	{
-		wcsupr(pszString);
-	}
-#else
-	{
-		LONG nLenght = (LONG)wcslen(pszString);
-		wcsupr_s(pszString, nLenght);
-	}
-#endif	
-#else
 	wcsupr(pszString);
-#endif
 }
 
 void WINAPI Helper_StrUpperA(LPSTR pszString)

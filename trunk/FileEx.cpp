@@ -7,6 +7,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "XStrhelper.h"
+#include <StrSafe.h>
 //#include <io.h>
 #include <stdio.h>
 //#include <direct.h>
@@ -321,9 +322,9 @@ BOOL WINAPI XCreateDirA(HWX_IN LPCSTR pchDstFilePath )
 			pchTail = strchr( pchTail, '\\');
 			if(pchTail)
 			{
-				nPairentPathLen = (LONG)strlen( pchDstFilePath ) - (LONG)strlen( pchTail ) + 1;
+				nPairentPathLen = (LONG)strlen( pchDstFilePath ) - (LONG)strlen( pchTail )/* + 1*/;
 				strncpy_s(szPairentPath, MAX_PATH, pchDstFilePath, nPairentPathLen); 
-				szPairentPath[nPairentPathLen + 1] = 0;
+				szPairentPath[nPairentPathLen] = 0;
 				if (!CreateDirectoryA (szPairentPath, NULL))
 				{
 					if (GetLastError() != ERROR_ALREADY_EXISTS)
@@ -357,9 +358,9 @@ BOOL WINAPI XCreateDirW(HWX_IN LPCWSTR pwhDstFilePath )
 		pwhTail = wcschr( pwhTail, L'\\');
 		if(pwhTail)
 		{
-			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail ) + 1;
+			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail )/* + 1*/;
 			wcsncpy_s(szPairentPath, MAX_PATH, pwhDstFilePath, nPairentPathLen);  
-			szPairentPath[nPairentPathLen + 1] = 0;
+			szPairentPath[nPairentPathLen] = 0;
 			if (!CreateDirectoryW(szPairentPath, NULL))
 			{
 				if (GetLastError() != ERROR_ALREADY_EXISTS)
