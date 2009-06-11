@@ -94,11 +94,6 @@ LRESULT CHWMSGThread::_ThreadProc()
 
 BOOL CHWMSGThread::Terminate()
 {				
-#if WINVER >= 0x0600
-	{
-		HWTRACE(TEXT(" CHWMSGThread::Terminate Starting............ %d\n"), GetThreadId(m_hThread));
-	}
-#endif
 	if (m_hThread)
 	{		
 		/*
@@ -119,8 +114,7 @@ BOOL CHWMSGThread::Terminate()
 }
 
 BOOL CHWMSGThread::PostMessage( UINT message, WPARAM wParam, LPARAM lParam)
-{
-	//DWORD dwID = GetThreadId(m_hThread);
+{	
 	LONG nCode = PostThreadMessage(m_dwThreadID, message, wParam, lParam);
 	if (!nCode)
 	{
