@@ -6,8 +6,10 @@ class HWMutexLock
 {
 protected:
 	HANDLE  m_hMutex;
+	BOOL		m_bCreate;
 public:
-	HWMutexLock(LPCTSTR);
+	HWMutexLock(LPCWSTR);
+	HWMutexLock(HANDLE);
 	virtual ~HWMutexLock();
 };
 

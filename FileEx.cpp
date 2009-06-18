@@ -358,7 +358,7 @@ BOOL WINAPI XCreateDirW(HWX_IN LPCWSTR pwhDstFilePath )
 		pwhTail = wcschr( pwhTail, L'\\');
 		if(pwhTail)
 		{
-			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail )/* + 1*/;
+			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail );
 			wcsncpy_s(szPairentPath, MAX_PATH, pwhDstFilePath, nPairentPathLen);  
 			szPairentPath[nPairentPathLen] = 0;
 			if (!CreateDirectoryW(szPairentPath, NULL))
