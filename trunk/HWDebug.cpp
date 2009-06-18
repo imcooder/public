@@ -79,15 +79,7 @@ protected:
 
 void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 { 	
-	WCHAR szBuffer[MAX_SIZE_L] = {0};	
-/*
-	{
-		WCHAR szThreadID[MAX_PATH + MAX_NAME] = {0};
-		WCHAR szMuduleName[MAX_NAME] = {0};
-		GetModuleFileName(NULL, szMuduleName, MAX_NAME);
-		_stprintf_s(szThreadID, _countof(szThreadID), TEXT("%d\tPID:%d TID:%d Name:%s\n"), GetTickCount(), GetCurrentProcessId(), GetCurrentThreadId(), szMuduleName);
-		DebugStringW(szThreadID);
-	}*/
+	static WCHAR szBuffer[MAX_SIZE_L] = {0};	
 #ifdef WINCE
 	{
 		LONG nLen = 0;
@@ -97,10 +89,9 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 		DebugStringW(szBuffer);
 		va_end(argList);	
 	}
-#else
-	{
+#else	
 		LPWSTR pwhBuffer = NULL;	
-		LONG nLen = 0;
+		LONG nLen = 0; 
 		va_list argList;
 		va_start(argList, pwhFormat);
 		nLen = _vscwprintf(pwhFormat, argList);
@@ -124,14 +115,14 @@ void WINAPI XTraceW(LPCWSTR pwhFormat, ...)
 			}
 		}	
 		va_end(argList);	
-	}
+	
 #endif	
 }
 
 #ifndef WINCE
 void WINAPI XTraceA(LPCSTR pchFormat, ...)
 { 	
-	CHAR szBuffer[MAX_SIZE_L];
+	static CHAR szBuffer[MAX_SIZE_L];
 
 	LPSTR pchBuffer = NULL;	
 	LONG nLen = 0;
@@ -167,7 +158,7 @@ DLLXEXPORT void WINAPI XTraceExW( BOOL bCondition, LPCWSTR pwhFormat, ... )
 	{
 		return;
 	}
-	WCHAR szBuffer[MAX_SIZE_L] = {0};
+	static WCHAR szBuffer[MAX_SIZE_L] = {0};
 #ifdef WINCE
 	{		
 		va_list argList;
@@ -205,7 +196,7 @@ DLLXEXPORT void WINAPI XTraceExW( BOOL bCondition, LPCWSTR pwhFormat, ... )
 		va_end(argList);
 	}
 #endif
-		
+
 }
 #ifndef WINCE
 DLLXEXPORT void WINAPI XTraceExA( BOOL bCondition, LPCSTR pchFormat, ... )
@@ -214,40 +205,40 @@ DLLXEXPORT void WINAPI XTraceExA( BOOL bCondition, LPCSTR pchFormat, ... )
 	{
 		return;
 	}	
-	CHAR szBuffer[MAX_SIZE_L] = {0};
+	static CHAR szBuffer[MAX_SIZE_L] = {0};
 
-		LPSTR pchBuffer = NULL;	
-		LONG nLen = 0;
-		va_list argList;
-		va_start(argList, pchFormat);
-		nLen = _vscprintf(pchFormat, argList);
-		if (nLen	< 0)
-		{
-			va_end(argList);	
-			return;
-		}
-		if (nLen < _countof(szBuffer))
-		{
-			pchBuffer = szBuffer;
-			StringCchVPrintfA(szBuffer, _countof(szBuffer) - 1, pchFormat, argList); 
-			DebugStringA(pchBuffer);
-		}
-		else
-		{
-			if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
-			{
-				StringCchVPrintfA(pchBuffer, nLen + 1, pchFormat, argList);
-				DebugStringA(pchBuffer);
-			}			
-		}	
+	LPSTR pchBuffer = NULL;	
+	LONG nLen = 0;
+	va_list argList;
+	va_start(argList, pchFormat);
+	nLen = _vscprintf(pchFormat, argList);
+	if (nLen	< 0)
+	{
 		va_end(argList);	
+		return;
+	}
+	if (nLen < _countof(szBuffer))
+	{
+		pchBuffer = szBuffer;
+		StringCchVPrintfA(szBuffer, _countof(szBuffer) - 1, pchFormat, argList); 
+		DebugStringA(pchBuffer);
+	}
+	else
+	{
+		if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
+		{
+			StringCchVPrintfA(pchBuffer, nLen + 1, pchFormat, argList);
+			DebugStringA(pchBuffer);
+		}			
+	}	
+	va_end(argList);	
 }
 #endif
 
 
 void WINAPI XForceTraceW(LPCWSTR pwhFormat, ...)
 { 	
-	WCHAR szBuffer[MAX_SIZE_L];
+	static WCHAR szBuffer[MAX_SIZE_L];
 #ifdef WINCE
 	{	
 		va_list argList;
@@ -285,37 +276,37 @@ void WINAPI XForceTraceW(LPCWSTR pwhFormat, ...)
 		va_end(argList);
 	}
 #endif			
-		
+
 }
 #ifndef WINCE
 void WINAPI XForceTraceA(LPCSTR pchFormat, ...)
 { 		
-	CHAR szBuffer[MAX_SIZE_L];
-		LPSTR pchBuffer = NULL;	
-		LONG nLen = 0;
-		va_list argList;
-		va_start(argList, pchFormat);
-		nLen = _vscprintf(pchFormat, argList);
-		if (nLen	< 0)
+	static CHAR szBuffer[MAX_SIZE_L];
+	LPSTR pchBuffer = NULL;	
+	LONG nLen = 0;
+	va_list argList;
+	va_start(argList, pchFormat);
+	nLen = _vscprintf(pchFormat, argList);
+	if (nLen	< 0)
+	{
+		va_end(argList);	
+		return;
+	}
+	if (nLen < MAX_SIZE_L)
+	{
+		pchBuffer = szBuffer;
+		StringCchVPrintfA(szBuffer, _countof(szBuffer) - 1, pchFormat, argList); 
+		ForceMessageBoxA(pchBuffer);
+	}
+	else
+	{
+		if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
 		{
-			va_end(argList);	
-			return;
-		}
-		if (nLen < MAX_SIZE_L)
-		{
-			pchBuffer = szBuffer;
-			StringCchVPrintfA(szBuffer, _countof(szBuffer) - 1, pchFormat, argList); 
+			StringCchVPrintfA(pchBuffer, nLen + 1, pchFormat, argList);
 			ForceMessageBoxA(pchBuffer);
-		}
-		else
-		{
-			if (pchBuffer = (LPSTR)_alloca((nLen + 2) * sizeof(CHAR)))
-			{
-				StringCchVPrintfA(pchBuffer, nLen + 1, pchFormat, argList);
-				ForceMessageBoxA(pchBuffer);
-			}			
-		}	
-		va_end(argList);			
+		}			
+	}	
+	va_end(argList);			
 }
 #endif
 
@@ -333,7 +324,7 @@ void WINAPI ForceMessageBoxW(LPCWSTR pszMsg)
 	GetModuleFileNameW(NULL, szTitle, MAX_PATH - 1);
 	MessageBoxW(GetActiveWindow(), pszMsg, szTitle, MB_OK);
 }
-	
+
 void WINAPI DebugStringW( LPCWSTR pszDebugInfo)
 {
 	if (!pszDebugInfo)
@@ -498,8 +489,8 @@ void HWLogFile::Log( BOOL bCondition, LPCWSTR pszFormat, ... )
 	EnterCriticalSection(&m_CS);
 	if (bCondition)
 	{
-		WCHAR szBuffer[MAX_SIZE_LL] = {0};	
-		CHAR szBufferEx[MAX_SIZE_LL] = {0};
+		static WCHAR szBuffer[MAX_SIZE_LL] = {0};	
+		static CHAR szBufferEx[MAX_SIZE_LL] = {0};
 		va_list argList;
 		va_start(argList, pszFormat);
 		LONG nERR = StringCchVPrintfW(szBuffer, _countof(szBuffer), pszFormat, argList); 		
@@ -559,8 +550,8 @@ inline void HWLogFile::Write(LPCSTR szEntry)
 	::EnterCriticalSection(&m_CS);	
 	if (m_hFile != INVALID_HANDLE_VALUE && szEntry )
 	{
-		CHAR szTimeString[MAX_SIZE_M] = {0};
-		CHAR szBuffer[MAX_SIZE_LL] = {0};	
+		static CHAR szTimeString[MAX_SIZE_M] = {0};
+		static CHAR szBuffer[MAX_SIZE_LL] = {0};	
 		GetTimeString(szTimeString, _countof(szTimeString));
 		INT nBytes = _snprintf(szBuffer, _countof(szBuffer), "%s,PID:\t%08X\tTID:\t%08X: %s\r\n", szTimeString, GetCurrentProcessId(), GetCurrentThreadId(), szEntry);
 		if (nBytes)
@@ -574,7 +565,7 @@ inline void HWLogFile::Write(LPCSTR szEntry)
 			}	
 		}	
 	}
-	
+
 	::LeaveCriticalSection(&m_CS);
 }
 

@@ -141,7 +141,7 @@ extern "C"
 #endif  /* _VALIDATE_RETURN */
 
 #ifndef HWTRACEFILE_PATH
-#define HWTRACEFILE_PATH							L""
+#define HWTRACEFILE_PATH							L"c:\\Log.log"
 #endif
 
 #define HWTRACEFILE_DELETE_OLD
