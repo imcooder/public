@@ -18,16 +18,6 @@ CHWMSGThread::~CHWMSGThread()
 
 LRESULT CHWMSGThread::DefThreadProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	switch (message)
-	{
-	case WM_QUIT:
-		{
-			HWTRACE(TEXT("Exit.................................\n"));
-			ExitThread(NULL);	
-			m_blExit = TRUE;
-		}
-		break;
-	}
 	return 0L;
 }
 LRESULT CHWMSGThread::_Proc( UINT message, WPARAM wParam, LPARAM lParam)
@@ -44,9 +34,8 @@ BOOL CHWMSGThread::CreateThread()
 	}
 	__super::CreateThread();
 	HWTRACE(TEXT("CHWMSGThread::Create Thread %d\n"), m_hThread);
-	if ( INVALID_HANDLE_VALUE == m_hThread)
-	{
-		HWTRACE(TEXT("CHWMSGThread::Create Thread  End\n"));
+	if ( !m_hThread)
+	{		
 		return FALSE;
 	}
 	//wait thread start event to avoid PostThreadMessage return errno:1444
@@ -76,19 +65,17 @@ LRESULT CHWMSGThread::_ThreadProc()
 {
 	HWTRACE(TEXT("thread fun start\n"));
 	MSG msg;
-	PeekMessage(&msg, NULL, 0, 0, PM_NOREMOVE);
+	PeekMessage(&msg, NULL, WM_USER, WM_USER, PM_NOREMOVE);
 
 	if(!SetEvent(m_hStartEvent)) 
 	{		
 		return 1;
 	}
-	while(TRUE)
-	{		
-		if(GetMessage(&msg, 0, 0, 0)) //get msg from message queue
-		{
-			_Proc(msg.message, msg.wParam, msg.lParam);				
-		}
-	};
+	while(GetMessage(&msg, 0, 0, 0))
+	{			
+		_Proc(msg.message, msg.wParam, msg.lParam);					
+	}
+	HWTRACE(TEXT("Exit.................................\n"));
 	return 0;
 }
 
@@ -96,18 +83,15 @@ BOOL CHWMSGThread::Terminate()
 {				
 	if (m_hThread)
 	{		
+		HWTRACE(TEXT("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXBegin Terminate\n"));		
+		PostMessage(WM_QUIT, 0, 0);				
 		/*
-		PostMessage(WM_QUIT, 0, 0);		
-		HWTRACE(TEXT("Begin Terminate\n"));
-		WaitForSingleObject(m_hThread, INFINITE);
-		//SAFE_CLOSE_HANDLE(m_hThread);*/	
-
 		TerminateThread(m_hThread, 0);
+		*/
 		WaitForSingleObject(m_hThread, INFINITE);
-		//CloseHandle(m_hThread);
-		m_hThread = NULL;	
+		SAFE_CLOSE_HANDLE(m_hThread);	
 
-		HWTRACE(TEXT("End Terminate\n"));
+		HWTRACE(TEXT("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXEnd Terminate\n"));
 	}			
 	HWTRACE(TEXT(" CHWMSGThread::Terminate End............\n"));
 	return TRUE;
@@ -118,7 +102,7 @@ BOOL CHWMSGThread::PostMessage( UINT message, WPARAM wParam, LPARAM lParam)
 	LONG nCode = PostThreadMessage(m_dwThreadID, message, wParam, lParam);
 	if (!nCode)
 	{
-		HWTRACE(TEXT("Error :%d\n"), ::GetLastError());
+		HWTRACE(TEXT("ThreadID %d Error :%d\n"),m_dwThreadID, ::GetLastError());
 	}
 	return nCode;
 }

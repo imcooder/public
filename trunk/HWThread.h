@@ -12,6 +12,7 @@ public:
 	virtual ~CHWThread();
 	virtual BOOL Terminate();		
 	virtual BOOL CreateThread();
+	virtual BOOL SetThreadPriority(int);
 protected:
 	HANDLE m_hThread;		
 	HANDLE m_hTerminateEvent;

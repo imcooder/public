@@ -29,6 +29,7 @@ CHWThread::CHWThread()
 CHWThread::~CHWThread()
 {
 	SAFE_CLOSE_HANDLE(m_hThread);	
+	m_dwThreadID = 0;
 	SAFE_CLOSE_HANDLE( m_hTerminateEvent);		
 }
 
@@ -41,6 +42,7 @@ BOOL CHWThread::Terminate()
 		TerminateThread(m_hTerminateEvent, 0);
 		WaitForSingleObject(m_hThread, INFINITE);	
 		SAFE_CLOSE_HANDLE(m_hThread);		
+		m_dwThreadID = 0;
 		HWTRACE(TEXT("CHWThread::Terminate End\n"));
 	}
 	else
@@ -70,6 +72,17 @@ BOOL CHWThread::CreateThread()
 	{
 		return TRUE;
 	}
+	m_dwThreadID = 0;
 	m_hThread = ::CreateThread(NULL, 0, ThreadProc, reinterpret_cast<LPVOID>(this), 0, &m_dwThreadID);
+	HWTRACEEX(!m_hThread, TEXT("CreateThread Failed %d\n"), GetLastError());
 	return !!m_hThread;
+}
+
+BOOL CHWThread::SetThreadPriority( int nPriority)
+{
+	if (m_hThread)
+	{
+		return ::SetThreadPriority(m_hThread, nPriority);
+	}
+	return FALSE;
 }
