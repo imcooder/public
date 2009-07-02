@@ -10,13 +10,13 @@ void CHWThread::TryExit(DWORD dwTime)
 	{
 		return;
 	}		
-	HWTRACE(TEXT("CHWThread::TryExit Begin\n"));
+	//HWTRACE(TEXT("CHWThread::TryExit Begin\n"));
 	if(WAIT_OBJECT_0 == WaitForSingleObject(m_hTerminateEvent, dwTime))   
 	{			
 		ResetEvent(m_hTerminateEvent);		
 		ExitThread(NULL);			
 	}
-	HWTRACE(TEXT("CHWThread::TryExit End\n"));
+	//HWTRACE(TEXT("CHWThread::TryExit End\n"));
 }
 
 CHWThread::CHWThread()
@@ -37,13 +37,16 @@ BOOL CHWThread::Terminate()
 {
 	if (m_hThread)
 	{
-		HWTRACE(TEXT("CHWThread::Terminate Begin\n"));
-	//SetEvent(m_hTerminateEvent);		
-		TerminateThread(m_hTerminateEvent, 0);
-		WaitForSingleObject(m_hThread, INFINITE);	
+		//HWTRACE(TEXT("CHWThread::Terminate Begin\n"));
+		SetEvent(m_hTerminateEvent);				
+		if (WAIT_OBJECT_0 != WaitForSingleObject(m_hThread, 300))
+		{
+			TerminateThread(m_hTerminateEvent, 0);
+			WaitForSingleObject(m_hThread, INFINITE);	
+		}		
 		SAFE_CLOSE_HANDLE(m_hThread);		
 		m_dwThreadID = 0;
-		HWTRACE(TEXT("CHWThread::Terminate End\n"));
+		//HWTRACE(TEXT("CHWThread::Terminate End\n"));
 	}
 	else
 	{
