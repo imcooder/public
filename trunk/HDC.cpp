@@ -156,3 +156,23 @@ BOOL WINAPI HDCGray( HDC hDC, const LPRECT pRect)
 	} 
 	return TRUE;
 }
+
+BOOL WINAPI DrawBorder( const LPRECT lprc )
+{
+	HDC hDC = NULL;
+	int sbx, sby;
+	if (!lprc)
+	{
+		return FALSE;
+	}
+	hDC = CreateDC( TEXT("DISPLAY"), NULL, NULL, NULL );
+	SelectObject( hDC, GetStockObject( GRAY_BRUSH ) );
+	sbx = GetSystemMetrics( SM_CXBORDER );
+	sby = GetSystemMetrics( SM_CYBORDER );
+	PatBlt( hDC, lprc->left, 	lprc->top, lprc->right - lprc->left-sbx, 	sby, PATINVERT );
+	PatBlt( hDC, lprc->right - sbx, lprc->top, sbx, lprc->bottom - lprc->top-sby, PATINVERT );
+	PatBlt( hDC, lprc->right, lprc->bottom-sby, -(lprc->right - lprc->left-sbx), sby, PATINVERT );
+	PatBlt( hDC, lprc->left, lprc->bottom, sbx, -(lprc->bottom - lprc->top-sby), PATINVERT );
+	DeleteDC( hDC );
+	return TRUE;
+}
