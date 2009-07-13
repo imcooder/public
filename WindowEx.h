@@ -11,6 +11,10 @@ extern "C"{
 
 #ifdef __cplusplus
 }
+
+DLLXEXPORT BOOL WINAPI ClientToScreen( HWND, LPRECT);
+DLLXEXPORT BOOL WINAPI ScreenToClient( HWND, LPRECT);
+
 #endif
 	
 
