@@ -363,26 +363,29 @@ void WINAPI DebugStringA( LPCSTR pszDebugInfo)
 
 void WINAPI DebugStringFileW(LPCWSTR pszFile, LPCWSTR pszDebugInfo)
 {
-	if (!pszDebugInfo)
+	CHAR szString[MAX_SIZE_LL] = {0};
+	CHAR szFilePath[MAX_PATH] = {0};
+	if (!pszDebugInfo || !pszFile)
 	{
 		return;
 	}
-	FILE *pFile= NULL;
-	pFile = _wfopen(pszFile, L"a");
-	if (pFile)
+	wcstombs(szFilePath, pszFile, _countof(szFilePath));
+
+	DWORD dwChar = wcstombs(NULL, pszDebugInfo, 0);
+	if (dwChar + 5 < _countof(szString))
 	{
-		LPSTR pszContent = WCharToChar(pszDebugInfo);
-		if (pszContent)
+		wcstombs(szString, pszDebugInfo,_countof(szString));
+		DebugStringFileA(szFilePath,  szString);
+	}
+	else
+	{
+		CHAR *pAnsiString = (CHAR*)_alloca(dwChar + 5);
+		if (pAnsiString)
 		{
-			CHAR szInfo[MAX_SIZE_S] = {0};
-			StringCchPrintfA(szInfo, _countof(szInfo) - 1, "%d\t PID:%d TID:%d\t", GetTickCount(), GetCurrentProcessId(), GetCurrentThreadId());
-			fwrite(szInfo, sizeof(CHAR), strlen(szInfo), pFile);
-			fwrite(pszContent, sizeof(CHAR), strlen(pszContent), pFile);
-			fclose(pFile); 
-			pFile = NULL;
-			SAFE_DELETE_AR(pszContent);
-		}
-	}  
+			wcstombs(pAnsiString, pszDebugInfo, dwChar + 1);
+			DebugStringFileA(szFilePath,  pAnsiString);
+		}		
+	} 
 }
 void WINAPI DebugStringFileA(LPCSTR pszFile, LPCSTR pszDebugInfo)
 {
