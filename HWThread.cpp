@@ -41,7 +41,7 @@ BOOL CHWThread::Terminate()
 		SetEvent(m_hTerminateEvent);				
 		if (WAIT_OBJECT_0 != WaitForSingleObject(m_hThread, 300))
 		{
-			TerminateThread(m_hTerminateEvent, 0);
+			TerminateThread(m_hThread, 0);
 			WaitForSingleObject(m_hThread, INFINITE);	
 		}		
 		SAFE_CLOSE_HANDLE(m_hThread);		
