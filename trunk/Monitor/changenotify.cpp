@@ -75,7 +75,7 @@ void CChangeMonitor::EndMoniter( void )
 		SAFE_CLOSE_HANDLE(m_hThread);
 		m_dwThreadId = 0; 
 	} 
-	HWTRACE(TEXT("EndMoniter Begin")); 
+	HWTRACE(TEXT("EndMoniter End")); 
 	m_hWnd = NULL; // Õ®÷™¥∞ÃÂ÷√¡„ 
 } 
 

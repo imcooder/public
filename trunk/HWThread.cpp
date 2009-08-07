@@ -34,7 +34,7 @@ CHWThread::~CHWThread()
 }
 
 BOOL CHWThread::Terminate()
-{
+{	
 	if (m_hThread)
 	{
 		//HWTRACE(TEXT("CHWThread::Terminate Begin\n"));
@@ -50,9 +50,9 @@ BOOL CHWThread::Terminate()
 	}
 	else
 	{
-		
+
 	}
-	return TRUE;
+	return TRUE;	
 }
 
 
