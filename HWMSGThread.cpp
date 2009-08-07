@@ -77,7 +77,7 @@ BOOL CHWMSGThread::Terminate()
 	if (m_hThread)
 	{		
 		//HWTRACE(TEXT("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXBegin Terminate\n"));		
-		PostMessage(WM_QUIT, 0, 0);				
+		PostMessage(WM_QUIT, 0, 0);		
 		if (WAIT_OBJECT_0 != WaitForSingleObject(m_hThread, 300))
 		{
 			TerminateThread(m_hThread, 0);	
