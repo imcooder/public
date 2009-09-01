@@ -18,6 +18,20 @@ CHWMSGThread::~CHWMSGThread()
 
 LRESULT CHWMSGThread::DefThreadProc(UINT message, WPARAM wParam, LPARAM lParam)
 {
+	switch (message)
+	{
+	case WM_QUIT:
+		{
+			ExitThread(0);
+			return 0;
+		}
+		break;
+	default:
+		{
+			return 0;
+		}
+		break;
+	}
 	return 0L;
 }
 LRESULT CHWMSGThread::_Proc( UINT message, WPARAM wParam, LPARAM lParam)
