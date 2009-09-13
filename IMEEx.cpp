@@ -13,7 +13,7 @@ HKL WINAPI GetHKLByIMEFileName(LPCTSTR pszFileName)
 
 	dwSize = GetKeyboardLayoutList(0, NULL);
 
-	lphkl = (HKL *)GlobalAlloc(GPTR, dwSize * sizeof(DWORD));
+	lphkl = (HKL *)GlobalAlloc(GPTR, dwSize * sizeof(HKL));
 
 	if (!lphkl)
 	{

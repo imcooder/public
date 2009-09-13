@@ -245,7 +245,7 @@ void WINAPI File_PushTextA(HWX_IN const TCHAR *pchFilePath, HWX_IN const char *p
 	}
 
 	va_start(arglist, pchFormat);
-	_vsnprintf(achBuffer, BUFFER_Max, pchFormat, arglist);
+	StringCchVPrintfA(achBuffer, _countof(achBuffer), pchFormat, arglist);
 	va_end(arglist);
 
 	fwrite(achBuffer, sizeof(*achBuffer), strlen(achBuffer), pFile);

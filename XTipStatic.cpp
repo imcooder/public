@@ -70,7 +70,7 @@ LRESULT CXTipStatic::OnCreateToolTip( WPARAM w, LPARAM l )
 	{
 		//没有Notify属性 static不捕捉鼠标消息
 		DWORD dwStyle = GetStyle();	
-		::SetWindowLong(GetSafeHwnd(), GWL_STYLE, dwStyle | SS_NOTIFY);
+		::SetWindowLongPtr(GetSafeHwnd(), GWL_STYLE, dwStyle | SS_NOTIFY);
 		CString strWndText;
 		m_ToolTip.Create(this);
 		GetWindowText(strWndText);
