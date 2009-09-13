@@ -556,7 +556,7 @@ inline void HWLogFile::Write(LPCSTR szEntry)
 		static CHAR szTimeString[MAX_SIZE_M] = {0};
 		static CHAR szBuffer[MAX_SIZE_LL] = {0};	
 		GetTimeString(szTimeString, _countof(szTimeString));
-		INT nBytes = _snprintf(szBuffer, _countof(szBuffer), "%s,PID:\t%08X\tTID:\t%08X: %s\r\n", szTimeString, GetCurrentProcessId(), GetCurrentThreadId(), szEntry);
+		INT nBytes = StringCchPrintfA(szBuffer, _countof(szBuffer), "%s,PID:\t%08X\tTID:\t%08X: %s\r\n", szTimeString, GetCurrentProcessId(), GetCurrentThreadId(), szEntry);
 		if (nBytes)
 		{
 			DWORD dwWrittenBytes = 0;
@@ -564,7 +564,7 @@ inline void HWLogFile::Write(LPCSTR szEntry)
 			::WriteFile(m_hFile, szBuffer, nBytes, &dwWrittenBytes, NULL);
 			if (dwWrittenBytes == (DWORD)nBytes) 
 			{
-				::FlushFileBuffers(m_hFile);	
+				::FlushFileBuffers(m_hFile);	 
 			}	
 		}	
 	}
@@ -579,9 +579,9 @@ BOOL HWLogFile::GetTimeString(LPSTR szString, int nStringSize)
 #ifdef STLOG_USE_PERFORMANCE_COUNTER
 	LARGE_INTEGER counter;
 	QueryPerformanceCounter(&counter);
-	return (0 < _snprintf(szString, nStringSize, "%02u:%02u:%02u(%I64d)", st.wHour, st.wMinute, st.wSecond, counter.QuadPart));
+	return (0 < StringCchPrintfA(szString, nStringSize, "%02u:%02u:%02u(%I64d)", st.wHour, st.wMinute, st.wSecond, counter.QuadPart));
 #else
-	return (0 < _snprintf(szString, nStringSize, "%02u:%02u:%02u:%03u", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds));
+	return (0 < StringCchPrintfA(szString, nStringSize, "%02u:%02u:%02u:%03u", st.wHour, st.wMinute, st.wSecond, st.wMilliseconds));
 #endif
 }
 HWLogFile *HWLogFile::GetLogFile() 

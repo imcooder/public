@@ -470,6 +470,14 @@ typedef struct tagCnd8
 	(dwTimerID) = NULL;\
 } 
 
+#define SAFE_RELEASE_DC					SAFE_RELEASEDC
+#undef SAFE_RELEASEDC
+#define SAFE_RELEASEDC(hWnd, hDC) \
+	if (/*::IsWindow((hWnd)) && */(hDC))\
+{\
+	::ReleaseDC((hWnd), (hDC));\
+	(hDC) = NULL;\
+} 
 
 //////////////////////////////////////////////////////////////////////////
 #undef SetControlText

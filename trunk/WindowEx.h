@@ -5,16 +5,18 @@
 
 
 #ifdef __cplusplus
-extern "C"{
+extern "C"
+{
 #endif 
 	DLLXEXPORT BOOL WINAPI InitDefaultFont(LOGFONT*);
-
+	
 #ifdef __cplusplus
-}
 
+}
 DLLXEXPORT BOOL WINAPI ClientToScreen( HWND, LPRECT);
 DLLXEXPORT BOOL WINAPI ScreenToClient( HWND, LPRECT);
-
+DLLXEXPORT BOOL WINAPI ModifyStyle(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
+DLLXEXPORT BOOL WINAPI ModifyStyleEx(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
 #endif
 	
 
