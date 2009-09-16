@@ -15,8 +15,8 @@ extern "C"
 }
 DLLXEXPORT BOOL WINAPI ClientToScreen( HWND, LPRECT);
 DLLXEXPORT BOOL WINAPI ScreenToClient( HWND, LPRECT);
-DLLXEXPORT BOOL WINAPI ModifyStyle(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
-DLLXEXPORT BOOL WINAPI ModifyStyleEx(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
+DLLXEXPORT BOOL WINAPI HWModifyStyle(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
+DLLXEXPORT BOOL WINAPI HWModifyStyleEx(HWND, DWORD dwRemove, DWORD dwAdd, UINT nFlags = 0);
 #endif
 	
 

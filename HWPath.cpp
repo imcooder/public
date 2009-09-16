@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HWPath.h"
 #include "XStrhelper.h"
-
+#include <StrSafe.h>
 
 DLLXEXPORT BOOL WINAPI HWPathAppend( LPWSTR pszPath, LPCWSTR pszFile)
 {
