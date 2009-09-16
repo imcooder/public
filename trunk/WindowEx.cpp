@@ -64,7 +64,7 @@ BOOL WINAPI ScreenToClient( HWND hWnd, LPRECT pRect)
 }
 
 
-BOOL WINAPI ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+BOOL WINAPI HWModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 {	
 	if (!::IsWindow(hWnd))
 	{
@@ -83,7 +83,7 @@ BOOL WINAPI ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 	return TRUE;
 }
 
-BOOL WINAPI ModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags )
+BOOL WINAPI HWModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags )
 {	
 	if (!::IsWindow(hWnd))
 	{
