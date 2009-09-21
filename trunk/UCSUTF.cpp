@@ -8,7 +8,7 @@
 
 
 /* 转换UCS4编码或者UCS2编码到UTF8编码 */
-int UCS4_To_UTF8( unsigned long dwCode, unsigned char* pUTF8Str )
+int Conv_UCS4_To_UTF8( unsigned long dwCode, unsigned char* pUTF8Str )
 {
 	int i, iLen;
 	unsigned char bSum, bStep;
