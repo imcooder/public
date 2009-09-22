@@ -5,9 +5,13 @@
 #include <shlobj.h>
 #include "HWDebug.h"
 #include <String.h>
-
+#include <HWWinVersion.h>
 
 //////////////////////////////////////////////////////////////////////////
+
+#ifndef LABEL_SECURITY_INFORMATION
+#define LABEL_SECURITY_INFORMATION       (0x00000010L)
+#endif
 
 LONG WINAPI HWGetObjectIntegrityLevel(HANDLE hHandle, SE_OBJECT_TYPE  objectType)
 {	
@@ -35,112 +39,105 @@ LONG WINAPI HWGetObjectIntegrityLevel(HANDLE hHandle, SE_OBJECT_TYPE  objectType
 	return integrityLevel;
 }
 
-#ifndef LABEL_SECURITY_INFORMATION
-#define LABEL_SECURITY_INFORMATION       (0x00000010L)
-#endif
 
 BOOL WINAPI HWSetObjectToLowIntegrity( HANDLE hObject, SE_OBJECT_TYPE type) 
 { 
-#if (WINVER >= 0x0600)	
-	BOOL  blRet = TRUE;  
-	{
-		OSVERSIONINFO osVersionInfo;
-		ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
-		osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
-		GetVersionEx(&osVersionInfo);		
-		if (osVersionInfo.dwPlatformId >= VER_PLATFORM_WIN32_NT && osVersionInfo.dwMajorVersion >= 6)
-		{	
-			blRet = FALSE;		
-			PSECURITY_DESCRIPTOR pSD = NULL;      
-			PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
-			BOOL fSaclPresent = FALSE;  
-			BOOL fSaclDefaulted = FALSE;  
+	BOOL  blRet = TRUE; 	
+	OSVERSIONINFO osVersionInfo;
+	ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
+	osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
+	GetVersionEx(&osVersionInfo);		
+	if (HWIsVistaOrGreater(&osVersionInfo))
+	{	
+		blRet = FALSE;		
+		PSECURITY_DESCRIPTOR pSD = NULL;      
+		PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
+		BOOL fSaclPresent = FALSE;  
+		BOOL fSaclDefaulted = FALSE;  
 
-			if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
-			{	
-				if (GetSecurityDescriptorSacl(pSD, &fSaclPresent, &pSacl, &fSaclDefaulted))
-				{
-					blRet = (ERROR_SUCCESS  == SetSecurityInfo(hObject, type,   LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl));
-				} 			
-				LocalFree ( pSD );
-			}		
-		}
+		if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1, 	&pSD, NULL))
+		{	
+			if (GetSecurityDescriptorSacl(pSD, &fSaclPresent, &pSacl, &fSaclDefaulted))
+			{
+				blRet = (ERROR_SUCCESS  == SetSecurityInfo(hObject, type,   LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl));
+			} 			
+			LocalFree ( pSD );
+		}		
 	}
 	return blRet;
-#else
-	return TRUE;
-#endif
 }
 
 
 LONG WINAPI HWGetFileIntegrityLevel(LPTSTR pszFilePath)
 {	
 	DWORD integrityLevel = SECURITY_MANDATORY_UNTRUSTED_RID;
-	PSECURITY_DESCRIPTOR pSD = NULL;  
-	PACL acl = 0;
-	if (ERROR_SUCCESS == ::GetNamedSecurityInfo(pszFilePath,	SE_FILE_OBJECT,	LABEL_SECURITY_INFORMATION,	0, 0,	0, &acl, &pSD))
-	{		
-		if (0 != acl && 0 < acl->AceCount)
-		{
-			ASSERT(1 == acl->AceCount);
-			SYSTEM_MANDATORY_LABEL_ACE* ace = 0;
-			if(::GetAce(acl, 0,	reinterpret_cast<void**>(&ace)))
+	OSVERSIONINFO osVersionInfo;
+	ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
+	osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
+	GetVersionEx(&osVersionInfo);		
+	if (HWIsVistaOrGreater(&osVersionInfo))
+	{	
+		PSECURITY_DESCRIPTOR pSD = NULL;  
+		PACL acl = 0;
+		if (ERROR_SUCCESS == ::GetNamedSecurityInfo(pszFilePath,	SE_FILE_OBJECT,	LABEL_SECURITY_INFORMATION,	0, 0,	0, &acl, &pSD))
+		{		
+			if (0 != acl && 0 < acl->AceCount)
 			{
-				ASSERT(0 != ace);
-				SID* sid = reinterpret_cast<SID*>(&ace->SidStart);
-				integrityLevel = sid->SubAuthority[0];
-			}			
-		}
-		if (pSD)
-		{
-			LocalFree ( pSD );
-		}
-	}		
+				ASSERT(1 == acl->AceCount);
+				SYSTEM_MANDATORY_LABEL_ACE* ace = 0;
+				if(::GetAce(acl, 0,	reinterpret_cast<void**>(&ace)))
+				{
+					ASSERT(0 != ace);
+					SID* sid = reinterpret_cast<SID*>(&ace->SidStart);
+					integrityLevel = sid->SubAuthority[0];
+				}			
+			}
+			if (pSD)
+			{
+				LocalFree ( pSD );
+			}
+		}		
+	}
 	return integrityLevel;
 }
 
 
 BOOL WINAPI HWSetFileToLowIntegrity(LPCTSTR pszFileName)
 {	
-#if (WINVER >= 0x0600)
 	BOOL  b = TRUE; 
-	{
-		OSVERSIONINFO osVersionInfo;
-		ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
-		osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
-		GetVersionEx(&osVersionInfo);		
-		if (osVersionInfo.dwPlatformId >= VER_PLATFORM_WIN32_NT && osVersionInfo.dwMajorVersion >= 6)
-		{	 
-			b = FALSE;		
-			PSECURITY_DESCRIPTOR pSD = NULL;      
-			PACL pSacl = NULL;                  // Œ¥∑÷≈‰  
-			BOOL fSaclPresent = FALSE;  
-			BOOL fSaclDefaulted = FALSE;  
-
-			if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1,	&pSD, NULL))
+	OSVERSIONINFO osVersionInfo;
+	ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
+	osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
+	GetVersionEx(&osVersionInfo);		
+	if (HWIsVistaOrGreater(&osVersionInfo))
+	{	
+		b = FALSE;		
+		PSECURITY_DESCRIPTOR pSD = NULL;      
+		PACL pSacl = NULL;  
+		BOOL fSaclPresent = FALSE;  
+		BOOL fSaclDefaulted = FALSE;  
+		if (ConvertStringSecurityDescriptorToSecurityDescriptor(TEXT("S:(ML;;NW;;;LW)"), SDDL_REVISION_1,	&pSD, NULL))
+		{
+			if (GetSecurityDescriptorSacl(pSD, &fSaclPresent,	&pSacl, &fSaclDefaulted))
 			{
-				if (GetSecurityDescriptorSacl(pSD, &fSaclPresent,	&pSacl, &fSaclDefaulted))
-				{
-					b = ERROR_SUCCESS == SetNamedSecurityInfo((LPTSTR)pszFileName, SE_FILE_OBJECT,  LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl);
-				}
-				LocalFree ( pSD );
-			}	
-		}
+				b = ERROR_SUCCESS == SetNamedSecurityInfo((LPTSTR)pszFileName, SE_FILE_OBJECT,  LABEL_SECURITY_INFORMATION, NULL, NULL, NULL, pSacl);
+			}
+			LocalFree ( pSD );
+		}	
 	}
 	return b;
-#else
-	return TRUE;
-#endif
 }
-
-
 
 BOOL WINAPI Helper_GetProcessElevation(BOOL* pIsElevation) 
 {
 	BOOL bIsAdmin = FALSE;
 	BOOL bIsElevation = FALSE;
-#if (WINVER >= 0x0600)
-	{
+	OSVERSIONINFO osVersionInfo;
+	ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
+	osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
+	GetVersionEx(&osVersionInfo);		
+	if (HWIsVistaOrGreater(&osVersionInfo))
+	{	
 		HANDLE hToken = NULL;
 		DWORD dwSize;
 		TOKEN_ELEVATION_TYPE ElevationType;
@@ -192,11 +189,10 @@ BOOL WINAPI Helper_GetProcessElevation(BOOL* pIsElevation)
 		
 		return bIsAdmin;
 	}
-#else
+	else
 	{
 		bIsAdmin = IsUserAnAdmin();
 	}
-#endif
 	if (pIsElevation)
 	{
 		*pIsElevation = bIsElevation;
@@ -208,14 +204,13 @@ BOOL WINAPI Helper_GetProcessElevation(BOOL* pIsElevation)
 
 LONG Helper_GetProcessIntegrityLevel(DWORD dwProcessId)
 {	
-	OSVERSIONINFO OSVersion;
-	ZeroMemory( &OSVersion, sizeof( OSVersion ));
-	OSVersion.dwOSVersionInfoSize = sizeof( OSVersion );
-	GetVersionEx( &OSVersion );
-
 	DWORD dwIL = SECURITY_MANDATORY_HIGH_RID;
-	if(OSVersion.dwMajorVersion >= 6)
-	{//Vista
+	OSVERSIONINFO osVersionInfo;
+	ZeroMemory(&osVersionInfo, sizeof(osVersionInfo));
+	osVersionInfo.dwOSVersionInfoSize = sizeof(osVersionInfo);
+	GetVersionEx(&osVersionInfo);		
+	if (HWIsVistaOrGreater(&osVersionInfo))
+	{			
 		HANDLE hToken = NULL;
 		HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION, FALSE, dwProcessId);
 		if(hProcess)
@@ -312,7 +307,7 @@ int AddAccessUser(LPTSTR pszFileName)
 	int	retval = 1;
 	PACL myacl = GenerateACL();
 
-	if ( ERROR_SUCCESS!=SetNamedSecurityInfo(pszFileName, SE_FILE_OBJECT, 	DACL_SECURITY_INFORMATION, 	NULL, NULL, myacl, NULL) ) 
+	if ( ERROR_SUCCESS != SetNamedSecurityInfo(pszFileName, SE_FILE_OBJECT, 	DACL_SECURITY_INFORMATION, 	NULL, NULL, myacl, NULL) ) 
 	{
 		retval = 0;
 	}
