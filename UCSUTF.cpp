@@ -341,7 +341,7 @@ LPWSTR WINAPI HWCharNext( LPCWSTR pszStr)
 		return pszNext;
 	}	
 	WCHAR w1 = 0, w2 = 0;
-	DWORD dwLen = wcslen(pszNext);		
+	DWORD dwLen = (UINT)wcslen(pszNext);		
 	w1 = pszNext[0];
 	if( w1 >= 0xD800 && w1 <= 0xDBFF )
 	{
