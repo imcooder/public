@@ -31,12 +31,12 @@ CHAR*		WINAPI StringTokenA( CHAR* pszToken, const CHAR* pszDelimit, CHAR ** pszC
 	{
 		pszBegin = *pszContext;
 	}
-	UINT nLen = strlen(pszBegin);
+	UINT nLen = (UINT)strlen(pszBegin);
 	pszEnd = pszBegin + nLen + 1;
-	UINT nHeader = strspn(pszBegin, pszDelimit);
+	UINT nHeader = (UINT)strspn(pszBegin, pszDelimit);
 	assert(nHeader <= nLen);
 	pszHeader = pszBegin + nHeader;	
-	UINT nMiddle = strcspn(pszHeader, pszDelimit);
+	UINT nMiddle = (UINT)strcspn(pszHeader, pszDelimit);
 	pszTail = pszHeader + nMiddle;
 	assert(pszHeader <= pszTail);
 	if (pszHeader < pszTail)
@@ -77,12 +77,12 @@ WCHAR*	WINAPI StringTokenW( WCHAR* pszToken, const WCHAR* pszDelimit, WCHAR ** p
 	{
 		pszBegin = *pszContext;
 	}
-	UINT nLen = wcslen(pszBegin);
+	UINT nLen = (UINT)wcslen(pszBegin);
 	pszEnd = pszBegin + nLen + 1;
-	UINT nHeader = wcsspn(pszBegin, pszDelimit);
+	UINT nHeader = (UINT)wcsspn(pszBegin, pszDelimit);
 	assert(nHeader <= nLen);
 	pszHeader = pszBegin + nHeader;	
-	UINT nMiddle = wcscspn(pszHeader, pszDelimit);
+	UINT nMiddle =(UINT) wcscspn(pszHeader, pszDelimit);
 	pszTail = pszHeader + nMiddle;
 	assert(pszHeader <= pszTail);
 	if (pszHeader < pszTail)
