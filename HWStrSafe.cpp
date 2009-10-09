@@ -1,13 +1,13 @@
 /********************************************************************
 Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
-文件名称: 	StrSafeEx.cpp					
+文件名称: 	HWStrSafe.cpp					
 文件内容:	
 版本历史:	1.0
 作者:		xuejuntao xuejuntao@hanwang.com.cn 2008/06/21
 *********************************************************************/
 
 #include "stdafx.h"
-#include "StrSafeEx.h"
+#include "HWStrSafe.h"
 #include <String.h>
 #include <wchar.h>
 
