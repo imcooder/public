@@ -136,3 +136,47 @@ BOOL WINAPI HWIsWin7OrGreater( const OSVERSIONINFO* pVersion)
 	return (pVersion->dwPlatformId >= VER_PLATFORM_WIN32_NT) &&	GreaterThanEqualTo(pVersion, 6, 1);
 }
 
+BOOL WINAPI HWIsX64()
+{
+	return 8 == sizeof(HANDLE);
+}
+
+BOOL WINAPI HWIsWow64Process(HANDLE hProecss)
+{
+	typedef BOOL (WINAPI *LPIsWow64Process)(HANDLE, PBOOL);
+	LPIsWow64Process pIsWow64Process = NULL;
+	BOOL bIsWow64 = FALSE;
+	HMODULE hKernel32 = LoadLibraryW(L"kernel32");
+	if (hKernel32)
+	{
+		pIsWow64Process = (LPIsWow64Process)GetProcAddress(hKernel32, "IsWow64Process");
+		if (pIsWow64Process)
+		{
+			pIsWow64Process(hProecss, &bIsWow64);
+		}
+	}	
+	if (hKernel32)
+	{
+		pIsWow64Process = NULL;
+		FreeLibrary(hKernel32);
+		hKernel32 = NULL;
+	}
+	return bIsWow64;	
+} 
+
+BOOL WINAPI HWIs64BitCPU()
+{
+	SYSTEM_INFO   si;
+	BOOL       bIs64BitCpu;
+
+	if (HWIsWow64Process(GetCurrentProcess()))
+	{
+		bIs64BitCpu = TRUE;
+	}
+	else
+	{
+		GetSystemInfo(&si);
+		bIs64BitCpu = ((si.wProcessorArchitecture & PROCESSOR_ARCHITECTURE_IA64) || (si.wProcessorArchitecture & PROCESSOR_ARCHITECTURE_AMD64))	? TRUE : FALSE; 
+	}
+	return bIs64BitCpu; 
+}

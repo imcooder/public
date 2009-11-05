@@ -24,7 +24,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StringUpper			StringUpperW
 #define StringLower			StringLowerW
 #define StringReverse		StringReverseW
-
+#define StringToLong		StringToLongW
+#define StringToFloat		StringToFloatW
+#define StringToDword		StringToDwordW
 #else
 
 #define StringToken			StringTokenA
@@ -37,6 +39,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StringUpper			StringUpperA
 #define StringLower			StringLowerA
 #define StringReverse		StringReverseA
+#define StringToLong		StringToLongA
+#define StringToFloat		StringToFloatA
+#define StringToDword		StringToDwordA
 #endif
 
 
@@ -67,6 +72,12 @@ extern "C"{
 	CHAR*		WINAPI StringReverseA(LPSTR pszString);
 	LONG		WINAPI StringWCharToChar(LPCWSTR pszStr, LONG nLen, LPSTR pszString, LONG nMaxLen);
 	LONG		WINAPI StringCharToWChar(LPCSTR pszStr, LONG nLen, LPWSTR pszString, LONG nMaxLen);
+	LONG		WINAPI StringToLongW(LPCWSTR pszNum);
+	LONG		WINAPI StringToLongA(LPCSTR pszNum);
+	float		WINAPI StringToFloatW(LPCWSTR pszNum);
+	float		WINAPI StringToFloatA(LPCSTR pszNum);
+	DWORD		WINAPI StringToDwordW(LPCWSTR pszNum);
+	DWORD		WINAPI StringToDwordA(LPCSTR pszNum);
 
 #ifdef __cplusplus
 }
