@@ -23,7 +23,6 @@ typedef DWORD (WINAPI *LPGetAdaptersInfo)(PIP_ADAPTER_INFO,PULONG);
 
 
 //////////////////////////////////////////////////////////////////////////
-LONG GetNetAdapterPhysicalMAC(WCHAR * strDeviceName, WCHAR* pszMac, LONG nMax);
 //////////////////////////////////////////////////////////////////////////
 
 
@@ -111,7 +110,7 @@ __exit:
 }
 
 
-LONG GetNetAdapterPhysicalMAC(WCHAR* strDeviceName, WCHAR* pszMac, LONG nMax)
+LONG WINAPI GetNetAdapterPhysicalMAC(WCHAR* strDeviceName, WCHAR* pszMac, LONG nMax)
 {
 	TCHAR   szDriver[256];  
 	BYTE		ucData[8];

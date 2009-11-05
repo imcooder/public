@@ -578,5 +578,13 @@ typedef struct tagCnd8
 
 //////////////////////////////////////////////////////////////////////////
 
+__inline HANDLE DWORD64ToHANDLE(const DWORD64 dw64Value)
+{
+	return((HANDLE) (DWORD64) dw64Value );
+}
+__inline ULONGLONG HANDLEToDWORD64(HANDLE h)
+{
+	return((DWORD64) h );
+}
 #endif//HWXUE_EXT_TYPE_H_INC
 

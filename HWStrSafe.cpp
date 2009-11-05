@@ -390,3 +390,94 @@ LONG WINAPI StringCharToWChar(LPCSTR pszStr, LONG nLen, LPWSTR pszString, LONG n
 { 
 	return 	MultiByteToWideChar(CP_ACP, 0, pszStr, nLen,  pszString, nMaxLen);		
 }
+
+
+LONG WINAPI StringToLongW(LPCWSTR pszNum)
+{
+	LONG nValue = 0;
+	if(!pszNum)
+	{
+		return nValue;
+	}
+	
+	LPCWSTR pwhIndex = wcspbrk(pszNum, L"0123456789.-+");
+	if (pwhIndex) 
+	{
+		swscanf(pwhIndex, L"%ld", &nValue);
+	}
+	return nValue;
+}
+LONG WINAPI StringToLongA(LPCSTR pszNum)
+{
+	LONG nValue = 0;
+	if(!pszNum)
+	{
+		return nValue;
+	}
+
+	LPCSTR pwhIndex = strpbrk(pszNum, "0123456789.-+");
+	if (pwhIndex) 
+	{
+		sscanf(pwhIndex, "%ld", &nValue);
+	}
+	return nValue;
+}
+float WINAPI StringToFloatW(LPCWSTR pszNum)
+{
+	float flValue = 0.0;
+	if(!pszNum)
+	{
+		return flValue;
+	}	
+	LPCWSTR pszIndex = wcspbrk(pszNum, L"0123456789.-+");
+	if (pszIndex) 
+	{
+		swscanf(pszIndex, L"%f", &flValue); 
+	}
+	return flValue;
+}
+
+float WINAPI StringToFloatA(LPCSTR pszNum)
+{
+	float flValue = 0.0;
+	if(!pszNum)
+	{
+		return flValue;
+	}	
+	LPCSTR pszIndex = strpbrk(pszNum, "0123456789.-+");
+	if (pszIndex) 
+	{
+		sscanf(pszIndex, "%f", &flValue); 
+	}
+	return flValue;
+}
+
+DWORD WINAPI StringToDwordW(LPCWSTR pszNum)
+{
+	DWORD dwValue = 0;
+	if(!pszNum)
+	{
+		return dwValue;
+	}	
+	LPCWSTR pwhIndex = wcspbrk(pszNum, L"0123456789ABCDEFabcdef");
+	if (pwhIndex) 
+	{
+		swscanf(pwhIndex, L"%x", &dwValue); 
+	}
+	return dwValue;
+}
+
+DWORD WINAPI StringToDwordA(LPCSTR pszNum)
+{
+	DWORD dwValue = 0;
+	if(!pszNum)
+	{
+		return dwValue;
+	}	
+	LPCSTR pwhIndex = strpbrk(pszNum, "0123456789ABCDEFabcdef");
+	if (pwhIndex) 
+	{
+		sscanf(pwhIndex, "%x", &dwValue); 
+	}
+	return dwValue;
+}
