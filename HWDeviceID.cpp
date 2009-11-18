@@ -6,6 +6,7 @@
 #include <StrSafe.h>
 
 
+#define NVIDIA_GUID TEXT("{1A3E09BE-1E45-494B-9174-D7385B45BBF5}")
 
 #ifndef OID_802_3_PERMANENT_ADDRESS
 #define OID_802_3_PERMANENT_ADDRESS             0x01010101
@@ -117,10 +118,10 @@ LONG WINAPI GetNetAdapterPhysicalMAC(WCHAR* strDeviceName, WCHAR* pszMac, LONG n
 	DWORD		ByteRet;	
 	WCHAR szPhysicalMAC[32] = {0};
 	HANDLE hDriver = INVALID_HANDLE_VALUE;
-	StringCchCopy(szDriver, _countof(szDriver), TEXT("\\\\.\\"));
-	StringCchCat(szDriver, _countof(szDriver), strDeviceName);
+	StringCchCopyW(szDriver, _countof(szDriver), L"\\\\.\\");
+	StringCchCatW(szDriver, _countof(szDriver), strDeviceName);
 
-	hDriver = CreateFile(szDriver, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);  
+	hDriver = CreateFileW(szDriver, GENERIC_READ, 0, NULL, OPEN_EXISTING, 0, NULL);  
 	if(INVALID_HANDLE_VALUE == hDriver)  
 	{  
 		return -1;  
@@ -137,7 +138,7 @@ LONG WINAPI GetNetAdapterPhysicalMAC(WCHAR* strDeviceName, WCHAR* pszMac, LONG n
 		{
 			WCHAR szCode[8] = {0};
 			StringCchPrintfW(szCode, _countof(szCode), L"%02X", ucData[dwIdx]);
-			StringCchCat(szPhysicalMAC, _countof(szPhysicalMAC), szCode);
+			StringCchCatW(szPhysicalMAC, _countof(szPhysicalMAC), szCode);
 		}		
 	}
 	CloseHandle(hDriver);
@@ -149,8 +150,49 @@ LONG WINAPI GetNetAdapterPhysicalMAC(WCHAR* strDeviceName, WCHAR* pszMac, LONG n
 	}
 	else if (pszMac && nMax)
 	{
-		StringCchCopy(pszMac, nMax, szPhysicalMAC);	
+		StringCchCopyW(pszMac, nMax, szPhysicalMAC);	
 		return wcslen(pszMac);
 	}
 	return 0;
+}
+
+BOOL WINAPI HWIsLocalAdapter(char *pAdapterName)
+{
+	#define NET_CARD_KEY TEXT("System\\CurrentControlSet\\Control\\Network\\{4D36E972-E325-11CE-BFC1-08002BE10318}")
+	BOOL ret_value = FALSE;
+	TCHAR szDataBuf[MAX_PATH + 1];
+	DWORD dwDataLen = MAX_PATH;
+	DWORD dwType = REG_SZ;
+	HKEY hNetKey = NULL;
+	HKEY hLocalNet = NULL;
+
+	CHAR szBuf[MAX_PATH + 1];
+
+	if(ERROR_SUCCESS != RegOpenKeyEx(HKEY_LOCAL_MACHINE, NET_CARD_KEY, 0, KEY_READ, &hNetKey))
+	{
+		return FALSE;
+	}
+	StringCchPrintfA(szBuf, _countof(szBuf), "%s\\Connection", pAdapterName);
+	if(ERROR_SUCCESS != RegOpenKeyExA(hNetKey ,szBuf ,0 ,KEY_READ, &hLocalNet))
+	{
+		RegCloseKey(hNetKey);
+		return FALSE;
+	}
+
+	if (ERROR_SUCCESS != RegQueryValueEx(hLocalNet, L"PnpInstanceID", 0, &dwType, (BYTE *)szDataBuf, &dwDataLen))
+	{
+		goto ret;
+	}
+	if (!(!_tcsnicmp(szDataBuf, L"PCI", lstrlen(L"PCI"))  || !_tcsnicmp(szDataBuf, NVIDIA_GUID, lstrlen(NVIDIA_GUID)) || !_tcsnicmp(szDataBuf, L"USB", lstrlen(L"USB"))))
+	{
+		goto ret;
+	}
+
+	ret_value = TRUE;
+
+ret:
+	RegCloseKey(hLocalNet);
+	RegCloseKey(hNetKey);
+
+	return ret_value;
 }
