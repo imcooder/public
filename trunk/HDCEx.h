@@ -9,102 +9,30 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #ifndef HWX_HDCEX_H
 #define HWX_HDCEX_H
 
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
-
-class CBufferDC
+class CXUEMemDC
 {
 public:
-	CBufferDC(HDC hDestDC, const RECT& rcPaint);
-	
-	virtual ~CBufferDC();	
-	HDC GetHDC();
+	CXUEMemDC(HDC hDestDC, const LPRECT prcPaint);
+	virtual ~CXUEMemDC();
+	HDC	GetSafeHdc();
+	BOOL Clear(COLORREF);
+	BOOL SwapBuffer();
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////
+	void DrawDragRect(const LPRECT lpRect, SIZE size, const LPRECT lpRectLast, SIZE sizeLast, HBRUSH pBrush, HBRUSH pBrushLast);
+	void FillSolidRect(LPCRECT lpRect, COLORREF clr);
+	void FillSolidRect(int x, int y, int cx, int cy, COLORREF clr);
+	void Draw3dRect(LPCRECT lpRect,COLORREF clrTopLeft, COLORREF clrBottomRight);
+	void Draw3dRect(int x, int y, int cx, int cy, COLORREF clrTopLeft, COLORREF clrBottomRight);
+	//////////////////////////////////////////////////////////////////////////
+	HBRUSH GetHalftoneBrush();
 protected:
-	HDC     m_hDestDC;    // Handle to the destination device context.
-	HDC m_hMemDC;
-	HBITMAP m_hBitmap;     // Bitmap in memory device context
-	RECT   m_rect;       // Size of the area to paint.
-	HGDIOBJ m_hOldBitmap; // Handle to the previously selected bitmap.
-};
-
-class CXBufferDCEx
-{
-public:
-	CXBufferDCEx(HDC hDestDC, const RECT rcPaint);
-	virtual ~CXBufferDCEx();
-
-protected:
-	HDC m_hMemDC;
-	HDC     m_hDestDC;    // Handle to the destination device context.
-	HBITMAP m_bitmap;     // Bitmap in memory device context
-	RECT   m_rect;       // Size of the area to paint.
-	HGDIOBJ m_hOldBitmap; // Handle to the previously selected bitmap.
-};
-
-class CBitmapDC
-{
-public:	
-	CBitmapDC(HDC, HBITMAP hBitmap);  
-	virtual ~CBitmapDC();
-	void SetBitmap(HBITMAP);
-protected:
-	HDC     m_hDC;        // Device context handle.
-	HGDIOBJ m_hOldBitmap; // Handle to the previously selected bitmap.
-};
-
-class CFontDC
-{
-public:
-	CFontDC(HDC, HFONT = NULL);
-	CFontDC(HDC, HFONT, COLORREF clrTextColor); 
-	virtual ~CFontDC();
-	void SetFont(HFONT);
-	void SetColor(COLORREF clrTextColor);	
-	void SetFontColor(HFONT, COLORREF clrTextColor);
-	void ReleaseFont();
-	void ReleaseColor();
-
-protected:
-	HDC m_hDC;	
-	HFONT m_hOldFont;
-	COLORREF m_crOldTextColor; 
-};
-class CPenDC
-{
-public:
-	CPenDC(HDC, HPEN);
-	CPenDC(HDC hDC, COLORREF crColor); 
-	virtual ~CPenDC();		
-	void Color(COLORREF crColor); // <combine CXPenDC::Color>
-protected:
-	HPEN m_hPen; 
-	HDC  m_hDC; 
-	HPEN m_hOldPen; 
-};
-
-class CBrushDC
-{
-public:	
-	CBrushDC(HDC hDC, COLORREF crColor);	
-	virtual ~CBrushDC();	
-	void Color(COLORREF crColor);
-protected:
-	HBRUSH m_hBrush; 
-	HDC    m_hDC;
-	HBRUSH m_hOldBrush; 
-};
-
-class CCompatibleDC
-{
-public:		
-	CCompatibleDC(HDC, HBITMAP hBitmap); 	
-	virtual ~CCompatibleDC();
-	HDC GetHDC();
-protected:
-	HBITMAP m_hOldBitmap; 
-	HDC m_hMemDC;
+	HDC			m_hDC;
+	HDC     m_hDestDC;   
+	HBITMAP m_hBitmap;    
+	RECT		m_rtPaint;      
+	HGDIOBJ m_hOldBitmap;
 };
 
 #endif //HWX_HDCEX_H
