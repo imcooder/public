@@ -7,14 +7,20 @@
 #include <assert.h>
 #include <stdio.h>
 #include "XStrhelper.h"
-#include <StrSafe.h>
+#include "HWStrSafe.h"
+#include <Shellapi.h>
 //#include <io.h>
 #include <stdio.h>
 //#include <direct.h>
 //#include <sys/stat.h>
 
+#ifdef WINCE
+#pragma comment(lib, "Ceshell.lib")
+#else
+#pragma comment(lib, "shell32.lib")
+#endif
 
-LONG WINAPI LoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
+LONG WINAPI HWLoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
 {
 	DWORD dwFileLen = 0;
 	FILE *pf = NULL;
@@ -42,7 +48,7 @@ LONG WINAPI LoadFileA( LPCSTR pszFileName, LPBYTE *ppFileContent)
 	*ppFileContent = (LPBYTE)pnBuffer;
 	return dwFileLen;
 }
-LONG WINAPI LoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
+LONG WINAPI HWLoadFileW(LPCWSTR pszFileName, LPBYTE *ppFileContent)
 {
 	DWORD dwFileLen = 0;
 	FILE *pf = NULL;
@@ -90,7 +96,7 @@ BOOL  WINAPI File_GenTitle(HWX_IN const TCHAR *ptchFilePath, HWX_OUT TCHAR *ptch
 		blRet = FALSE;
 		goto Exit_;
 	}  
-	_tcsncpy_s(ptchTitle, MAX_PATH, ptchFllwHead + 1, nTitleLen);
+	StringCchCopyN(ptchTitle, MAX_PATH, ptchFllwHead + 1, nTitleLen);
 
 Exit_:  
 	return blRet;
@@ -110,7 +116,7 @@ BOOL WINAPI File_GenName(HWX_IN const TCHAR *ptchFilePath, HWX_OUT TCHAR *ptchNa
 		blRet = FALSE;
 		goto Exit_;
 	}  
-	_tcsncpy_s(ptchName, MAX_PATH, ptchFllwHead + 1, nNameLen);
+	StringCchCopyN(ptchName, MAX_PATH, ptchFllwHead + 1, nNameLen);
 
 Exit_:  
 	return blRet;
@@ -138,7 +144,7 @@ BOOL WINAPI File_GenFilePath(HWX_IN const TCHAR *ptchFullPath, HWX_OUT TCHAR *pt
 
 	nPathLen = (LONG)_tcslen( ptchFullPath ) - (LONG)_tcslen( pchHead );
 	assert(nPathLen > 0);
-	_tcsncpy_s( ptchPath, MAX_PATH, ptchFullPath, nPathLen );
+	StringCchCopyN( ptchPath, MAX_PATH, ptchFullPath, nPathLen );
 
 _Exit:
 
@@ -154,7 +160,7 @@ BOOL WINAPI File_GenCurPath(HWX_OUT TCHAR * ptchPath)
 	assert (nLen < MAX_PATH);
 	VERIFY(NULL != (ptchIndex = _tcsrchr(atchPath, _T('\\'))));
 	*(ptchIndex) = 0;
-	_tcscpy_s(ptchPath, MAX_PATH, atchPath);  
+	StringCchCopy(ptchPath, MAX_PATH, atchPath);  
 	return TRUE;
 }
 
@@ -197,7 +203,7 @@ BOOL WINAPI File_CreateDirs(HWX_IN const TCHAR *ptchDstFilePath )
 		if(pchTail)
 		{
 			nPairentPathLen = (LONG)_tcslen( ptchDstFilePath ) - (LONG)_tcslen( pchTail );
-			_tcsncpy_s(szPairentPath, MAX_PATH, ptchDstFilePath, nPairentPathLen);      
+			StringCchCopyN(szPairentPath, MAX_PATH, ptchDstFilePath, nPairentPathLen);      
 			//_tmkdir(szPairentPath);   
 			CreateDirectory(szPairentPath, NULL);
 			pchTail ++;
@@ -245,7 +251,7 @@ void WINAPI File_PushTextA(HWX_IN const TCHAR *pchFilePath, HWX_IN const char *p
 	}
 
 	va_start(arglist, pchFormat);
-	StringCchVPrintfA(achBuffer, _countof(achBuffer), pchFormat, arglist);
+	_vsnprintf(achBuffer, BUFFER_Max, pchFormat, arglist);
 	va_end(arglist);
 
 	fwrite(achBuffer, sizeof(*achBuffer), strlen(achBuffer), pFile);
@@ -307,35 +313,35 @@ BOOL WINAPI XIsFileInUseA(LPCSTR strFileName)
 #ifndef WINCE
 BOOL WINAPI XCreateDirA(HWX_IN LPCSTR pchDstFilePath )
 {   
-		LPCSTR pchTail = pchDstFilePath;  
-		CHAR szPairentPath[MAX_PATH] = {0};
-		BOOL blRet = TRUE;
-		int nPairentPathLen;
-		if (!pchDstFilePath)
-		{
-			blRet = FALSE;
-			goto _Error;
-		}
+	LPCSTR pchTail = pchDstFilePath;  
+	CHAR szPairentPath[MAX_PATH] = {0};
+	BOOL blRet = TRUE;
+	int nPairentPathLen;
+	if (!pchDstFilePath)
+	{
+		blRet = FALSE;
+		goto _Error;
+	}
 
-		while(pchTail)
-		{    
-			pchTail = strchr( pchTail, '\\');
-			if(pchTail)
+	while(pchTail)
+	{    
+		pchTail = strchr( pchTail, '\\');
+		if(pchTail)
+		{
+			nPairentPathLen = (LONG)strlen( pchDstFilePath ) - (LONG)strlen( pchTail ) + 1;
+			strncpy_s(szPairentPath, MAX_PATH, pchDstFilePath, nPairentPathLen); 
+			szPairentPath[nPairentPathLen + 1] = 0;
+			if (!CreateDirectoryA (szPairentPath, NULL))
 			{
-				nPairentPathLen = (LONG)strlen( pchDstFilePath ) - (LONG)strlen( pchTail )/* + 1*/;
-				strncpy_s(szPairentPath, MAX_PATH, pchDstFilePath, nPairentPathLen); 
-				szPairentPath[nPairentPathLen] = 0;
-				if (!CreateDirectoryA (szPairentPath, NULL))
+				if (GetLastError() != ERROR_ALREADY_EXISTS)
 				{
-					if (GetLastError() != ERROR_ALREADY_EXISTS)
-					{
-						blRet = FALSE;
-						break;
-					}				
-				}            
-				pchTail ++;
-			}
+					blRet = FALSE;
+					break;
+				}				
+			}            
+			pchTail ++;
 		}
+	}
 _Error:
 	return blRet;
 }
@@ -359,10 +365,10 @@ BOOL WINAPI XCreateDirW(HWX_IN LPCWSTR pwhDstFilePath )
 		if(pwhTail)
 		{
 			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail );
-			wcsncpy_s(szPairentPath, MAX_PATH, pwhDstFilePath, nPairentPathLen);  
+			StringCchCopyNW(szPairentPath, MAX_PATH, pwhDstFilePath, nPairentPathLen);  
 			szPairentPath[nPairentPathLen] = 0;
 			if (!CreateDirectoryW(szPairentPath, NULL))
-			{
+			{				
 				if (GetLastError() != ERROR_ALREADY_EXISTS)
 				{
 					blRet = FALSE;
@@ -370,7 +376,7 @@ BOOL WINAPI XCreateDirW(HWX_IN LPCWSTR pwhDstFilePath )
 				}			
 			}         
 			pwhTail ++;
-		}
+		}		
 	}
 _Error:
 
@@ -379,13 +385,13 @@ _Error:
 #ifndef WINCE
 BOOL WINAPI XGenCurPathA(HWX_OUT LPSTR pchPath)
 {
-		CHAR achPath[MAX_PATH];
-		CHAR *pchIndex;
-		LONG nLen = GetModuleFileNameA(NULL, achPath, MAX_PATH);
-		assert (nLen < MAX_PATH); 
-		VERIFY(NULL != (pchIndex = strrchr(achPath, '\\')));
-		*(pchIndex) = 0;
-		strcpy_s(pchPath, MAX_PATH, achPath);  
+	CHAR achPath[MAX_PATH];
+	CHAR *pchIndex;
+	LONG nLen = GetModuleFileNameA(NULL, achPath, MAX_PATH);
+	assert (nLen < MAX_PATH); 
+	VERIFY(NULL != (pchIndex = strrchr(achPath, '\\')));
+	*(pchIndex) = 0;
+	strcpy_s(pchPath, MAX_PATH, achPath);  
 	return TRUE;
 }
 #endif
@@ -397,7 +403,7 @@ BOOL WINAPI XGenCurPathW(HWX_OUT LPWSTR pwhPath)
 	assert (nLen < MAX_PATH);
 	VERIFY(NULL != (pwhIndex = wcsrchr(awhPath, L'\\')));
 	*(pwhIndex) = 0;
-	wcscpy_s(pwhPath, MAX_PATH, awhPath);  
+	StringCchCopyW(pwhPath, MAX_PATH, awhPath);  
 	return TRUE;
 }
 
@@ -466,7 +472,7 @@ BOOL WINAPI XCreateFileW(HWX_IN LPCWSTR pwhDstFilePath, BOOL blOverwrite)
 
 BOOL WINAPI XIsDirectoryExistW(LPCWSTR pwhDir)
 {  
-	wchar_t wchPath[_MAX_PATH];  
+	wchar_t wchPath[_MAX_PATH] = {0};  
 	BOOL blRet = TRUE;
 	DWORD dwFileAtti = GetFileAttributesW(pwhDir);
 	if ((DWORD)(-1) == dwFileAtti)
@@ -483,21 +489,21 @@ BOOL WINAPI XIsDirectoryExistW(LPCWSTR pwhDir)
 	}
 	/*
 	if (!_wgetcwd(wchPath, _MAX_PATH))
-		{
-			blRet = FALSE;
-		}
-		else
-		{
-			if (_wchdir(pwhDir))
-			{
-				blRet = FALSE;
-			}
-			else
-			{
-				_wchdir(wchPath);
-			}    
-		}*/
-	
+	{
+	blRet = FALSE;
+	}
+	else
+	{
+	if (_wchdir(pwhDir))
+	{
+	blRet = FALSE;
+	}
+	else
+	{
+	_wchdir(wchPath);
+	}    
+	}*/
+
 	return blRet;
 }
 #ifndef WINCE
@@ -518,23 +524,23 @@ BOOL WINAPI XIsDirectoryExistA(LPCSTR pchDir)
 	{
 		blRet = FALSE;
 	}
-/*	
-		if (!_getcwd(achPath, _MAX_PATH))
-		{
-			blRet = FALSE;
-		}
-		else
-		{
-			if (_chdir(pchDir))
-			{
-				blRet = FALSE;
-			}
-			else
-			{
-				_chdir(achPath);
-			}    
-		}*/
-	
+	/*	
+	if (!_getcwd(achPath, _MAX_PATH))
+	{
+	blRet = FALSE;
+	}
+	else
+	{
+	if (_chdir(pchDir))
+	{
+	blRet = FALSE;
+	}
+	else
+	{
+	_chdir(achPath);
+	}    
+	}*/
+
 	return blRet;
 }
 #endif
@@ -549,10 +555,10 @@ BOOL WINAPI XIsFileExistW(LPCWSTR pwhPath)
 	}
 	/*
 	if (0 != _waccess(pwhPath, 0))
-		{ 
-			blRet = FALSE;
-		} */
-	  
+	{ 
+	blRet = FALSE;
+	} */
+
 	return blRet;
 }
 #ifndef WINCE
@@ -567,11 +573,11 @@ BOOL WINAPI XIsFileExistA(LPCSTR pchPath)
 	}
 	/*
 	if (0 != _access(pchPath, 0))
-		{ 
-			blRet = FALSE;
-		}  
-		*/
-	 
+	{ 
+	blRet = FALSE;
+	}  
+	*/
+
 	return blRet;
 }
 #endif
@@ -584,14 +590,14 @@ BOOL WINAPI XRemoveFileW(LPCWSTR pwhPath)
 	{
 		blRet = DeleteFileW(pwhPath);
 	}
-/*
-	
-		if (0 == _waccess(pwhPath, 0) && 0 != _wremove(pwhPath))
-		{    
-			_wchmod(pwhPath, _S_IREAD | _S_IWRITE);  
-			blRet = (-1 != _wremove(pwhPath)) ? TRUE : FALSE;
-		} */
-	  
+	/*
+
+	if (0 == _waccess(pwhPath, 0) && 0 != _wremove(pwhPath))
+	{    
+	_wchmod(pwhPath, _S_IREAD | _S_IWRITE);  
+	blRet = (-1 != _wremove(pwhPath)) ? TRUE : FALSE;
+	} */
+
 	return blRet;
 }
 #ifndef WINCE
@@ -606,11 +612,11 @@ BOOL WINAPI XRemoveFileA(LPCSTR pchPath)
 	}
 	/*
 	if (0 == _access(pchPath, 0) && 0 != remove(pchPath))
-		{  
-			_chmod(pchPath, _S_IREAD | _S_IWRITE);  
-			blRet = (-1 != remove(pchPath)) ? TRUE : FALSE;
-		}   */
-	
+	{  
+	_chmod(pchPath, _S_IREAD | _S_IWRITE);  
+	blRet = (-1 != remove(pchPath)) ? TRUE : FALSE;
+	}   */
+
 	return blRet;
 }
 #endif
@@ -629,7 +635,7 @@ BOOL WINAPI XDeleteDirectoryW(LPCWSTR pwhDir, BOOL blDelAll)
 	{
 		awhDir[nTail] = 0;
 	}
-
+	HWTRACE(TEXT("%s"), pwhDir);
 	WCHAR awhFile[MAX_PATH];
 	awhFile[0] = 0;
 	StringCchPrintfW(awhFile, _countof(awhFile), L"%s\\*.*", awhDir);
@@ -660,6 +666,7 @@ BOOL WINAPI XDeleteDirectoryW(LPCWSTR pwhDir, BOOL blDelAll)
 						tFileSet.dwFileAttributes &= ~FILE_ATTRIBUTE_READONLY;
 						SetFileAttributes(awhFile, tFileSet.dwFileAttributes);
 						blReturn = XRemoveFileW(awhFile);
+						HWTRACE(TEXT("%s"), awhFile);
 						//blReturn = (-1 != _wremove(awhFile)) ? TRUE : FALSE;
 					}
 					else
@@ -671,13 +678,14 @@ BOOL WINAPI XDeleteDirectoryW(LPCWSTR pwhDir, BOOL blDelAll)
 				{
 					//blReturn = (-1 != _wremove(awhFile)) ? TRUE : FALSE;
 					blReturn = XRemoveFileW(awhFile);
+					HWTRACE(TEXT("%s"), awhFile);
 				}
 			}
-			blFinded = (0 == FindNextFileW(hFile, &tFileSet))? TRUE : FALSE;
+			blFinded = (0 != FindNextFileW(hFile, &tFileSet))? TRUE : FALSE;
 		}
 	}
 	FindClose(hFile);
-	
+
 	blReturn = RemoveDirectoryW(awhDir);
 
 	return blReturn;
@@ -742,7 +750,7 @@ BOOL WINAPI XDeleteDirectoryA(LPCSTR pchDir, BOOL blDelAll)
 					//blReturn = (-1 != remove(achFile)) ? TRUE : FALSE;
 				}
 			}
-			blFinded = (0 == FindNextFileA(hFile, &tFileSet))? TRUE : FALSE;
+			blFinded = (0 != FindNextFileA(hFile, &tFileSet))? TRUE : FALSE;
 			//blFinded = (0 == _findnext(hFile, &tFileSet))? TRUE : FALSE;
 		}
 	}
@@ -752,3 +760,231 @@ BOOL WINAPI XDeleteDirectoryA(LPCSTR pchDir, BOOL blDelAll)
 	return blReturn;
 }
 #endif
+
+
+
+LONG WINAPI HWXUE_GetFileName(const TCHAR *pszFilePath, TCHAR *pszName, LONG nMax)
+{
+	if (!pszFilePath)
+	{
+		return -1;
+	}
+	LPCTSTR pszHead = pszFilePath; 	
+	TCHAR szFileName[256]	= {0};
+
+	pszHead = _tcsrchr(pszFilePath, _T('\\'));  
+	if (pszHead)
+	{
+		StringCchCopy(szFileName, _countof(szFileName), pszHead + 1);
+	}
+	else
+	{
+		StringCchCopy(szFileName, _countof(szFileName), pszFilePath);
+	}
+	if (!pszName && !nMax)
+	{
+		return _tcslen(szFileName);
+	}
+	else if (pszName && nMax > 0)
+	{
+		StringCchCopy(pszName, nMax, szFileName);
+		return _tcslen(pszName);
+	}
+	return -1;
+}
+
+BOOL WINAPI XUE_IsValidDirectoryW(LPCWSTR pszDir)   
+{
+	if (!pszDir)
+	{
+		return FALSE;
+	}
+	DWORD dwAttr = GetFileAttributesW(pszDir);   
+	if(dwAttr != 0xFFFFFFFF)   
+	{   
+		return dwAttr & FILE_ATTRIBUTE_DIRECTORY;   
+	}   
+	else   
+	{   
+		return FALSE;   
+	}   
+}  
+
+BOOL WINAPI XUE_IsValidDirectoryA(LPCSTR pszDir)   
+{
+	if (!pszDir)
+	{
+		return FALSE;
+	}
+	WCHAR szDir[MAX_DIR] = {0};
+	MultiByteToWideChar(CP_ACP, 0, pszDir, -1, szDir, _countof(szDir));
+	return XUE_IsValidDirectoryW(szDir);
+}
+
+BOOL WINAPI XUE_IsValidFileW(LPCWSTR pszFile)   
+{   
+	if (!pszFile)
+	{
+		return FALSE;
+	}
+	DWORD dwAttr = GetFileAttributesW(pszFile);   
+	if(dwAttr != 0xFFFFFFFF)   
+	{   
+		return!(dwAttr & FILE_ATTRIBUTE_DIRECTORY);   
+	}   
+	else
+	{   
+		return FALSE;
+	} 
+} 
+
+BOOL WINAPI XUE_IsValidFileA(LPCSTR pszFile)   
+{   
+	if (!pszFile)
+	{
+		return FALSE;
+	}
+	WCHAR szFile[MAX_DIR] = {0};
+	MultiByteToWideChar(CP_ACP, 0, pszFile, -1, szFile, _countof(szFile));
+	return XUE_IsValidFileW(szFile);
+} 
+
+ BOOL WINAPI XUE_CopyFolderA(LPCSTR pszSrc, LPCSTR pszDes, BOOL bOverWrite)   
+{   
+	WCHAR szSrc[MAX_DIR] = {0};
+	WCHAR szDes[MAX_DIR] = {0};
+	if (!pszSrc || !pszDes)
+	{
+		FALSE;
+	}
+	MultiByteToWideChar(CP_ACP, 0, pszSrc, -1, szSrc, _countof(szSrc));
+	MultiByteToWideChar(CP_ACP, 0, pszDes, -1, szDes, _countof(szDes));
+
+	return XUE_CopyFolderW(szSrc, szDes, bOverWrite);	   
+}  
+
+ BOOL WINAPI CheckSelfCopy(LPCWSTR pszSrc, LPCWSTR pszDest)
+ {
+	 BOOL bRes = FALSE;
+	 if (!pszSrc || !pszDest)
+	 {
+		 return FALSE;
+	 }
+	 WCHAR szSrc[MAX_PATH] = {0};
+	 WCHAR szDest[MAX_PATH] = {0};
+	 StringCchCopyW(szSrc, _countof(szSrc), pszSrc);
+	 StringCchCopyW(szDest, _countof(szDest), pszDest);
+	 if (XUE_IsValidDirectoryW(szSrc))
+	 {
+		 StringTrimW(szSrc, L" \\\t\/");
+		 StringTrimW(szDest, L" \\\t\/");
+
+		 if (0 == wcsicmp(szDest, szSrc))
+		 {
+			 bRes = TRUE;
+		 }		
+	 }
+	 return bRes;
+ }
+
+BOOL WINAPI XUE_CopyFolderW(LPCWSTR pszSrc, LPCWSTR pszDes, BOOL bOverWrite)
+{
+	if (!pszSrc || !pszDes)
+	{
+		return FALSE;
+	}
+	if(!XUE_IsValidDirectoryW(pszSrc))   
+	{   
+		return   FALSE;   
+	} 
+	if (CheckSelfCopy(pszSrc, pszDes))
+	{
+		return TRUE;
+	}
+
+	WCHAR szSrc[MAX_PATH] = {0};
+	WCHAR szDes[MAX_PATH] = {0};	
+	StringCchCopy(szDes, _countof(szDes), pszDes);
+	StringCchCopy(szSrc, _countof(szSrc), pszSrc);
+
+	BOOL blReturn = TRUE;
+	WCHAR szDir[_MAX_PATH] = {0};
+	szDir[0] = 0;
+	StringCchCopyW(szDir, _countof(szDir), szSrc);
+	LONG nTail = (LONG)wcslen(szDir) - 1;
+	if (nTail <= 0)
+	{
+		return FALSE;
+	}
+	if (szDir[nTail] == L'\\' || szDir[nTail] == L'/')
+	{
+		szDir[nTail] = 0;
+	}
+	HWTRACE(TEXT("%s"), szDir);
+	WCHAR szFile[MAX_PATH];
+	szFile[0] = 0;
+	StringCchCopyW(szFile, _countof(szFile), szDir);
+	HWPathAppend_s(szFile, _countof(szFile), L"*.*");	
+
+	WIN32_FIND_DATAW tFileSet;
+	HANDLE hFile = NULL;	
+	if ((hFile = FindFirstFileW(szFile, &tFileSet)) != INVALID_HANDLE_VALUE )
+	{
+		BOOL blFinded = TRUE;
+		while (blFinded)
+		{
+			if (tFileSet.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+			{
+				if (!(0 == wcscmp(tFileSet.cFileName, L"." )|| 0 == wcscmp(tFileSet.cFileName, L"..")))
+				{
+					//文件夹
+					TCHAR szSrcPath[MAX_PATH] = {0};
+					StringCchCopy(szSrcPath, _countof(szSrcPath), szDir);
+					HWPathAppend_s(szSrcPath, _countof(szSrcPath), tFileSet.cFileName);					
+					TCHAR szDestPath[MAX_PATH] = {0};
+					StringCchCopy(szDestPath, _countof(szDestPath), szDes);
+					HWPathAppend_s(szDestPath, _countof(szDestPath), tFileSet.cFileName);
+					CreateDirectory(szDestPath, NULL);
+					if (!XUE_CopyFolderW(szSrcPath, szDestPath, bOverWrite))
+					{
+						if (blReturn)
+						{
+							blReturn = !blReturn;
+						}
+					}					
+				}			
+			}
+			else
+			{	
+				//文件
+				TCHAR szSrcFilePath[MAX_PATH] = {0};
+				TCHAR szDestFilePath[MAX_PATH] = {0};
+				StringCchCopy(szSrcFilePath, _countof(szSrcFilePath), szDir);
+				HWPathAppend_s(szSrcFilePath, _countof(szSrcFilePath), tFileSet.cFileName);
+				StringCchCopy(szDestFilePath, _countof(szDestFilePath), szDes);
+				HWPathAppend_s(szDestFilePath, _countof(szDestFilePath), tFileSet.cFileName);
+				if (!CopyFile(szSrcFilePath, szDestFilePath, !bOverWrite))
+				{
+					if (blReturn)
+					{
+						blReturn = !blReturn;
+					}	
+				}				
+			}
+			blFinded = (0 != FindNextFileW(hFile, &tFileSet))? TRUE : FALSE;
+		}
+	}
+	FindClose(hFile);
+	hFile = NULL;	
+	return blReturn;
+}
+
+
+BOOL FileCopy(LPCWSTR pszSrcFile, LPCWSTR pszDesFile, BOOL bOverWrite)
+{
+	if (!pszDesFile || !pszSrcFile)
+	{
+		return FALSE;
+	}	
+	return CopyFile(pszSrcFile, pszDesFile, !bOverWrite);
+}

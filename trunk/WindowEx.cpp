@@ -20,7 +20,7 @@ BOOL WINAPI InitDefaultFont(LOGFONT* pLogFont)
 	return TRUE;
 }
 
-BOOL WINAPI ClientToScreen( HWND hWnd, LPRECT pRect)
+BOOL WINAPI XUE_ClientToScreen( HWND hWnd, LPRECT pRect)
 {
 	if (!pRect)
 	{
@@ -42,7 +42,7 @@ BOOL WINAPI ClientToScreen( HWND hWnd, LPRECT pRect)
 }
 
 
-BOOL WINAPI ScreenToClient( HWND hWnd, LPRECT pRect)
+BOOL WINAPI XUE_ScreenToClient( HWND hWnd, LPRECT pRect)
 {
 	if (!pRect)
 	{
@@ -64,7 +64,7 @@ BOOL WINAPI ScreenToClient( HWND hWnd, LPRECT pRect)
 }
 
 
-BOOL WINAPI HWModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
+BOOL WINAPI XUE_ModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 {	
 	if (!::IsWindow(hWnd))
 	{
@@ -83,7 +83,7 @@ BOOL WINAPI HWModifyStyle(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags)
 	return TRUE;
 }
 
-BOOL WINAPI HWModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags )
+BOOL WINAPI XUE_ModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags )
 {	
 	if (!::IsWindow(hWnd))
 	{
@@ -100,4 +100,22 @@ BOOL WINAPI HWModifyStyleEx(HWND hWnd, DWORD dwRemove, DWORD dwAdd, UINT nFlags 
 		}
 	}	
 	return TRUE;
+}
+
+DLLXEXPORT DWORD WINAPI XUE_GetWindowStyle( HWND hWnd)
+{
+	if (!::IsWindow(hWnd))
+	{
+		return 0;
+	}
+	return ::GetWindowLong(hWnd, GWL_STYLE);
+}
+
+DLLXEXPORT DWORD WINAPI XUE_GetWindowStyleEx( HWND hWnd)
+{
+	if (!::IsWindow(hWnd))
+	{
+		return 0;
+	}
+	return ::GetWindowLong(hWnd, GWL_EXSTYLE);
 }
