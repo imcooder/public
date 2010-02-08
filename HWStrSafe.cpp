@@ -11,6 +11,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include <String.h>
 #include <wchar.h>
 
+#ifndef _countof
+#define _countof(_Array) (sizeof(_Array) / sizeof(_Array[0]))
+#endif
 
 CHAR*		WINAPI StringTokenA( CHAR* pszToken, const CHAR* pszDelimit, CHAR ** pszContext)
 {
@@ -115,19 +118,27 @@ LONG WINAPI StringMidA(LPSTR pszString, LONG nIndex, UINT nCount)
 	}	
 	LONG nLength = (LONG)strlen(pszString);
 	assert(nIndex >= 0 && nIndex + (LONG)nCount <= nLength);	
-	if (0 != nIndex && nCount > 0)
+	if (0 != nIndex && nCount >= 0)
 	{
-		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
-		pszString[nCount] = 0;  
-#if defined(_DEBUG) || defined(DEBUG)
+		if (nCount > 0)
 		{
-			if (nIndex + nCount < (LONG)nLength)
+			memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
+			pszString[nCount] = 0;  
+#if defined(_DEBUG) || defined(DEBUG)
 			{
-				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
-			}
-		}  
+				if (nIndex + nCount < (LONG)nLength)
+				{
+					ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
+				}
+			}  
 #endif
-		nRet = (LONG)strlen(pszString);
+			nRet = (LONG)strlen(pszString);
+		}
+		else
+		{
+			pszString[0] = 0;
+		}
+		
 	}  
 	return nRet;
 }
@@ -165,7 +176,7 @@ void WINAPI StringTrimLeftA(LPSTR pszString, LPCSTR pszTag)
 	}	
 	LONG nLength = (LONG)strlen(pszString);
 	LONG nAmount = (LONG)strspn(pszString, pszTag);
-	if (nAmount < nLength)
+	if (nAmount <= nLength)
 	{
 		StringRightA(pszString, nLength - nAmount);
 	}	
@@ -211,19 +222,26 @@ LONG WINAPI StringMidW(LPWSTR pszString, LONG nIndex, UINT nCount)
 	}	
 	LONG nLength = (LONG)wcslen(pszString);
 	assert(nIndex >= 0 && nIndex + (LONG)nCount <= nLength);	
-	if (0 != nIndex && nCount > 0)
+	if (0 != nIndex && nCount >= 0)
 	{
-		memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
-		pszString[nCount] = 0;  
-#if defined(_DEBUG) || defined(DEBUG)
+		if (nCount > 0)
 		{
-			if (nIndex + (LONG)nCount < nLength)
+			memmove(pszString, pszString + nIndex, nCount * sizeof(*pszString));
+			pszString[nCount] = 0;  
+#if defined(_DEBUG) || defined(DEBUG)
 			{
-				ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
-			}
-		}  
+				if (nIndex + (LONG)nCount < nLength)
+				{
+					ZeroMemory(pszString + nCount, (nLength - nCount) * sizeof(*pszString));
+				}
+			}  
 #endif
-		nRet = (LONG)wcslen(pszString);
+			nRet = (LONG)wcslen(pszString);
+		}
+		else
+		{
+			pszString[0] = 0;
+		}		
 	}  
 	return nRet;
 }
@@ -261,7 +279,7 @@ void WINAPI StringTrimLeftW(LPWSTR pszString, LPCWSTR pwhTag)
 	}	
 	LONG nLength = (LONG)wcslen(pszString);
 	LONG nAmount = (LONG)wcsspn(pszString, pwhTag);
-	if (nAmount < nLength)
+	if (nAmount <= nLength)
 	{
 		StringRightW(pszString, nLength - nAmount);
 	}	
@@ -390,8 +408,6 @@ LONG WINAPI StringCharToWChar(LPCSTR pszStr, LONG nLen, LPWSTR pszString, LONG n
 { 
 	return 	MultiByteToWideChar(CP_ACP, 0, pszStr, nLen,  pszString, nMaxLen);		
 }
-
-
 LONG WINAPI StringToLongW(LPCWSTR pszNum)
 {
 	LONG nValue = 0;
@@ -480,4 +496,69 @@ DWORD WINAPI StringToDwordA(LPCSTR pszNum)
 		sscanf(pwhIndex, "%x", &dwValue); 
 	}
 	return dwValue;
+}
+
+
+
+LONG WINAPI StringCchToGuidW(LPCWSTR pszString, LONG nCount, GUID* pGUID)
+{
+	if (!pszString || nCount < 0 || !pGUID)
+	{
+		return -1;
+	}
+	WCHAR szGUID[64] = {0};
+	StringCchCopyW(szGUID, _countof(szGUID), pszString);
+	StringTrimW(szGUID, L"{}");
+	swscanf(szGUID, TEXT("%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X"), &pGUID->Data1, &pGUID->Data2, &pGUID->Data3, &pGUID->Data4[0], &pGUID->Data4[1], &pGUID->Data4[2], &pGUID->Data4[3], &pGUID->Data4[4], &pGUID->Data4[5], &pGUID->Data4[6], &pGUID->Data4[7]);
+	return 0;	
+}
+LONG WINAPI StringCchToGuidA(LPCSTR pszString, LONG nCount, GUID* pGUID)
+{
+	WCHAR szGUID[64] = {0};
+	if (!pszString || nCount < 0 || !pGUID)
+	{
+		return -1;
+	}
+	StringCharToWChar(pszString, nCount, szGUID, _countof(szGUID));	
+	return StringCchToGuidW(szGUID, _countof(szGUID), pGUID);	
+}
+
+LONG WINAPI StringCchFromGuidW(const GUID* pGUID, LPWSTR pszString, LONG nCount)
+{
+	if (!pGUID)
+	{
+		return -1;
+	}
+	WCHAR szGUID[64] = {0};
+	HRESULT  hRes = StringCchPrintfW(szGUID, _countof(szGUID), TEXT("{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}"), pGUID->Data1, pGUID->Data2, pGUID->Data3, pGUID->Data4[0], pGUID->Data4[1], pGUID->Data4[2], pGUID->Data4[3], pGUID->Data4[4], pGUID->Data4[5], pGUID->Data4[6], pGUID->Data4[7]);		
+	if (hRes != S_OK)
+	{	
+		return -1;
+	}
+	if (pszString && nCount > 0)
+	{
+		StringCchCopyW(pszString, nCount, szGUID);
+		return wcslen(pszString);
+	}
+	else if(!pszString && !nCount)
+	{
+		return wcslen(szGUID);
+	}
+	return -1;
+}
+
+
+LONG WINAPI StringCchFromGuidA(const GUID* pGUID, LPSTR pszString, LONG nCount)
+{
+	if (!pGUID)
+	{
+		return -1;
+	}
+	WCHAR szGUID[64] = {0};
+	LONG nRet = StringCchFromGuidW(pGUID, szGUID, _countof(szGUID));
+	if (!nRet && pszString && nCount > 0)
+	{
+		StringWCharToChar(szGUID, wcslen(szGUID), pszString, nCount);
+	}
+	return nRet;	
 }

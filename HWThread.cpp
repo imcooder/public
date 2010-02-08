@@ -109,3 +109,13 @@ BOOL CHWThread::SetThreadPriority( int nPriority)
 	}
 	return FALSE;
 }
+
+DWORD CHWThread::ResumeThread()
+{
+	return ::ResumeThread(m_hThread);
+}
+
+DWORD CHWThread::SuspendThread()
+{
+	return ::SuspendThread(m_hThread);
+}

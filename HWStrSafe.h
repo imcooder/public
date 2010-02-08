@@ -27,6 +27,10 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StringToLong		StringToLongW
 #define StringToFloat		StringToFloatW
 #define StringToDword		StringToDwordW
+#define StringCchToGuid	StringCchToGuidW
+#define StringCchFromGuid	StringCchFromGuidW
+
+
 #else
 
 #define StringToken			StringTokenA
@@ -42,6 +46,9 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #define StringToLong		StringToLongA
 #define StringToFloat		StringToFloatA
 #define StringToDword		StringToDwordA
+#define StringCchToGuid	StringCchToGuidA
+#define StringCchFromGuid	StringCchFromGuidA
+
 #endif
 
 
@@ -78,7 +85,10 @@ extern "C"{
 	float		WINAPI StringToFloatA(LPCSTR pszNum);
 	DWORD		WINAPI StringToDwordW(LPCWSTR pszNum);
 	DWORD		WINAPI StringToDwordA(LPCSTR pszNum);
-
+	LONG		WINAPI StringCchToGuidW(LPCWSTR pszString, LONG nCount, GUID* pGUID);
+	LONG		WINAPI StringCchToGuidA(LPCSTR pszString, LONG nCount, GUID* pGUID);
+	LONG		WINAPI StringCchFromGuidW(const GUID* pGUID, LPWSTR pszString, LONG nCount);
+	LONG		WINAPI StringCchFromGuidA(const GUID* pGUID, LPSTR pszString, LONG nCount);
 #ifdef __cplusplus
 }
 #endif

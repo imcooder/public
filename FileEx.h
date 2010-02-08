@@ -7,7 +7,7 @@
 
 #ifdef _UNICODE
 
-#define LoadFile				 LoadFileW
+#define HWLoadFile			 HWLoadFileW
 #define HWIsFileInUse    XIsFileInUseW
 #define HWCreateDir      XCreateDirW
 #define HWGenCurPath     XGenCurPathW
@@ -16,10 +16,12 @@
 #define HWIsFileExist    XIsFileExistW
 #define HWRemoveFile     XRemoveFileW
 #define HWDeleteDirectory  XDeleteDirectoryW
-
+#define HWIsValidDirectory		XUE_IsValidDirectoryW
+#define HWIsValidFile					XUE_IsValidFileW	
+#define HWCopyFolder					XUE_CopyFolderW
 #else
 
-#define LoadFile			LoadFileA
+#define HWLoadFile			 HWLoadFileA
 #define HWIsFileInUse    XIsFileInUseA
 #define HWCreateDir      XCreateDirA
 #define HWGenCurPath     XGenCurPathA
@@ -28,7 +30,9 @@
 #define HWIsFileExist    XIsFileExistA
 #define HWRemoveFile     XRemoveFileA
 #define HWDeleteDirectory  XDeleteDirectoryA
-
+#define HWIsValidDirectory		XUE_IsValidDirectoryA
+#define HWIsValidFile					XUE_IsValidFileA	
+#define HWCopyFolder					XUE_CopyFolderA
 #endif
 
 
@@ -42,8 +46,8 @@ extern "C"{
 	// -1   :	Not enough memory
 	// -2		: file not found	
 	//////////////////////////////////////////////////////////////////////////
-	DLLXEXPORT LONG WINAPI LoadFileA( LPCSTR, LPBYTE *);
-	DLLXEXPORT LONG WINAPI LoadFileW(LPCWSTR, LPBYTE *);
+	DLLXEXPORT LONG WINAPI HWLoadFileA( LPCSTR, LPBYTE *);
+	DLLXEXPORT LONG WINAPI HWLoadFileW(LPCWSTR, LPBYTE *);
 	//////////////////////////////////////////////////////////////////////////
 	//	>=0 if lpwstr != NULL the strlen need
 	//
@@ -73,6 +77,15 @@ extern "C"{
 	DLLXEXPORT  BOOL    WINAPI    XRemoveFileA(LPCSTR );
 	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryW(LPCWSTR , BOOL blDelAll);
 	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryA(LPCSTR , BOOL blDelAll);
+
+	DLLXEXPORT BOOL			WINAPI		XUE_IsValidFileW(LPCWSTR pszFile);
+	DLLXEXPORT BOOL			WINAPI		XUE_IsValidFileA(LPCSTR pszFile);;
+	DLLXEXPORT BOOL			WINAPI		XUE_IsValidDirectoryW(LPCWSTR pszDir); 
+	DLLXEXPORT BOOL			WINAPI		XUE_IsValidDirectoryA(LPCSTR pszDir);  
+	DLLXEXPORT BOOL			WINAPI		XUE_CopyFolderW(LPCWSTR pszSrc, LPCWSTR pszDes, BOOL bOverWrite);
+	DLLXEXPORT BOOL			WINAPI		XUE_CopyFolderA(LPCSTR pszSrc, LPCSTR pszDes, BOOL bOverWrite);
+	//
+	LONG WINAPI HWXUE_GetFileName(const TCHAR *pszFilePath, TCHAR *pszName, LONG nMax);
 /*
 #ifdef __cplusplus
 }

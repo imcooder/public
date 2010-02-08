@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "HWPath.h"
-#include "XStrhelper.h"
-#include <StrSafe.h>
+#include "HWStrSafe.h"
+
 
 DLLXEXPORT BOOL WINAPI HWPathAppend( LPWSTR pszPath, LPCWSTR pszFile)
 {
@@ -28,9 +28,9 @@ DLLXEXPORT BOOL WINAPI HWPathAppend_s( LPWSTR pszPath,DWORD dwLen, LPCWSTR pszFi
 	WCHAR szPath[MAX_PATH] = {0};
 	WCHAR szFile[MAX_PATH] = {0};
 	StringCchCopy(szPath, _countof(szPath), pszPath);
-	StrTrimRight(szPath, L" \t\\/");
+	StringTrimRight(szPath, L" \t\\/");
 	StringCchCopy(szFile, _countof(szFile), pszFile);
-	StrTrimLeft(szFile, L" \t\\/");
+	StringTrimLeft(szFile, L" \t\\/");
 	//HWTRACE(TEXT("%s\n"), szFile);
 	StringCchCat(szPath, _countof(szPath), L"\\");
 	StringCchCat(szPath, _countof(szPath), szFile);
