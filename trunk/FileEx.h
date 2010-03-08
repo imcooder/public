@@ -7,32 +7,36 @@
 
 #ifdef _UNICODE
 
-#define HWLoadFile			 HWLoadFileW
-#define HWIsFileInUse    XIsFileInUseW
-#define HWCreateDir      XCreateDirW
-#define HWGenCurPath     XGenCurPathW
-#define HWCreateFile     XCreateFileW
-#define HWIsDirectoryExist        XIsDirectoryExistW
-#define HWIsFileExist    XIsFileExistW
-#define HWRemoveFile     XRemoveFileW
-#define HWDeleteDirectory  XDeleteDirectoryW
-#define HWIsValidDirectory		XUE_IsValidDirectoryW
-#define HWIsValidFile					XUE_IsValidFileW	
-#define HWCopyFolder					XUE_CopyFolderW
+#define HWLoadFile											XUE_LoadFileW
+#define HWIsFileInUse										XUE_IsFileInUseW
+#define HWCreateDir											XUE_CreateFolderW
+#define HWGenCurPath										XUE_GenCurPathW
+#define HWCreateFile										XUE_CreateFileW
+#define HWCreateFolder									XUE_CreateFolderW
+#define HWIsDirectoryExist							XUE_IsDirectoryExistW
+#define HWIsFileExist										XUE_IsFileExistW
+#define HWRemoveFile										XUE_RemoveFileW
+#define HWRemoveFolder									XUE_RemoveFolderW
+#define HWDeleteDirectory								XUE_RemoveFolderW
+#define HWIsValidDirectory							XUE_IsValidDirectoryW
+#define HWIsValidFile										XUE_IsValidFileW	
+#define HWCopyFolder										XUE_CopyFolderW
 #else
 
-#define HWLoadFile			 HWLoadFileA
-#define HWIsFileInUse    XIsFileInUseA
-#define HWCreateDir      XCreateDirA
-#define HWGenCurPath     XGenCurPathA
-#define HWCreateFile     XCreateFileA
-#define HWIsDirectoryExist        XIsDirectoryExistA
-#define HWIsFileExist    XIsFileExistA
-#define HWRemoveFile     XRemoveFileA
-#define HWDeleteDirectory  XDeleteDirectoryA
-#define HWIsValidDirectory		XUE_IsValidDirectoryA
-#define HWIsValidFile					XUE_IsValidFileA	
-#define HWCopyFolder					XUE_CopyFolderA
+#define HWLoadFile											XUE_LoadFileA
+#define HWIsFileInUse										XUE_IsFileInUseA
+#define HWCreateDir											XUE_CreateFolderA
+#define HWGenCurPath										XUE_GenCurPathA
+#define HWCreateFile										XUE_CreateFileA
+#define HWCreateFolder									XUE_CreateFolderA
+#define HWIsDirectoryExist							XUE_IsDirectoryExistA
+#define HWIsFileExist										XUE_IsFileExistA
+#define HWRemoveFile										XUE_RemoveFileA
+#define HWRemoveFolder									XUE_RemoveFolderA
+#define HWDeleteDirectory								XUE_RemoveFolderA
+#define HWIsValidDirectory							XUE_IsValidDirectoryA
+#define HWIsValidFile										XUE_IsValidFileA	
+#define HWCopyFolder										XUE_CopyFolderA
 #endif
 
 
@@ -46,8 +50,8 @@ extern "C"{
 	// -1   :	Not enough memory
 	// -2		: file not found	
 	//////////////////////////////////////////////////////////////////////////
-	DLLXEXPORT LONG WINAPI HWLoadFileA( LPCSTR, LPBYTE *);
-	DLLXEXPORT LONG WINAPI HWLoadFileW(LPCWSTR, LPBYTE *);
+	DLLXEXPORT LONG WINAPI XUE_LoadFileA( LPCSTR, LPBYTE *);
+	DLLXEXPORT LONG WINAPI XUE_LoadFileW(LPCWSTR, LPBYTE *);
 	//////////////////////////////////////////////////////////////////////////
 	//	>=0 if lpwstr != NULL the strlen need
 	//
@@ -61,22 +65,22 @@ extern "C"{
 	DLLXEXPORT void  WINAPI File_WriteBinary(HWX_IN const TCHAR *pchFileName, HWX_IN const void *pvBuffer, HWX_IN size_t stSize, HWX_IN BOOL nIsAppend = TRUE);
 	DLLXEXPORT void  WINAPI File_PushTextA(HWX_IN const TCHAR *pchFilePath, HWX_IN const char *pchFormat, ...);
 
-	DLLXEXPORT  BOOL    WINAPI    XIsFileInUseA(LPCSTR strFileName); 
-	DLLXEXPORT  BOOL    WINAPI    XIsFileInUseW(LPCWSTR strFileName); 
-	DLLXEXPORT  BOOL    WINAPI    XCreateDirW(LPCWSTR pwhDstFilePath);
-	DLLXEXPORT  BOOL    WINAPI    XCreateDirA(LPCSTR pchDstFilePath);
-	DLLXEXPORT  BOOL    WINAPI    XGenCurPathW(HWX_OUT LPCWSTR pwhPath);
-	DLLXEXPORT  BOOL    WINAPI    XGenCurPathA(HWX_OUT LPCSTR pchPath);
-	DLLXEXPORT  BOOL    WINAPI    XCreateFileW(HWX_IN LPCWSTR pwhDstFilePath, BOOL blOverwrite = TRUE);
-	DLLXEXPORT  BOOL    WINAPI    XCreateFileA(HWX_IN LPCSTR pwhDstFilePath, BOOL blOverwrite = TRUE);
-	DLLXEXPORT  BOOL    WINAPI    XIsDirectoryExistW(LPCWSTR pwhDir);
-	DLLXEXPORT  BOOL    WINAPI    XIsDirectoryExistA(LPCSTR pchDir);
-	DLLXEXPORT  BOOL    WINAPI    XIsFileExistW(LPCWSTR );
-	DLLXEXPORT  BOOL    WINAPI    XIsFileExistA(LPCSTR );
-	DLLXEXPORT  BOOL    WINAPI    XRemoveFileW(LPCWSTR );
-	DLLXEXPORT  BOOL    WINAPI    XRemoveFileA(LPCSTR );
-	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryW(LPCWSTR , BOOL blDelAll);
-	DLLXEXPORT  BOOL    WINAPI    XDeleteDirectoryA(LPCSTR , BOOL blDelAll);
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsFileInUseA(LPCSTR strFileName); 
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsFileInUseW(LPCWSTR strFileName); 
+	DLLXEXPORT  BOOL    WINAPI    XUE_CreateFolderW(LPCWSTR pwhDstFilePath);
+	DLLXEXPORT  BOOL    WINAPI    XUE_CreateFolderA(LPCSTR pchDstFilePath);
+	DLLXEXPORT  BOOL    WINAPI    XUE_GenCurPathW(HWX_OUT LPCWSTR pwhPath);
+	DLLXEXPORT  BOOL    WINAPI    XUE_GenCurPathA(HWX_OUT LPCSTR pchPath);
+	DLLXEXPORT  BOOL    WINAPI    XUE_CreateFileW(HWX_IN LPCWSTR pwhDstFilePath, BOOL blOverwrite = TRUE);
+	DLLXEXPORT  BOOL    WINAPI    XUE_CreateFileA(HWX_IN LPCSTR pwhDstFilePath, BOOL blOverwrite = TRUE);
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsDirectoryExistW(LPCWSTR pwhDir);
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsDirectoryExistA(LPCSTR pchDir);
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsFileExistW(LPCWSTR );
+	DLLXEXPORT  BOOL    WINAPI    XUE_IsFileExistA(LPCSTR );
+	DLLXEXPORT  BOOL    WINAPI    XUE_RemoveFileW(LPCWSTR );
+	DLLXEXPORT  BOOL    WINAPI    XUE_RemoveFileA(LPCSTR );
+	DLLXEXPORT  BOOL    WINAPI    XUE_RemoveFolderW(LPCWSTR , BOOL blDelAll);
+	DLLXEXPORT  BOOL    WINAPI    XUE_RemoveFolderA(LPCSTR , BOOL blDelAll);
 
 	DLLXEXPORT BOOL			WINAPI		XUE_IsValidFileW(LPCWSTR pszFile);
 	DLLXEXPORT BOOL			WINAPI		XUE_IsValidFileA(LPCSTR pszFile);;
