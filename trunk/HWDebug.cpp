@@ -9,9 +9,6 @@ Copyright (c) 2002-2003 汉王科技有限公司. 版权所有.
 #include "HWDebug.h"
 #include <stdio.h>
 #include <memory>
-#include <XStrHelper.h>
-#include <string.h>
-#include <Windows.h>
 #include <StrSafe.h>
 
 #define LOGINSTANCENAME				_T("HWX_DEBUG_MUTEX")
