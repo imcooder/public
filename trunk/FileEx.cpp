@@ -330,16 +330,19 @@ BOOL WINAPI XUE_CreateFolderA(HWX_IN LPCSTR pchDstFilePath )
 		if(pchTail)
 		{
 			nPairentPathLen = (LONG)strlen( pchDstFilePath ) - (LONG)strlen( pchTail ) + 1;
-			strncpy_s(szPairentPath, MAX_PATH, pchDstFilePath, nPairentPathLen); 
+			StringCchCopyNA(szPairentPath, _countof(szPairentPath), pchDstFilePath, nPairentPathLen); 
 			szPairentPath[nPairentPathLen + 1] = 0;
-			if (!CreateDirectoryA (szPairentPath, NULL))
+			if (!XUE_IsValidDirectoryA(szPairentPath))
 			{
-				if (GetLastError() != ERROR_ALREADY_EXISTS)
+				if (!CreateDirectoryA (szPairentPath, NULL))
 				{
-					blRet = FALSE;
-					break;
-				}				
-			}            
+					if (GetLastError() != ERROR_ALREADY_EXISTS)
+					{
+						blRet = FALSE;
+						break;
+					}				
+				}  
+			}
 			pchTail ++;
 		}
 	}
@@ -359,23 +362,27 @@ BOOL WINAPI XUE_CreateFolderW(HWX_IN LPCWSTR pwhDstFilePath )
 		blRet = FALSE;
 		goto _Error;
 	}
-
+	
 	while(pwhTail)
 	{    
 		pwhTail = wcschr( pwhTail, L'\\');
 		if(pwhTail)
 		{
 			nPairentPathLen = (LONG)wcslen( pwhDstFilePath ) - (LONG)wcslen( pwhTail );
-			StringCchCopyNW(szPairentPath, MAX_PATH, pwhDstFilePath, nPairentPathLen);  
-			szPairentPath[nPairentPathLen] = 0;
-			if (!CreateDirectoryW(szPairentPath, NULL))
-			{				
-				if (GetLastError() != ERROR_ALREADY_EXISTS)
-				{
-					blRet = FALSE;
-					break;
-				}			
-			}         
+			StringCchCopyNW(szPairentPath, _countof(szPairentPath), pwhDstFilePath, nPairentPathLen);  
+			szPairentPath[nPairentPathLen] = 0;							
+			if (!XUE_IsValidDirectoryW(szPairentPath))
+			{
+				if (!CreateDirectoryW(szPairentPath, NULL))
+				{				
+					if (GetLastError() != ERROR_ALREADY_EXISTS)
+					{
+						HWTRACE(TEXT("XUE_CreateFolderW %d\n"), GetLastError());
+						blRet = FALSE;
+						break;
+					}			
+				} 
+			}
 			pwhTail ++;
 		}		
 	}
@@ -383,6 +390,7 @@ _Error:
 
 	return blRet;
 }
+
 #ifndef WINCE
 BOOL WINAPI XUE_GenCurPathA(HWX_OUT LPSTR pchPath)
 {
